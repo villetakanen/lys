@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { Lys } from "../../src/lys.js";
 
 const instances: Lys[] = [];
@@ -88,7 +88,7 @@ describe("keyboard navigation", () => {
 	it("Space does not navigate when an input is focused", () => {
 		const { container, instance } = createDeck(5);
 		const input = document.createElement("input");
-		container.querySelector("article")!.appendChild(input);
+		container.querySelector("article")?.appendChild(input);
 		pressKey(input, " ");
 		expect(instance.current).toBe(0);
 	});
@@ -96,7 +96,7 @@ describe("keyboard navigation", () => {
 	it("Space does not navigate when a textarea is focused", () => {
 		const { container, instance } = createDeck(5);
 		const textarea = document.createElement("textarea");
-		container.querySelector("article")!.appendChild(textarea);
+		container.querySelector("article")?.appendChild(textarea);
 		pressKey(textarea, " ");
 		expect(instance.current).toBe(0);
 	});
@@ -104,7 +104,7 @@ describe("keyboard navigation", () => {
 	it("Arrow keys still navigate when an input is focused", () => {
 		const { container, instance } = createDeck(5);
 		const input = document.createElement("input");
-		container.querySelector("article")!.appendChild(input);
+		container.querySelector("article")?.appendChild(input);
 		pressKey(input, "ArrowRight");
 		expect(instance.current).toBe(1);
 	});
@@ -243,7 +243,7 @@ describe("hash routing", () => {
 
 	it("hash uses article id when available", () => {
 		const { container, instance } = createDeck(5);
-		container.querySelectorAll("article")[2]!.id = "details";
+		container.querySelectorAll("article")[2]?.setAttribute("id", "details");
 		instance.goTo(2);
 		expect(location.hash).toBe("#slide=details");
 	});
@@ -306,5 +306,32 @@ describe("destroy lifecycle", () => {
 			}),
 		);
 		expect(instance.current).toBe(-1);
+	});
+});
+
+describe("reduced motion scroll behavior", () => {
+	afterEach(() => {
+		cleanup();
+		vi.restoreAllMocks();
+	});
+
+	it("uses smooth scroll when motion is allowed", () => {
+		vi.spyOn(window, "matchMedia").mockReturnValue({ matches: false } as MediaQueryList);
+		const { container, instance } = createDeck(5);
+		const slide = container.querySelectorAll("article")[1] as HTMLElement;
+		const spy = vi.fn();
+		slide.scrollIntoView = spy;
+		instance.next();
+		expect(spy).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+	});
+
+	it("uses instant scroll when reduced motion is preferred", () => {
+		vi.spyOn(window, "matchMedia").mockReturnValue({ matches: true } as MediaQueryList);
+		const { container, instance } = createDeck(5);
+		const slide = container.querySelectorAll("article")[1] as HTMLElement;
+		const spy = vi.fn();
+		slide.scrollIntoView = spy;
+		instance.next();
+		expect(spy).toHaveBeenCalledWith({ behavior: "instant", block: "start" });
 	});
 });

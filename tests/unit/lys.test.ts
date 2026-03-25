@@ -255,7 +255,8 @@ describe("programmatic navigation", () => {
 
 	it("goTo(id) navigates by article id", () => {
 		const container = createDeck(5);
-		container.querySelectorAll("article")[2]!.id = "conclusion";
+		const articles = container.querySelectorAll("article");
+		articles[2]?.setAttribute("id", "conclusion");
 		const instance = new Lys(container);
 		instance.goTo("conclusion");
 		expect(instance.current).toBe(2);
@@ -333,9 +334,9 @@ describe("state attributes", () => {
 		const container = createDeck(3);
 		new Lys(container);
 		const articles = container.querySelectorAll("article");
-		expect(articles[0]!.hasAttribute("data-lys-active")).toBe(true);
-		expect(articles[1]!.hasAttribute("data-lys-active")).toBe(false);
-		expect(articles[2]!.hasAttribute("data-lys-active")).toBe(false);
+		expect(articles[0]?.hasAttribute("data-lys-active")).toBe(true);
+		expect(articles[1]?.hasAttribute("data-lys-active")).toBe(false);
+		expect(articles[2]?.hasAttribute("data-lys-active")).toBe(false);
 	});
 
 	it("data-lys-active moves on navigation", () => {
@@ -343,8 +344,8 @@ describe("state attributes", () => {
 		const instance = new Lys(container);
 		instance.next();
 		const articles = container.querySelectorAll("article");
-		expect(articles[0]!.hasAttribute("data-lys-active")).toBe(false);
-		expect(articles[1]!.hasAttribute("data-lys-active")).toBe(true);
+		expect(articles[0]?.hasAttribute("data-lys-active")).toBe(false);
+		expect(articles[1]?.hasAttribute("data-lys-active")).toBe(true);
 	});
 
 	it("data-lys-current reflects the current index", () => {
