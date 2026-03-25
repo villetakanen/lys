@@ -146,14 +146,94 @@ describe("tabindex management", () => {
 	});
 });
 
-describe("keyboard destroy lifecycle", () => {
+describe("touch navigation", () => {
+	afterEach(cleanup);
+
+	function swipe(target: HTMLElement, deltaX: number, deltaY = 0): void {
+		const startX = 200;
+		const startY = 200;
+		target.dispatchEvent(
+			new TouchEvent("touchstart", {
+				touches: [new Touch({ identifier: 0, target, clientX: startX, clientY: startY })],
+				bubbles: true,
+			}),
+		);
+		target.dispatchEvent(
+			new TouchEvent("touchend", {
+				changedTouches: [
+					new Touch({
+						identifier: 0,
+						target,
+						clientX: startX + deltaX,
+						clientY: startY + deltaY,
+					}),
+				],
+				bubbles: true,
+			}),
+		);
+	}
+
+	it("swipe left triggers next()", () => {
+		const { container, instance } = createDeck(5);
+		swipe(container, -60);
+		expect(instance.current).toBe(1);
+	});
+
+	it("swipe right triggers prev()", () => {
+		const { container, instance } = createDeck(5);
+		instance.goTo(2);
+		swipe(container, 60);
+		expect(instance.current).toBe(1);
+	});
+
+	it("short swipe is ignored", () => {
+		const { container, instance } = createDeck(5);
+		swipe(container, -30);
+		expect(instance.current).toBe(0);
+	});
+
+	it("vertical-dominant swipe is ignored", () => {
+		const { container, instance } = createDeck(5);
+		swipe(container, -60, -100);
+		expect(instance.current).toBe(0);
+	});
+
+	it("swipe left at last slide is a no-op", () => {
+		const { container, instance } = createDeck(5);
+		instance.goTo(4);
+		swipe(container, -60);
+		expect(instance.current).toBe(4);
+	});
+});
+
+describe("destroy lifecycle", () => {
 	afterEach(cleanup);
 
 	it("destroy removes keyboard listener", () => {
 		const { container, instance } = createDeck(5);
 		instance.destroy();
 		pressKey(container, "ArrowRight");
-		// Instance is destroyed, current is -1, and no listener fires.
+		expect(instance.current).toBe(-1);
+	});
+
+	it("destroy removes touch listener", () => {
+		const { container, instance } = createDeck(5);
+		instance.destroy();
+		// Swipe after destroy — should not navigate.
+		container.dispatchEvent(
+			new TouchEvent("touchstart", {
+				touches: [new Touch({ identifier: 0, target: container, clientX: 200, clientY: 200 })],
+				bubbles: true,
+			}),
+		);
+		container.dispatchEvent(
+			new TouchEvent("touchend", {
+				changedTouches: [
+					new Touch({ identifier: 0, target: container, clientX: 100, clientY: 200 }),
+				],
+				bubbles: true,
+			}),
+		);
 		expect(instance.current).toBe(-1);
 	});
 });

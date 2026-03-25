@@ -53,9 +53,41 @@ export function setupNavigation(instance: LysInstance, container: HTMLElement): 
 
 	container.addEventListener("keydown", onKeydown);
 
+	// Touch / swipe navigation.
+	const SWIPE_THRESHOLD = 50;
+	let startX = 0;
+	let startY = 0;
+
+	function onTouchStart(e: TouchEvent): void {
+		const touch = e.touches[0];
+		if (touch) {
+			startX = touch.clientX;
+			startY = touch.clientY;
+		}
+	}
+
+	function onTouchEnd(e: TouchEvent): void {
+		const touch = e.changedTouches[0];
+		if (!touch) return;
+		const deltaX = touch.clientX - startX;
+		const deltaY = touch.clientY - startY;
+		if (Math.abs(deltaX) > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY)) {
+			if (deltaX < 0) {
+				instance.next();
+			} else {
+				instance.prev();
+			}
+		}
+	}
+
+	container.addEventListener("touchstart", onTouchStart, { passive: true });
+	container.addEventListener("touchend", onTouchEnd, { passive: true });
+
 	return {
 		destroy() {
 			container.removeEventListener("keydown", onKeydown);
+			container.removeEventListener("touchstart", onTouchStart);
+			container.removeEventListener("touchend", onTouchEnd);
 			if (addedTabindex) {
 				container.removeAttribute("tabindex");
 			}
