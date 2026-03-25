@@ -23,7 +23,7 @@ Three progressive enhancement tiers drive the design:
 - **Instance state:** Each instance tracks `current` (0-indexed slide number), `total` (slide count), and a reference to the active `slide` element.
 - **`lys:ready` event:** Dispatched on the container after initialization completes. `{ detail: { instance: LysInstance } }`.
 - **`destroy()` method:** Removes all event listeners, cleans up ARIA attributes added by JS, resets internal state. The container returns to its CSS-only behavior.
-- **Idempotency:** Calling `Lys.init()` on an already-initialized container is a no-op (returns the existing instance).
+- **Idempotency:** `Lys.from(container)` and `Lys.init()` are idempotent — they return existing instances without re-initialization. `new Lys(container)` on an already-initialized container destroys the previous instance first, then creates a fresh one (constructor always returns a new object).
 
 #### The `<article>` contract (HTML)
 
@@ -97,7 +97,7 @@ This spec does NOT cover: keyboard/touch navigation (`navigation.spec.md`), ARIA
 6. `lys:ready` fires on each container after initialization.
 7. Instance exposes `current`, `total`, and `slide` read-only properties with correct values.
 8. `destroy()` cleans up all JS state and listeners; container reverts to CSS-only behavior.
-9. Re-initializing an already-initialized container returns the existing instance (idempotent).
+9. `Lys.from()` is idempotent — returns the existing instance. `new Lys()` on an initialized container destroys the old instance and creates a fresh one.
 10. Non-`<article>` children of `[data-lys]` are ignored.
 11. `data-background` applies as CSS `background` shorthand.
 12. `data-class` classes are applied to articles on init and removed on destroy.
@@ -185,11 +185,18 @@ Scenario: new Lys(container) initializes a single container
   Then it returns a LysInstance
   And lys:ready fires on that container
 
-Scenario: Re-init returns existing instance
+Scenario: Lys.from() returns existing instance (idempotent)
   Given a [data-lys] container that is already initialized
-  When new Lys(container) is called again
+  When Lys.from(container) is called again
   Then it returns the same LysInstance (referential equality)
   And lys:ready does not fire again
+
+Scenario: new Lys() on initialized container replaces the instance
+  Given a [data-lys] container that is already initialized
+  When new Lys(container) is called again
+  Then the previous instance is destroyed
+  And a new LysInstance is returned
+  And lys:ready fires for the new instance
 
 Scenario: Instance exposes correct state
   Given a [data-lys] container with 5 <article> children
@@ -275,6 +282,11 @@ Scenario: Transitions are disabled when reduced motion is preferred
 | Lifecycle | `tests/unit/lys.test.ts` |
 | Print layout | `tests/e2e/print.spec.ts` |
 | Reduced motion | `tests/unit/tokens.test.ts` + `tests/e2e/slides.spec.ts` |
+
+## Known Gaps
+
+- **Auto-init test coverage.** The IIFE module-level auto-init code path (`DOMContentLoaded` listener / immediate `Lys.init()`) has no unit test. Will be covered by e2e tests in `tests/e2e/slides.spec.ts`.
+- **No ARIA attributes in core init.** The `destroy()` contract mentions cleaning up "ARIA attributes added by JS," but core currently sets none. ARIA roles (`role="group"`, `aria-roledescription`), live regions, and focus management are deferred to `a11y.spec.md`. Track this to ensure the a11y module is implemented before shipping.
 
 ## Related / Future
 
