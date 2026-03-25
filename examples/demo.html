@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>⚜ Lys — Demo</title>
+	<link rel="stylesheet" href="/src/lys.css">
+	<style>
+		/* Author theme — Lys has zero visual opinions, so we bring our own */
+		:root {
+			--lys-slide-padding: 3rem 4rem;
+			--lys-aspect-ratio: 16/9;
+		}
+
+		* { margin: 0; box-sizing: border-box; }
+
+		body {
+			font-family: "Inter", system-ui, -apple-system, sans-serif;
+			color: #1a1a2e;
+			background: #0a0a0a;
+		}
+
+		[data-lys] > article {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		/* Content slides — base styles */
+		article p, article li {
+			font-size: clamp(0.9rem, 1.8vw, 1.25rem);
+			line-height: 1.6;
+		}
+
+		article h2 {
+			font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+			font-weight: 700;
+			margin-bottom: 1em;
+			letter-spacing: -0.01em;
+		}
+
+		article ul {
+			list-style: none;
+			padding: 0;
+		}
+
+		article ul li {
+			padding: 0.4em 0;
+			padding-left: 1.5em;
+			position: relative;
+		}
+
+		article ul li::before {
+			content: "⚜";
+			position: absolute;
+			left: 0;
+			opacity: 0.5;
+			font-size: 0.8em;
+		}
+
+		/* Title slide */
+		.title-slide {
+			text-align: center;
+			background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+			color: #f0f0f0;
+		}
+		.title-slide h1 {
+			font-size: clamp(2rem, 5vw, 4rem);
+			font-weight: 800;
+			letter-spacing: -0.02em;
+			margin-bottom: 0.5em;
+		}
+		.title-slide p {
+			font-size: clamp(1rem, 2vw, 1.5rem);
+			opacity: 0.7;
+		}
+
+		/* Code slide */
+		.code-slide pre {
+			background: #1a1a2e;
+			color: #e0def4;
+			padding: 1.5em 2em;
+			border-radius: 0.75rem;
+			font-size: clamp(0.75rem, 1.5vw, 1rem);
+			overflow-x: auto;
+			line-height: 1.7;
+			margin-top: 0.5em;
+		}
+
+		/* Two-column layout */
+		.two-col {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 2rem;
+			align-items: start;
+			margin-top: 1em;
+		}
+
+		/* Dark text on light backgrounds */
+		.light { color: #1a1a2e; }
+		.light h2 { color: #0f0c29; }
+
+		/* Light text on dark backgrounds */
+		.dark { color: #f0f0f0; }
+		.dark h2 { color: #ffffff; }
+
+		/* Closing slide */
+		.closing {
+			text-align: center;
+		}
+		.closing h2 {
+			font-size: clamp(2rem, 4vw, 3rem);
+		}
+		.closing p {
+			font-size: clamp(1rem, 2vw, 1.5rem);
+			opacity: 0.6;
+			margin-top: 0.5em;
+		}
+
+		/* Slide counter (supplementary element — Lys ignores non-articles) */
+		.slide-counter {
+			position: fixed;
+			bottom: 1.5rem;
+			right: 2rem;
+			font-size: 0.75rem;
+			color: rgba(255, 255, 255, 0.3);
+			font-family: "SF Mono", "Fira Code", monospace;
+			z-index: 10;
+			pointer-events: none;
+		}
+	</style>
+</head>
+<body>
+	<div data-lys id="deck">
+
+		<article data-class="title-slide" data-notes="Welcome to the demo. This shows what Lys can do today.">
+			<h1>⚜ Lys</h1>
+			<p>A structural slide engine for LLM-generated presentations</p>
+		</article>
+
+		<article data-class="light" data-background="#f8f8f0" data-notes="Cover the three progressive enhancement tiers.">
+			<h2>What is Lys?</h2>
+			<ul>
+				<li>Zero-dependency CSS + TypeScript library</li>
+				<li>Turns <code>&lt;article&gt;</code> elements into slide presentations</li>
+				<li>Visually unopinionated — bring your own theme</li>
+				<li>Behaviorally opinionated — navigation, a11y, presenter sync</li>
+			</ul>
+		</article>
+
+		<article data-class="dark" data-background="linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)">
+			<h2>The HTML Contract</h2>
+			<pre><code>&lt;div data-lys&gt;
+  &lt;article&gt;
+    &lt;h1&gt;First Slide&lt;/h1&gt;
+    &lt;p&gt;Hello, world.&lt;/p&gt;
+  &lt;/article&gt;
+  &lt;article&gt;
+    &lt;h2&gt;Second Slide&lt;/h2&gt;
+    &lt;p&gt;That's it. That's the API.&lt;/p&gt;
+  &lt;/article&gt;
+&lt;/div&gt;</code></pre>
+		</article>
+
+		<article data-class="light" data-background="#f0f0ff" data-notes="Explain progressive enhancement tiers.">
+			<h2>Progressive Enhancement</h2>
+			<div class="two-col">
+				<div>
+					<p><strong>No JS, no CSS</strong></p>
+					<p>Articles flow as a readable document.</p>
+					<br>
+					<p><strong>CSS only</strong></p>
+					<p>Scroll-snap slides, navigable by scrolling.</p>
+				</div>
+				<div>
+					<p><strong>CSS + JS</strong></p>
+					<p>Full experience: keyboard navigation, state tracking, programmatic API, presenter mode.</p>
+					<br>
+					<p><strong>Size budget</strong></p>
+					<p>JS &lt; 5 KB gzip. CSS &lt; 2 KB gzip. Currently ~1.2 KB total.</p>
+				</div>
+			</div>
+		</article>
+
+		<article data-class="dark code-slide" data-background="#1e1e2e" data-notes="Show the data attribute API.">
+			<h2>Data Attributes</h2>
+			<pre><code>&lt;article
+  data-class="title-slide dark"
+  data-background="linear-gradient(135deg, #0f0c29, #302b63)"
+  data-notes="Speaker notes go here"
+  data-transition="fade"
+  data-timing="30"
+&gt;
+  &lt;h1&gt;Your Content&lt;/h1&gt;
+&lt;/article&gt;</code></pre>
+		</article>
+
+		<article data-class="light" data-background="linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)" data-notes="Emphasize the two-tier system.">
+			<h2>Design Tokens</h2>
+			<ul>
+				<li>Two-tier system: <code>--lys-*</code> (public) / <code>--_lys-*</code> (internal)</li>
+				<li>Override at <code>:root</code>, container, or individual slide level</li>
+				<li>9 tokens: aspect ratio, padding, transitions, font size, gap, dimensions, focus ring</li>
+				<li><code>prefers-reduced-motion</code> sets transitions to 0ms automatically</li>
+			</ul>
+		</article>
+
+		<article data-class="light" data-background="#f8f8f0">
+			<h2>LLM-First Design</h2>
+			<ul>
+				<li>Flat structure — slides are siblings, not nested</li>
+				<li>Standard HTML elements only — nothing proprietary</li>
+				<li>Single self-contained HTML file as output format</li>
+				<li>Auto-initializes — zero setup code needed</li>
+				<li>Graceful degradation — wrong attributes don't break slides</li>
+			</ul>
+		</article>
+
+		<article data-class="closing dark" data-background="linear-gradient(135deg, #0f0c29, #302b63, #24243e)">
+			<h2>⚜</h2>
+			<p>Scroll to navigate · Open the HTML to see how it works</p>
+		</article>
+
+	</div>
+
+	<div class="slide-counter" id="counter"></div>
+
+	<script type="module">
+		import { Lys } from "/src/lys.ts";
+
+		const deck = Lys.from(document.getElementById("deck"));
+		const counter = document.getElementById("counter");
+
+		function updateCounter() {
+			if (deck.total > 0) {
+				counter.textContent = `${deck.current + 1} / ${deck.total}`;
+			}
+		}
+
+		updateCounter();
+
+		// Update counter on scroll (temporary — proper slidechange events come with navigation module)
+		document.getElementById("deck").addEventListener("scroll", () => {
+			// Approximate current slide from scroll position
+			const container = document.getElementById("deck");
+			const scrollTop = container.scrollTop;
+			const slideHeight = container.clientHeight;
+			const approxSlide = Math.round(scrollTop / slideHeight);
+			counter.textContent = `${approxSlide + 1} / ${deck.total}`;
+		});
+	</script>
+</body>
+</html>
