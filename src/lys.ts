@@ -1,5 +1,5 @@
 import "./lys.css";
-import type { LysInstance, LysReadyDetail } from "./types.js";
+import type { LysInstance, LysReadyDetail, LysSlideChangeDetail } from "./types.js";
 
 /** Registry of initialized containers to instances (for idempotency). */
 const registry = new WeakMap<HTMLElement, Lys>();
@@ -60,6 +60,12 @@ export class Lys implements LysInstance {
 			}
 		}
 
+		// Set initial state attributes.
+		if (this.#current >= 0) {
+			this.#slides[this.#current]?.setAttribute("data-lys-active", "");
+			container.setAttribute("data-lys-current", String(this.#current));
+		}
+
 		registry.set(container, this);
 
 		// Dispatch lys:ready.
@@ -83,7 +89,61 @@ export class Lys implements LysInstance {
 		return this.#slides[this.#current] ?? null;
 	}
 
+	next(): void {
+		this.goTo(this.#current + 1);
+	}
+
+	prev(): void {
+		this.goTo(this.#current - 1);
+	}
+
+	goTo(target: number | string): void {
+		if (this.#slides.length === 0) return;
+
+		let index: number;
+		if (typeof target === "string") {
+			index = this.#slides.findIndex((s) => s.id === target);
+			if (index === -1) return;
+		} else {
+			index = Math.max(0, Math.min(target, this.#slides.length - 1));
+		}
+
+		if (index === this.#current) return;
+
+		const from = this.#current;
+		const prevSlide = this.#slides[this.#current];
+		const nextSlide = this.#slides[index];
+		if (!nextSlide) return;
+
+		// Update active slide attribute.
+		prevSlide?.removeAttribute("data-lys-active");
+		this.#current = index;
+		nextSlide.setAttribute("data-lys-active", "");
+		this.#container.setAttribute("data-lys-current", String(this.#current));
+
+		// Scroll the target slide into view.
+		const prefersReducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+		nextSlide.scrollIntoView({
+			behavior: prefersReducedMotion ? "instant" : "smooth",
+			block: "start",
+		});
+
+		// Dispatch slidechange event.
+		this.#container.dispatchEvent(
+			new CustomEvent<LysSlideChangeDetail>("lys:slidechange", {
+				detail: { from, to: this.#current, slide: nextSlide },
+				bubbles: true,
+			}),
+		);
+	}
+
 	destroy(): void {
+		// Remove state attributes.
+		for (const slide of this.#slides) {
+			slide.removeAttribute("data-lys-active");
+		}
+		this.#container.removeAttribute("data-lys-current");
+
 		// Revert data-class additions.
 		for (const [slide, classes] of this.#classMap) {
 			slide.classList.remove(...classes);

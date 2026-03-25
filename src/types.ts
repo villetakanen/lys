@@ -7,6 +7,13 @@ export interface LysInstance {
 	/** The currently active slide element, or null if the deck is empty. */
 	readonly slide: HTMLElement | null;
 
+	/** Advance to the next slide. No-op at the last slide. */
+	next(): void;
+	/** Go to the previous slide. No-op at the first slide. */
+	prev(): void;
+	/** Jump to a slide by 0-based index or article id. */
+	goTo(target: number | string): void;
+
 	/** Tear down the instance: remove listeners, revert data-class, clear state. */
 	destroy(): void;
 }

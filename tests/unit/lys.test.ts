@@ -196,6 +196,182 @@ describe("data-background handling", () => {
 	});
 });
 
+describe("programmatic navigation", () => {
+	afterEach(cleanup);
+
+	it("next() advances to the next slide", () => {
+		const container = createDeck(5);
+		const instance = new Lys(container);
+		instance.next();
+		expect(instance.current).toBe(1);
+		expect(instance.slide).toBe(container.querySelectorAll("article")[1]);
+	});
+
+	it("next() is a no-op at the last slide", () => {
+		const container = createDeck(5);
+		const instance = new Lys(container);
+		instance.goTo(4);
+		instance.next();
+		expect(instance.current).toBe(4);
+	});
+
+	it("prev() goes to the previous slide", () => {
+		const container = createDeck(5);
+		const instance = new Lys(container);
+		instance.goTo(3);
+		instance.prev();
+		expect(instance.current).toBe(2);
+	});
+
+	it("prev() is a no-op at the first slide", () => {
+		const container = createDeck(5);
+		const instance = new Lys(container);
+		instance.prev();
+		expect(instance.current).toBe(0);
+	});
+
+	it("goTo(n) jumps to a specific slide", () => {
+		const container = createDeck(5);
+		const instance = new Lys(container);
+		instance.goTo(3);
+		expect(instance.current).toBe(3);
+	});
+
+	it("goTo() clamps out-of-range positive index", () => {
+		const container = createDeck(5);
+		const instance = new Lys(container);
+		instance.goTo(99);
+		expect(instance.current).toBe(4);
+	});
+
+	it("goTo() clamps negative index to 0", () => {
+		const container = createDeck(5);
+		const instance = new Lys(container);
+		instance.goTo(3);
+		instance.goTo(-1);
+		expect(instance.current).toBe(0);
+	});
+
+	it("goTo(id) navigates by article id", () => {
+		const container = createDeck(5);
+		container.querySelectorAll("article")[2]!.id = "conclusion";
+		const instance = new Lys(container);
+		instance.goTo("conclusion");
+		expect(instance.current).toBe(2);
+	});
+
+	it("goTo(id) with non-existent id is a no-op", () => {
+		const container = createDeck(5);
+		const instance = new Lys(container);
+		instance.goTo("nonexistent");
+		expect(instance.current).toBe(0);
+	});
+
+	it("navigating to the current slide is a no-op", () => {
+		const container = createDeck(5);
+		const instance = new Lys(container);
+		const handler = vi.fn();
+		container.addEventListener("lys:slidechange", handler);
+		instance.goTo(0);
+		expect(handler).not.toHaveBeenCalled();
+	});
+
+	it("navigation on empty deck is a no-op", () => {
+		const container = createDeck(0);
+		const instance = new Lys(container);
+		expect(() => {
+			instance.next();
+			instance.prev();
+			instance.goTo(0);
+		}).not.toThrow();
+	});
+});
+
+describe("lys:slidechange event", () => {
+	afterEach(cleanup);
+
+	it("fires with correct detail on next()", () => {
+		const container = createDeck(5);
+		const instance = new Lys(container);
+		const handler = vi.fn();
+		container.addEventListener("lys:slidechange", handler);
+		instance.next();
+		expect(handler).toHaveBeenCalledOnce();
+		const detail = handler.mock.calls[0][0].detail;
+		expect(detail.from).toBe(0);
+		expect(detail.to).toBe(1);
+		expect(detail.slide).toBe(container.querySelectorAll("article")[1]);
+	});
+
+	it("does not fire when target equals current", () => {
+		const container = createDeck(5);
+		new Lys(container);
+		const handler = vi.fn();
+		container.addEventListener("lys:slidechange", handler);
+		// goTo(0) when already at 0
+		const instance = Lys.from(container);
+		instance.goTo(0);
+		expect(handler).not.toHaveBeenCalled();
+	});
+
+	it("does not fire for no-op next() at last slide", () => {
+		const container = createDeck(3);
+		const instance = new Lys(container);
+		instance.goTo(2);
+		const handler = vi.fn();
+		container.addEventListener("lys:slidechange", handler);
+		instance.next();
+		expect(handler).not.toHaveBeenCalled();
+	});
+});
+
+describe("state attributes", () => {
+	afterEach(cleanup);
+
+	it("data-lys-active is set on the first slide on init", () => {
+		const container = createDeck(3);
+		new Lys(container);
+		const articles = container.querySelectorAll("article");
+		expect(articles[0]!.hasAttribute("data-lys-active")).toBe(true);
+		expect(articles[1]!.hasAttribute("data-lys-active")).toBe(false);
+		expect(articles[2]!.hasAttribute("data-lys-active")).toBe(false);
+	});
+
+	it("data-lys-active moves on navigation", () => {
+		const container = createDeck(3);
+		const instance = new Lys(container);
+		instance.next();
+		const articles = container.querySelectorAll("article");
+		expect(articles[0]!.hasAttribute("data-lys-active")).toBe(false);
+		expect(articles[1]!.hasAttribute("data-lys-active")).toBe(true);
+	});
+
+	it("data-lys-current reflects the current index", () => {
+		const container = createDeck(3);
+		const instance = new Lys(container);
+		expect(container.getAttribute("data-lys-current")).toBe("0");
+		instance.next();
+		expect(container.getAttribute("data-lys-current")).toBe("1");
+	});
+
+	it("state attributes are cleaned up on destroy", () => {
+		const container = createDeck(3);
+		const instance = new Lys(container);
+		instance.destroy();
+		expect(container.hasAttribute("data-lys-current")).toBe(false);
+		const articles = container.querySelectorAll("article");
+		for (const article of articles) {
+			expect(article.hasAttribute("data-lys-active")).toBe(false);
+		}
+	});
+
+	it("no state attributes on empty deck", () => {
+		const container = createDeck(0);
+		new Lys(container);
+		expect(container.hasAttribute("data-lys-current")).toBe(false);
+	});
+});
+
 describe("Lys destroy lifecycle", () => {
 	afterEach(cleanup);
 
