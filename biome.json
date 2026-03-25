@@ -1,5 +1,8 @@
 {
 	"$schema": "https://biomejs.dev/schemas/2.0.x/schema.json",
+	"files": {
+		"includes": ["**", "!dist"]
+	},
 	"assist": {
 		"actions": {
 			"source": {
