@@ -1,0 +1,21 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{ts,css,json}"
+      run: pnpm biome check --write {staged_files}
+      stage_fixed: true
+    typecheck:
+      run: pnpm tsc --noEmit
+    unit-test:
+      run: pnpm vitest run
+
+commit-msg:
+  commands:
+    conventional:
+      run: |
+        MSG=$(cat {1})
+        if ! echo "$MSG" | grep -qE '^(feat|fix|refactor|docs|test|chore|build|ci|perf|style|revert)(\(.+\))?!?:\ .+'; then
+          echo "Commit message must follow Conventional Commits: type(scope): description"
+          exit 1
+        fi

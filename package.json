@@ -1,0 +1,56 @@
+{
+	"name": "lys",
+	"version": "0.1.0",
+	"type": "module",
+	"description": "A structural CSS+TS slide engine for LLM-generated presentations",
+	"main": "dist/lys.js",
+	"module": "dist/lys.js",
+	"exports": {
+		".": {
+			"import": "./dist/lys.js",
+			"types": "./dist/lys.d.ts"
+		},
+		"./css": "./dist/lys.css"
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc --noEmit && vite build",
+		"preview": "vite preview",
+		"lint": "biome check --write .",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"test:e2e": "playwright test",
+		"test:e2e:ui": "playwright test --ui",
+		"test:all": "vitest run && playwright test",
+		"prepare": "lefthook install"
+	},
+	"keywords": [
+		"slides",
+		"presentation",
+		"css",
+		"accessible",
+		"llm"
+	],
+	"license": "MIT",
+	"packageManager": "pnpm@10.30.3",
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"lefthook"
+		]
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.8",
+		"@playwright/test": "^1.58.2",
+		"@vitest/coverage-v8": "^4.1.1",
+		"happy-dom": "^20.8.8",
+		"lefthook": "^2.1.4",
+		"typescript": "^6.0.2",
+		"vite": "^8.0.2",
+		"vitest": "^4.1.1"
+	}
+}
