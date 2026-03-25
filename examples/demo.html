@@ -218,7 +218,7 @@
 
 		<article data-class="closing dark" data-background="linear-gradient(135deg, #0f0c29, #302b63, #24243e)">
 			<h2>⚜</h2>
-			<p>Scroll to navigate · Open the HTML to see how it works</p>
+			<p>Arrow keys or swipe to navigate · Open the HTML to see how it works</p>
 		</article>
 
 	</div>
@@ -232,22 +232,12 @@
 		const counter = document.getElementById("counter");
 
 		function updateCounter() {
-			if (deck.total > 0) {
-				counter.textContent = `${deck.current + 1} / ${deck.total}`;
-			}
+			counter.textContent = `${deck.current + 1} / ${deck.total}`;
 		}
 
 		updateCounter();
 
-		// Update counter on scroll (temporary — proper slidechange events come with navigation module)
-		document.getElementById("deck").addEventListener("scroll", () => {
-			// Approximate current slide from scroll position
-			const container = document.getElementById("deck");
-			const scrollTop = container.scrollTop;
-			const slideHeight = container.clientHeight;
-			const approxSlide = Math.round(scrollTop / slideHeight);
-			counter.textContent = `${approxSlide + 1} / ${deck.total}`;
-		});
+		document.getElementById("deck").addEventListener("lys:slidechange", updateCounter);
 	</script>
 </body>
 </html>

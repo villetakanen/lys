@@ -115,6 +115,12 @@ export function setupNavigation(instance: LysInstance, container: HTMLElement): 
 		instance.goTo(initialTarget);
 	}
 
+	// Auto-focus the container if it's the only deck on the page,
+	// so keyboard navigation works immediately without clicking.
+	if (document.querySelectorAll("[data-lys]").length === 1) {
+		container.focus({ preventScroll: true });
+	}
+
 	return {
 		destroy() {
 			container.removeEventListener("keydown", onKeydown);

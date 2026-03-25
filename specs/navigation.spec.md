@@ -70,6 +70,8 @@ Keyboard listeners are attached to the `[data-lys]` container element (not `docu
 
 The container must be focusable. Navigation sets `tabindex="0"` on the container during init if it doesn't already have a `tabindex`. This is the only DOM mutation navigation performs (beyond state attribute updates).
 
+**Auto-focus:** When there is only one `[data-lys]` container on the page, navigation auto-focuses it after init (`container.focus({ preventScroll: true })`). This allows keyboard navigation to work immediately without the user needing to click the deck first. With multiple decks, no auto-focus occurs — the user must click or tab to the desired deck.
+
 **New API surface:** Navigation adds `tabindex="0"` to the container. This is a DOM mutation on an existing element, not a new data attribute. It enables keyboard interaction without requiring author markup changes.
 
 | Key | Action | Condition |
