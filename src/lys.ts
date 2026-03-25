@@ -1,4 +1,5 @@
 import "./lys.css";
+import { type NavigationHandle, setupNavigation } from "./navigation.js";
 import type { LysInstance, LysReadyDetail, LysSlideChangeDetail } from "./types.js";
 
 /** Registry of initialized containers to instances (for idempotency). */
@@ -15,6 +16,7 @@ export class Lys implements LysInstance {
 	#slides: HTMLElement[] = [];
 	#current = -1;
 	#classMap = new Map<HTMLElement, string[]>();
+	#navigation: NavigationHandle | null = null;
 
 	/** Discover and initialize all `[data-lys]` containers in the document. */
 	static init(): Lys[] {
@@ -67,6 +69,7 @@ export class Lys implements LysInstance {
 		}
 
 		registry.set(container, this);
+		this.#navigation = setupNavigation(this, container);
 
 		// Dispatch lys:ready.
 		container.dispatchEvent(
@@ -138,6 +141,10 @@ export class Lys implements LysInstance {
 	}
 
 	destroy(): void {
+		// Tear down navigation listeners.
+		this.#navigation?.destroy();
+		this.#navigation = null;
+
 		// Remove state attributes.
 		for (const slide of this.#slides) {
 			slide.removeAttribute("data-lys-active");
