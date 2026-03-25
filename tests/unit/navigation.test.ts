@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { Lys } from "../../src/lys.js";
 
+const instances: Lys[] = [];
+
 function createDeck(articleCount: number): { container: HTMLElement; instance: Lys } {
 	const articles = Array.from(
 		{ length: articleCount },
@@ -11,6 +13,7 @@ function createDeck(articleCount: number): { container: HTMLElement; instance: L
 	container.innerHTML = articles;
 	document.body.appendChild(container);
 	const instance = new Lys(container);
+	instances.push(instance);
 	return { container, instance };
 }
 
@@ -19,7 +22,12 @@ function pressKey(target: HTMLElement, key: string, opts: Partial<KeyboardEventI
 }
 
 function cleanup(): void {
+	for (const instance of instances) {
+		instance.destroy();
+	}
+	instances.length = 0;
 	document.body.innerHTML = "";
+	history.replaceState(null, "", location.pathname);
 }
 
 describe("keyboard navigation", () => {
@@ -203,6 +211,69 @@ describe("touch navigation", () => {
 		instance.goTo(4);
 		swipe(container, -60);
 		expect(instance.current).toBe(4);
+	});
+});
+
+describe("hash routing", () => {
+	afterEach(cleanup);
+
+	it("hash deep link on init (numeric, 1-based)", () => {
+		history.replaceState(null, "", "#slide=3");
+		const { instance } = createDeck(5);
+		expect(instance.current).toBe(2);
+	});
+
+	it("hash deep link on init (by id)", () => {
+		history.replaceState(null, "", "#slide=overview");
+		const container = document.createElement("div");
+		container.setAttribute("data-lys", "");
+		container.innerHTML =
+			'<article>Slide 1</article><article id="overview">Slide 2</article><article>Slide 3</article>';
+		document.body.appendChild(container);
+		const instance = new Lys(container);
+		instances.push(instance);
+		expect(instance.current).toBe(1);
+	});
+
+	it("hash updates on navigation (1-based number)", () => {
+		const { instance } = createDeck(5);
+		instance.next();
+		expect(location.hash).toBe("#slide=2");
+	});
+
+	it("hash uses article id when available", () => {
+		const { container, instance } = createDeck(5);
+		container.querySelectorAll("article")[2]!.id = "details";
+		instance.goTo(2);
+		expect(location.hash).toBe("#slide=details");
+	});
+
+	it("external hashchange triggers navigation", () => {
+		const { instance } = createDeck(5);
+		// Simulate external hash change.
+		history.replaceState(null, "", "#slide=4");
+		window.dispatchEvent(new HashChangeEvent("hashchange"));
+		expect(instance.current).toBe(3);
+	});
+
+	it("invalid hash is ignored", () => {
+		history.replaceState(null, "", "#something-else");
+		const { instance } = createDeck(5);
+		expect(instance.current).toBe(0);
+	});
+
+	it("out-of-range hash is clamped", () => {
+		history.replaceState(null, "", "#slide=99");
+		const { instance } = createDeck(5);
+		expect(instance.current).toBe(4);
+	});
+
+	it("destroy removes hashchange listener", () => {
+		const { instance } = createDeck(5);
+		instance.destroy();
+		history.replaceState(null, "", "#slide=3");
+		window.dispatchEvent(new HashChangeEvent("hashchange"));
+		expect(instance.current).toBe(-1);
 	});
 });
 

@@ -83,11 +83,45 @@ export function setupNavigation(instance: LysInstance, container: HTMLElement): 
 	container.addEventListener("touchstart", onTouchStart, { passive: true });
 	container.addEventListener("touchend", onTouchEnd, { passive: true });
 
+	// Hash routing.
+	function parseSlideHash(hash: string): number | string | null {
+		const match = hash.match(/^#slide=(.+)$/);
+		if (!match?.[1]) return null;
+		const val = match[1];
+		const num = Number(val);
+		return Number.isFinite(num) ? num - 1 : val; // 1-based to 0-based for numbers
+	}
+
+	function onSlideChange(e: Event): void {
+		const detail = (e as CustomEvent).detail;
+		const slide = detail.slide as HTMLElement;
+		const hashVal = slide.id || String(detail.to + 1); // 1-based
+		history.replaceState(null, "", `#slide=${hashVal}`);
+	}
+
+	function onHashChange(): void {
+		const target = parseSlideHash(location.hash);
+		if (target !== null) {
+			instance.goTo(target);
+		}
+	}
+
+	container.addEventListener("lys:slidechange", onSlideChange);
+	window.addEventListener("hashchange", onHashChange);
+
+	// Navigate to initial hash if present.
+	const initialTarget = parseSlideHash(location.hash);
+	if (initialTarget !== null) {
+		instance.goTo(initialTarget);
+	}
+
 	return {
 		destroy() {
 			container.removeEventListener("keydown", onKeydown);
 			container.removeEventListener("touchstart", onTouchStart);
 			container.removeEventListener("touchend", onTouchEnd);
+			container.removeEventListener("lys:slidechange", onSlideChange);
+			window.removeEventListener("hashchange", onHashChange);
 			if (addedTabindex) {
 				container.removeAttribute("tabindex");
 			}

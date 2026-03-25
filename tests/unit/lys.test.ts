@@ -15,6 +15,7 @@ function createDeck(articleCount: number, extras?: string): HTMLElement {
 
 function cleanup(): void {
 	document.body.innerHTML = "";
+	history.replaceState(null, "", location.pathname);
 }
 
 describe("Lys initialization", () => {
