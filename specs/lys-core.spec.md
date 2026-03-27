@@ -278,7 +278,7 @@ Scenario: Transitions are disabled when reduced motion is preferred
 | CSS-only layout | `tests/e2e/slides.spec.ts` |
 | Token resolution | `tests/unit/tokens.test.ts` |
 | JS initialization | `tests/unit/lys.test.ts` |
-| Data attributes | `tests/unit/lys.test.ts` + `tests/e2e/slides.spec.ts` |
+| Data attributes | `tests/unit/lys.test.ts` + `tests/e2e/slides.spec.ts` + `tests/e2e/navigation.spec.ts` |
 | Lifecycle | `tests/unit/lys.test.ts` |
 | Print layout | `tests/e2e/print.spec.ts` |
 | Reduced motion | `tests/unit/tokens.test.ts` + `tests/e2e/slides.spec.ts` |

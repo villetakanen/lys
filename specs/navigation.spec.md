@@ -498,12 +498,12 @@ Scenario: Hash routing targets the correct deck
 |---|---|
 | Programmatic navigation | `tests/unit/navigation.test.ts` |
 | State attributes | `tests/unit/navigation.test.ts` |
-| Keyboard navigation | `tests/unit/navigation.test.ts` + `tests/e2e/slides.spec.ts` |
-| Touch navigation | `tests/unit/navigation.test.ts` + `tests/e2e/slides.spec.ts` |
-| Hash routing | `tests/unit/navigation.test.ts` + `tests/e2e/slides.spec.ts` |
+| Keyboard navigation | `tests/unit/navigation.test.ts` + `tests/e2e/navigation.spec.ts` |
+| Touch navigation | `tests/unit/navigation.test.ts` |
+| Hash routing | `tests/unit/navigation.test.ts` + `tests/e2e/navigation.spec.ts` |
 | Reduced motion | `tests/e2e/slides.spec.ts` |
 | Lifecycle | `tests/unit/navigation.test.ts` |
-| Multiple decks | `tests/e2e/slides.spec.ts` |
+| Multiple decks | `tests/e2e/navigation.spec.ts` |
 
 ## Known Constraints
 
