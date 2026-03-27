@@ -111,18 +111,11 @@ Lys handles navigation through:
 - **URL hash** — `#slide=3` or `#slide=intro` (by `id` attribute on article).
 - **API** — `lys.next()`, `lys.prev()`, `lys.goTo(n)`, `lys.goTo('intro')`.
 
-## Presenter Mode
+## Presenter Mode (Future — not in 1.0)
 
-Activated via `Ctrl+Shift+P` or `lys.presenter()`. Opens a separate window (or panel) containing:
+> Deferred to post-1.0. See [ADR-001](./docs/adr/001-defer-presenter-mode.md) for rationale.
 
-- Current slide preview
-- Next slide preview
-- Speaker notes for the current slide
-- Elapsed timer and per-slide timer
-- Slide counter (`3 / 17`)
-- Slide overview grid (thumbnail navigation)
-
-Presenter mode communicates with the main deck via `BroadcastChannel`, so it works across windows on the same origin.
+The `data-notes` and `data-timing` attributes on slides are part of the 1.0 article contract as general-purpose metadata, but no built-in presenter UI ships in 1.0.
 
 ## Events
 
@@ -130,7 +123,7 @@ Lys emits custom events on the container element:
 
 - `lys:slidechange` — `{ detail: { from: number, to: number, slide: HTMLElement } }`
 - `lys:ready` — Initialization complete.
-- `lys:presenter` — Presenter mode opened/closed.
+- `lys:presenter` — *(Future — not in 1.0)* Presenter mode opened/closed.
 
 ## Programmatic API
 
@@ -145,9 +138,6 @@ interface LysInstance {
   readonly current: number;
   readonly total: number;
   readonly slide: HTMLElement;
-
-  // Presenter
-  presenter(): void;
 
   // Lifecycle
   destroy(): void;
@@ -172,7 +162,7 @@ const deck: LysInstance = new Lys(document.getElementById('my-deck'));
     lys.css              ← structural styles + design tokens
     lys.ts               ← entry point, auto-init, public API
     navigation.ts        ← keyboard, touch, hash routing
-    presenter.ts         ← presenter mode (lazy-loaded)
+    presenter.ts         ← presenter mode (future — not in 1.0)
     a11y.ts              ← ARIA live region, focus management
     types.ts             ← shared type definitions
   specs/

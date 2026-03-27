@@ -70,7 +70,7 @@ A Lys presentation works at three levels:
 
 1. **No JS, no Lys CSS** — A readable HTML document. Articles flow vertically. Printable.
 2. **Lys CSS only** — Scroll-snap slides with CSS-only navigation. No presenter features, but a functional deck.
-3. **Lys CSS + JS** — Full experience: keyboard/touch/swipe navigation, presenter mode, slide overview, timer, URL hash routing.
+3. **Lys CSS + JS** — Full experience: keyboard/touch/swipe navigation, ARIA announcements, URL hash routing.
 
 ## What Lys is NOT
 
