@@ -4,7 +4,7 @@
 
 This document defines *how* Lys works. For *why* it exists and what it values, see [VISION.md](./VISION.md).
 
-Lys is visually unopinionated but **behaviorally opinionated**. Everything below — navigation, focus management, ARIA announcements, presenter sync, transition handling — represents strong, deliberate decisions that free authors (human or LLM) from having to get these right themselves.
+Lys is visually unopinionated but **behaviorally opinionated**. Everything below — navigation, focus management, ARIA announcements, transition handling — represents strong, deliberate decisions that free authors (human or LLM) from having to get these right themselves.
 
 ## Distribution
 
@@ -45,7 +45,7 @@ A core design requirement is that an LLM can produce a **complete, self-containe
 This means:
 
 - **lys.css must be self-contained.** No `@import`, no external references, no `url()` pointing to other files.
-- **lys.iife.js must be self-contained.** No dynamic `import()` in the IIFE build (presenter mode lazy-loading uses dynamic import only in the ESM build; the IIFE build must bundle everything).
+- **lys.iife.js must be self-contained.** No dynamic `import()` in the IIFE build. The IIFE build must bundle everything.
 - **Both must be small enough to inline.** The size budgets (< 2 KB CSS, < 6 KB IIFE JS gzipped) are designed with inline usage in mind — raw (uncompressed) should stay well under 20 KB total.
 - **No initialization boilerplate.** The IIFE auto-discovers `[data-lys]` on DOMContentLoaded. Zero lines of setup code needed from the author.
 
@@ -162,14 +162,13 @@ const deck: LysInstance = new Lys(document.getElementById('my-deck'));
     lys.css              ← structural styles + design tokens
     lys.ts               ← entry point, auto-init, public API
     navigation.ts        ← keyboard, touch, hash routing
-    presenter.ts         ← presenter mode (future — not in 1.0)
     a11y.ts              ← ARIA live region, focus management
     types.ts             ← shared type definitions
   specs/
     lys-core.spec.md     ← spec: slide rendering, tokens, layout
     navigation.spec.md   ← spec: keyboard, touch, hash routing
-    presenter.spec.md    ← spec: presenter mode
     a11y.spec.md         ← spec: accessibility contract
+    transitions.spec.md  ← spec: scroll-snap and fade transition modes
   tests/
     unit/                ← Vitest + happy-dom
     e2e/                 ← Playwright (real browser)

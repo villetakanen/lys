@@ -237,14 +237,13 @@ commit-msg:
     lys.css              ← structural styles + design tokens
     lys.ts               ← entry point, auto-init, public API
     navigation.ts        ← keyboard, touch, hash routing
-    presenter.ts         ← presenter mode (lazy-loaded)
     a11y.ts              ← ARIA live region, focus management
     types.ts             ← shared type definitions
   specs/
     lys-core.spec.md     ← spec: slide rendering, tokens, layout
     navigation.spec.md   ← spec: keyboard, touch, hash routing
-    presenter.spec.md    ← spec: presenter mode
     a11y.spec.md         ← spec: accessibility contract
+    transitions.spec.md  ← spec: scroll-snap and fade transition modes
   examples/
     minimal.html         ← 4-line deck
     themed.html          ← custom tokens + author CSS
@@ -257,8 +256,8 @@ commit-msg:
       tokens.test.ts     ← CSS custom property resolution
     e2e/
       slides.spec.ts     ← slide rendering, navigation, transitions
-      presenter.spec.ts  ← presenter mode, BroadcastChannel sync
       a11y.spec.ts       ← axe-core scans, screen reader flow
+      transitions.spec.ts ← fade mode layout, reduced motion
       print.spec.ts      ← @media print layout
     fixtures/
       minimal.html       ← 4-line deck for testing
@@ -298,7 +297,6 @@ Real browser tests against the Vite dev server. These verify things happy-dom ca
 - **Keyboard navigation** — Arrow keys, Space, Home/End actually change slides in a real browser.
 - **Touch/swipe** — Simulated touch gestures trigger navigation.
 - **Transitions** — CSS transitions and `prefers-reduced-motion` behave correctly.
-- **Presenter mode** — `BroadcastChannel` sync between windows works.
 - **Print layout** — `@media print` produces one slide per page.
 - **Accessibility audit** — `@axe-core/playwright` scans for WCAG 2.1 AA violations on every fixture.
 - **Progressive enhancement** — Deck is navigable with JS disabled (CSS-only scroll-snap).
@@ -310,8 +308,8 @@ E2E tests run against `tests/fixtures/*.html` — standalone decks that exercise
 ```
 specs/lys-core.spec.md    →  tests/unit/lys.test.ts + tests/unit/tokens.test.ts
 specs/navigation.spec.md  →  tests/unit/navigation.test.ts + tests/e2e/slides.spec.ts
-specs/presenter.spec.md   →  tests/e2e/presenter.spec.ts
-specs/a11y.spec.md        →  tests/unit/a11y.test.ts + tests/e2e/a11y.spec.ts
+specs/a11y.spec.md          →  tests/unit/a11y.test.ts + tests/e2e/a11y.spec.ts
+specs/transitions.spec.md   →  tests/unit/transitions.test.ts + tests/e2e/transitions.spec.ts
 ```
 
 If a spec scenario has no corresponding test, that's a gap. If a test has no spec scenario, the spec needs updating.
@@ -385,7 +383,6 @@ Conventional Commits, enforced by Lefthook. Micro-commit granularity during deve
 ```
 feat(core): add slide container initialization
 fix(nav): prevent double-fire on rapid arrow key
-refactor(presenter): extract timer into standalone module
 docs(spec): add edge case scenario for empty decks
 test(a11y): verify live region announces slide changes
 chore(build): update Vite to 6.x

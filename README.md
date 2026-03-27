@@ -39,9 +39,8 @@ Open in a browser. That's it — a complete, accessible, navigable presentation 
 
 - **Zero dependencies** — CSS + JS, nothing else.
 - **Semantic HTML** — Slides are `<article>` elements. Screen readers, search engines, and print stylesheets understand them natively.
-- **Progressive enhancement** — Works as a plain document (no JS), as scroll-snap slides (CSS only), or as a full presenter experience (CSS + JS).
+- **Progressive enhancement** — Works as a plain document (no JS), as scroll-snap slides (CSS only), or as a full interactive deck (CSS + JS).
 - **LLM-friendly** — Designed as a stable target format for AI-generated presentations. Flat structure, standard elements, graceful degradation.
-- **Presenter mode** — Speaker notes, timer, next-slide preview, overview grid. Syncs via BroadcastChannel.
 - **CSS design tokens** — Override `--lys-aspect-ratio`, `--lys-slide-padding`, and more at any cascade level.
 - **Accessible by default** — WCAG 2.1 AA. ARIA live regions, focus management, `prefers-reduced-motion` support.
 
