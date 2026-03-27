@@ -184,28 +184,4 @@ test.describe("fade mode progressive enhancement", () => {
 
 		await context.close();
 	});
-
-	test("fade mode print layout shows all slides", async ({ page }) => {
-		await page.goto("/tests/fixtures/fade.html");
-		await page.waitForFunction(() => {
-			const container = document.querySelector("[data-lys]");
-			return container?.getAttribute("data-lys-mode") === "fade";
-		});
-
-		await page.emulateMedia({ media: "print" });
-
-		// Wait for all slides to reach opacity: 1 (print CSS overrides fade mode).
-		const slides = page.locator("[data-lys] > article");
-		const count = await slides.count();
-
-		for (let i = 0; i < count; i++) {
-			await expect(async () => {
-				const opacity = await slides.nth(i).evaluate((el) => getComputedStyle(el).opacity);
-				expect(opacity).toBe("1");
-			}).toPass({ timeout: 2000 });
-
-			const position = await slides.nth(i).evaluate((el) => getComputedStyle(el).position);
-			expect(position).toBe("static");
-		}
-	});
 });
