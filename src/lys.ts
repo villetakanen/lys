@@ -1,3 +1,4 @@
+import { type A11yHandle, setupA11y } from "./a11y.js";
 import "./lys.css";
 import { type NavigationHandle, setupNavigation } from "./navigation.js";
 import type { LysInstance, LysReadyDetail, LysSlideChangeDetail } from "./types.js";
@@ -17,6 +18,7 @@ export class Lys implements LysInstance {
 	#current = -1;
 	#classMap = new Map<HTMLElement, string[]>();
 	#navigation: NavigationHandle | null = null;
+	#a11y: A11yHandle | null = null;
 
 	/** Discover and initialize all `[data-lys]` containers in the document. */
 	static init(): Lys[] {
@@ -70,6 +72,7 @@ export class Lys implements LysInstance {
 
 		registry.set(container, this);
 		this.#navigation = setupNavigation(this, container);
+		this.#a11y = setupA11y(container, this.#slides, this.#current);
 
 		// Dispatch lys:ready.
 		container.dispatchEvent(
@@ -141,7 +144,9 @@ export class Lys implements LysInstance {
 	}
 
 	destroy(): void {
-		// Tear down navigation listeners.
+		// Tear down a11y and navigation listeners.
+		this.#a11y?.destroy();
+		this.#a11y = null;
 		this.#navigation?.destroy();
 		this.#navigation = null;
 

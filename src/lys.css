@@ -61,6 +61,29 @@
 	transition-timing-function: var(--_lys-transition-easing);
 }
 
+/* === Focus ring === */
+[data-lys] > article:focus-visible {
+	outline: var(--_lys-focus-ring);
+	outline-offset: -2px;
+}
+
+[data-lys] > article:focus:not(:focus-visible) {
+	outline: none;
+}
+
+/* === Visually hidden (screen-reader only) === */
+.lys-sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
 /* === Reduced motion === */
 @media (prefers-reduced-motion: reduce) {
 	[data-lys] {
