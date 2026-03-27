@@ -53,7 +53,7 @@ Fade mode styles are scoped under `[data-lys][data-lys-mode="fade"]`:
   position: relative;
   overflow: hidden;
   scroll-snap-type: none;  /* Disable scroll-snap */
-  height: 100vh;
+  /* height: 100vh inherited from base [data-lys] rule */
 }
 
 [data-lys][data-lys-mode="fade"] > article {
@@ -66,9 +66,7 @@ Fade mode styles are scoped under `[data-lys][data-lys-mode="fade"]`:
   opacity: 0;
   pointer-events: none;
   transition-property: opacity;
-  transition-duration: var(--_lys-transition-duration);
-  transition-timing-function: var(--_lys-transition-easing);
-  /* aspect-ratio, max-width, max-height, padding, font-size, box-sizing carry over from base rules */
+  /* transition-duration and transition-timing-function inherited from base article rule */
 }
 
 [data-lys][data-lys-mode="fade"] > article[data-lys-active] {
