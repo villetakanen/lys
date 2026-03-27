@@ -39,6 +39,14 @@
 	"engines": {
 		"node": ">=20"
 	},
+	"homepage": "https://villetakanen.github.io/lys/",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/villetakanen/lys.git"
+	},
+	"bugs": {
+		"url": "https://github.com/villetakanen/lys/issues"
+	},
 	"license": "MIT",
 	"packageManager": "pnpm@10.30.3",
 	"pnpm": {

@@ -1,0 +1,66 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  pages: write
+  id-token: write
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.30.3
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install and build
+        run: pnpm install && pnpm build
+
+      - name: Copy llms.txt into site
+        run: cp llms.txt site/
+
+      - name: Copy examples into site
+        run: |
+          mkdir -p site/examples
+          cp examples/*.html site/examples/
+
+      - name: Copy dist assets into site/examples
+        run: |
+          cp dist/lys.css site/examples/
+          cp dist/lys.iife.js site/examples/
+
+      - name: Rewrite example asset paths
+        run: |
+          sed -i 's|/src/lys.css|lys.css|g' site/examples/*.html
+          sed -i 's|/src/lys.ts|lys.iife.js|g' site/examples/*.html
+          sed -i 's|type="module" src="lys.iife.js"|src="lys.iife.js"|g' site/examples/*.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
