@@ -1,0 +1,106 @@
+# Lys
+
+> Zero-dependency CSS + TS slide engine. Turns `<article>` elements into accessible, navigable presentations. Visually unopinionated, behaviorally opinionated. Designed for LLM-generated single-file HTML.
+
+## HTML Contract
+
+Slides are `<article>` elements inside a `<div data-lys>` container. Use standard HTML elements inside each article.
+
+### Data Attributes (on `<article>`)
+
+| Attribute | Purpose | Example |
+|---|---|---|
+| `data-notes` | Speaker notes (text) | `data-notes="Mention Q3 figures"` |
+| `data-transition` | Transition mode (`"fade"` enables fade for the deck) | `data-transition="fade"` |
+| `data-class` | CSS classes added to the slide | `data-class="title-slide dark"` |
+| `data-background` | Background shorthand (color, gradient, URL) | `data-background="#1a1a2e"` |
+| `data-timing` | Suggested duration in seconds | `data-timing="30"` |
+
+## CSS Tokens
+
+Set `--lys-*` properties on `:root`, `[data-lys]`, or individual `<article>` elements to customize.
+
+| Token | Default |
+|---|---|
+| `--lys-aspect-ratio` | `16 / 9` |
+| `--lys-slide-padding` | `2rem` |
+| `--lys-transition-duration` | `300ms` |
+| `--lys-transition-easing` | `ease-in-out` |
+| `--lys-font-size-base` | `clamp(1rem, 2vw, 1.5rem)` |
+| `--lys-slide-gap` | `0` |
+| `--lys-slide-max-width` | `100vw` |
+| `--lys-slide-max-height` | `100vh` |
+| `--lys-focus-ring` | `2px solid currentColor` |
+
+## Events
+
+Emitted on the `[data-lys]` container element, with `bubbles: true`.
+
+- **`lys:ready`** — `{ detail: { instance } }` — Initialization complete. The instance exposes the JS API below.
+- **`lys:slidechange`** — `{ detail: { from: number, to: number, slide: HTMLElement } }` — Slide changed.
+
+## JS API
+
+```
+Lys.init()           → Lys[]          // Auto-discover all [data-lys] containers
+Lys.from(el)         → Lys            // Get or create instance (idempotent)
+new Lys(el)          → Lys            // Create instance for a container
+
+instance.next()                       // Next slide (no-op at end)
+instance.prev()                       // Previous slide (no-op at start)
+instance.goTo(index | id)             // Jump by 0-based index or article id
+instance.destroy()                    // Remove listeners, revert state
+
+instance.current     → number         // 0-based current slide index (-1 if empty)
+instance.total       → number         // Total slide count
+instance.slide       → HTMLElement|null // Current slide element
+```
+
+Navigation: Arrow keys, Space/Shift+Space, Home/End, touch swipe, hash routing (`#slide=3` or `#slide=intro`).
+
+IIFE build auto-initializes on DOMContentLoaded. ESM build exposes `Lys` for manual control.
+
+## Inline Example
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Deck</title>
+  <style>/* contents of lys.css */</style>
+  <style>
+    :root {
+      --lys-slide-padding: 3rem 4rem;
+      --lys-aspect-ratio: 16/9;
+    }
+  </style>
+</head>
+<body>
+  <div data-lys>
+    <article data-notes="Opening slide">
+      <h1>Title</h1>
+      <p>Subtitle text here.</p>
+    </article>
+    <article data-background="#1a1a2e" data-notes="Main content">
+      <h2>Second Slide</h2>
+      <ul>
+        <li>Point one</li>
+        <li>Point two</li>
+      </ul>
+    </article>
+  </div>
+  <script>/* contents of lys.iife.js */</script>
+</body>
+</html>
+```
+
+## File Sizes
+
+<!-- LYS:SIZES -->
+| File | Raw | Gzip |
+|---|---|---|
+| `lys.css` | 2.3 KB | 0.8 KB |
+| `lys.iife.js` | 5.5 KB | 2.1 KB |
+<!-- /LYS:SIZES -->

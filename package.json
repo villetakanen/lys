@@ -17,7 +17,7 @@
 	],
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc --noEmit && vite build",
+		"build": "tsc --noEmit && vite build && node scripts/inject-skill.js",
 		"preview": "vite preview",
 		"lint": "biome check --write .",
 		"typecheck": "tsc --noEmit",
@@ -36,6 +36,9 @@
 		"accessible",
 		"llm"
 	],
+	"engines": {
+		"node": ">=20"
+	},
 	"license": "MIT",
 	"packageManager": "pnpm@10.30.3",
 	"pnpm": {
