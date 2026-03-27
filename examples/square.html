@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>FREE//FALL — Square Deck</title>
+	<link rel="stylesheet" href="/src/lys.css">
+	<style>
+		/* FREE//FALL Design — cyberpunk industrial, 1:1 square slides */
+		:root {
+			--lys-aspect-ratio: 1 / 1;
+			--lys-slide-padding: 3rem;
+			--lys-font-size-base: clamp(0.875rem, 2vw, 1.125rem);
+			--lys-transition-duration: 500ms;
+			--lys-slide-max-width: 100vh;
+			--lys-focus-ring: 2px solid #ccda0b;
+
+			--ff-bg: #0c0c10;
+			--ff-surface: #16161c;
+			--ff-border: #2a2a35;
+			--ff-text: #d6e1ec;
+			--ff-text-muted: #7a8594;
+			--ff-accent: #ccda0b;
+			--ff-accent-dim: #99a308;
+			--ff-danger: #e03030;
+		}
+
+		* { margin: 0; box-sizing: border-box; }
+
+		body {
+			font-family: "SF Mono", "Cascadia Code", "Fira Code", monospace;
+			color: var(--ff-text);
+			background: #000;
+		}
+
+		[data-lys] > article {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		/* Typography */
+		article h1,
+		article h2,
+		article h3 {
+			font-family: system-ui, -apple-system, sans-serif;
+			font-weight: 800;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+		}
+
+		article h1 {
+			font-size: clamp(2.5rem, 8vw, 4rem);
+			line-height: 1;
+		}
+
+		article h2 {
+			font-size: clamp(1.25rem, 3.5vw, 1.75rem);
+			margin-bottom: 1em;
+			color: var(--ff-accent);
+		}
+
+		article h3 {
+			font-size: 1rem;
+			color: var(--ff-accent);
+			margin-bottom: 0.5em;
+		}
+
+		article p,
+		article li {
+			line-height: 1.65;
+			max-width: 50ch;
+		}
+
+		article ul {
+			list-style: none;
+			padding: 0;
+		}
+
+		article ul li {
+			padding: 0.4em 0;
+			padding-left: 1.25em;
+			position: relative;
+		}
+
+		article ul li::before {
+			content: "//";
+			position: absolute;
+			left: 0;
+			color: var(--ff-accent-dim);
+			font-size: 0.75em;
+			font-weight: 700;
+		}
+
+		article code {
+			color: var(--ff-accent);
+			font-size: 0.9em;
+		}
+
+		/* --- Slide variants --- */
+
+		/* Title */
+		.title-slide {
+			text-align: center;
+			align-items: center;
+		}
+
+		.title-slide h1 {
+			font-size: clamp(3.5rem, 12vw, 6rem);
+			letter-spacing: 0.12em;
+			background: linear-gradient(180deg, var(--ff-text), var(--ff-text-muted));
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+		}
+
+		.title-slide .tagline {
+			font-size: clamp(0.75rem, 1.8vw, 1rem);
+			color: var(--ff-accent);
+			text-transform: uppercase;
+			letter-spacing: 0.2em;
+			margin-top: 0.75em;
+		}
+
+		.title-slide .version {
+			font-size: 0.75rem;
+			color: var(--ff-text-muted);
+			margin-top: 1.5em;
+			letter-spacing: 0.08em;
+		}
+
+		/* Content with left accent border */
+		.accented {
+			border-left: 3px solid var(--ff-accent);
+			padding-left: 2rem;
+		}
+
+		.accented h2 {
+			margin-left: -2rem;
+			padding-left: 2rem;
+		}
+
+		/* Stats grid */
+		.stats {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 1.5rem;
+			margin-top: 1em;
+		}
+
+		.stat {
+			border: 1px solid var(--ff-border);
+			padding: 1.25em;
+		}
+
+		.stat-value {
+			font-family: system-ui, -apple-system, sans-serif;
+			font-size: clamp(1.5rem, 4vw, 2.5rem);
+			font-weight: 800;
+			color: var(--ff-accent);
+			display: block;
+		}
+
+		.stat-label {
+			font-size: 0.75rem;
+			color: var(--ff-text-muted);
+			text-transform: uppercase;
+			letter-spacing: 0.1em;
+			margin-top: 0.25em;
+			display: block;
+		}
+
+		/* Quote */
+		article blockquote {
+			border-left: 3px solid var(--ff-accent);
+			padding-left: 1.5em;
+			font-style: italic;
+			max-width: 40ch;
+		}
+
+		article blockquote footer {
+			font-style: normal;
+			color: var(--ff-text-muted);
+			font-size: 0.85em;
+			margin-top: 0.75em;
+		}
+
+		/* Closing */
+		.closing {
+			text-align: center;
+			align-items: center;
+		}
+
+		.closing h2 {
+			font-size: clamp(2rem, 6vw, 3rem);
+			color: var(--ff-text);
+			letter-spacing: 0.1em;
+		}
+
+		.closing p {
+			color: var(--ff-text-muted);
+			text-transform: uppercase;
+			letter-spacing: 0.15em;
+			font-size: 0.8rem;
+			max-width: none;
+		}
+	</style>
+</head>
+<body>
+	<div data-lys>
+
+		<article data-class="title-slide" data-transition="fade" data-background="#0c0c10" data-notes="Introduce FREE//FALL — a tabletop RPG set in 2048. Cyberpunk mercenary setting, MIT licensed.">
+			<h1>FREE//FALL</h1>
+			<p class="tagline">Tabletop RPG — 2048</p>
+			<p class="version">v7 Alpha — CC-BY / MIT</p>
+		</article>
+
+		<article data-background="linear-gradient(160deg, #0c0c10 0%, #16161c 100%)" data-notes="Set the scene. The world broke — climate collapse, dead Mediterranean, Fortress Europe. Humanity spread to the solar system but brought its problems along.">
+			<h2>The World</h2>
+			<p>Year 2048. The climate changed, the Mediterranean died, and Europe walled itself off.</p>
+			<p style="margin-top: 0.75em;">Humanity scattered across a fractured solar system — but brought every war, grudge, and power grab with it.</p>
+		</article>
+
+		<article data-class="accented" data-background="#0c0c10" data-notes="Explain the player fantasy. You're not a hero — you're a mercenary taking jobs no one else will. The tension is between capability and cost.">
+			<h2>Operators</h2>
+			<ul>
+				<li>Mercenary operators in a fractured solar system</li>
+				<li>Jobs too dirty, too dangerous, or too illegal for corporate militaries</li>
+				<li>Capability is bought, spliced, or installed</li>
+				<li>But power is never free</li>
+			</ul>
+		</article>
+
+		<article data-background="#16161c" data-notes="Show the mechanical pillars of the game. Four stats, 2d6 core resolution, gear matters more than levels.">
+			<h2>The System</h2>
+			<div class="stats">
+				<div class="stat">
+					<span class="stat-value">2d6</span>
+					<span class="stat-label">Core Resolution</span>
+				</div>
+				<div class="stat">
+					<span class="stat-value">4</span>
+					<span class="stat-label">Core Stats</span>
+				</div>
+				<div class="stat">
+					<span class="stat-value">Gear</span>
+					<span class="stat-label">Over Levels</span>
+				</div>
+				<div class="stat">
+					<span class="stat-value">Crew</span>
+					<span class="stat-label">Over Solo</span>
+				</div>
+			</div>
+		</article>
+
+		<article data-background="linear-gradient(160deg, #16161c 0%, #0c0c10 100%)" data-notes="The central thematic question. Every augmentation, every job, every deal chips away at something. What's left when the chrome outweighs the meat?">
+			<blockquote>
+				<p>What will be left of you when the job is done?</p>
+				<footer>— FREE//FALL core question</footer>
+			</blockquote>
+		</article>
+
+		<article data-class="closing" data-background="#0c0c10" data-notes="Close with the project link. This is an open experiment in RPG development — SRD and registry available.">
+			<h2>FREE//FALL</h2>
+			<p>free-fall.myrrys.com</p>
+		</article>
+
+	</div>
+	<script type="module" src="/src/lys.ts"></script>
+</body>
+</html>

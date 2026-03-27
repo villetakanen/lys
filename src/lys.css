@@ -98,6 +98,7 @@
 	transform: translateX(-50%);
 	scroll-snap-align: unset;
 	min-height: unset;
+	height: var(--_lys-slide-max-height);
 	opacity: 0;
 	pointer-events: none;
 	transition-property: opacity;
