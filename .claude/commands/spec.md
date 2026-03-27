@@ -29,7 +29,7 @@ Why does this feature exist? What problem does it solve for Lys users (LLMs and 
 - DOM structure and data attributes involved
 - API surface (methods, events, tokens) — reference ARCHITECTURE.md conventions
 - Module boundaries — which source file(s) this touches
-- Integration points with existing modules (navigation, a11y, presenter, core)
+- Integration points with existing modules (navigation, a11y, transitions, core)
 
 ### Anti-Patterns
 What must NOT be done. Include at least:

@@ -14,7 +14,7 @@ Navigation must:
 - Work identically in IIFE (auto-init) and ESM (manual init) modes.
 - Coexist with scroll-snap — when JS navigates, it scrolls the target slide into view smoothly (or instantly with reduced motion). The scroll-snap container remains the layout mechanism; JS just drives it programmatically.
 - Support deep linking — opening `deck.html#slide=5` or `deck.html#slide=intro` jumps directly to that slide on load.
-- Emit events — every navigation action dispatches `lys:slidechange` so other modules (a11y, presenter) can react.
+- Emit events — every navigation action dispatches `lys:slidechange` so other modules (a11y, transitions) can react.
 
 ### Architecture
 
@@ -50,7 +50,7 @@ interface LysSlideChangeDetail {
 }
 ```
 
-Dispatched on the `[data-lys]` container element with `bubbles: true`. This is the primary integration point for the a11y module (live region announcements, focus management) and the presenter module (slide sync).
+Dispatched on the `[data-lys]` container element with `bubbles: true`. This is the primary integration point for the a11y module (live region announcements, focus management).
 
 #### Scroll behavior
 
@@ -135,7 +135,7 @@ Additionally, the active slide receives a `data-lys-active` attribute (no value)
 #### Integration with other modules
 
 - **a11y** (future): Listens for `lys:slidechange` to announce slide transitions via ARIA live region and manage focus.
-- **presenter** (future): Listens for `lys:slidechange` to sync presenter view via BroadcastChannel.
+- **transitions**: Navigation is mode-agnostic. Fade mode branches in `goTo()`, not in the navigation module.
 - **core**: Navigation reads `#slides` and `#current` from the instance. It updates `#current` via an internal setter (not the public readonly property).
 
 ### Anti-Patterns
@@ -498,12 +498,12 @@ Scenario: Hash routing targets the correct deck
 |---|---|
 | Programmatic navigation | `tests/unit/navigation.test.ts` |
 | State attributes | `tests/unit/navigation.test.ts` |
-| Keyboard navigation | `tests/unit/navigation.test.ts` + `tests/e2e/slides.spec.ts` |
-| Touch navigation | `tests/unit/navigation.test.ts` + `tests/e2e/slides.spec.ts` |
-| Hash routing | `tests/unit/navigation.test.ts` + `tests/e2e/slides.spec.ts` |
+| Keyboard navigation | `tests/unit/navigation.test.ts` + `tests/e2e/navigation.spec.ts` |
+| Touch navigation | `tests/unit/navigation.test.ts` |
+| Hash routing | `tests/unit/navigation.test.ts` + `tests/e2e/navigation.spec.ts` |
 | Reduced motion | `tests/e2e/slides.spec.ts` |
 | Lifecycle | `tests/unit/navigation.test.ts` |
-| Multiple decks | `tests/e2e/slides.spec.ts` |
+| Multiple decks | `tests/e2e/navigation.spec.ts` |
 
 ## Known Constraints
 
@@ -513,6 +513,6 @@ Scenario: Hash routing targets the correct deck
 ## Related / Future
 
 - **Accessibility** (`specs/a11y.spec.md`) — Listens for `lys:slidechange` to manage focus and ARIA live region. Navigation provides the events; a11y provides the announcements.
-- **Presenter** (`specs/presenter.spec.md`) — Listens for `lys:slidechange` to sync via BroadcastChannel.
+- **Transitions** (`specs/transitions.spec.md`) — Fade mode changes how `goTo()` renders slide changes (opacity instead of scroll). Navigation itself is unchanged.
 - **Fragments / steps** (VISION.md open question) — Incremental reveals within a slide. If implemented, `next()` would need to check for pending fragments before advancing to the next slide. This spec does not account for fragments; it would require a spec update.
 - **`data-transition` visual effects** — The `data-transition` attribute is part of the article contract but its visual implementation is deferred. Navigation changes state; transitions are a separate concern.

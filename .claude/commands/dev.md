@@ -51,27 +51,21 @@ After implementation, run these checks sequentially:
 3. `pnpm test` — Vitest unit tests
 4. Fix any failures before proceeding
 
-### Step 5: Commit
+### Step 5: Report
 
-Make micro-commits per CLAUDE.md conventions. Each commit should be one discrete, working change:
+After verification passes, report back:
 
-- Stage specific files (not `git add .`)
-- Use conventional commit format: `type(scope): description`
-- Verify each commit passes lint + typecheck + tests
+1. What was done (files changed, tests added)
+2. If implementation revealed new constraints, note what spec updates are needed
+3. Any open questions
 
-### Step 6: Close the loop
-
-After all commits:
-
-1. Update the GitHub issue with a comment summarizing what was done
-2. Close the issue: `gh issue close <number>`
-3. If implementation revealed new constraints, note what spec updates are needed
-4. Report back: what was done, what tests were added, any open questions
+Do NOT commit, push, or close the issue — that is the user's decision.
 
 ## Rules
 
 - Never skip the verification step — all four checks must pass
-- If a check fails, fix it before committing
+- If a check fails, fix it before proceeding
 - If the task is blocked (missing dependency, spec ambiguity), stop and ask rather than guessing
+- Do NOT commit, push, or close issues — the user controls git and GitHub operations
 - Do not modify files outside the scope of the issue without asking
 - If the issue's acceptance criteria can't all be met, explain what's missing and why

@@ -12,7 +12,7 @@ The name means *light* in several Nordic languages. The logo is ⚜ (U+269C, fle
 
 ### 1. Slides are articles
 
-Every slide is an `<article>` element inside a container. This is not a metaphor — it is the actual DOM structure. An LLM (or a human) authors a presentation by writing `<article>` elements with standard HTML content inside them. Lys handles everything else: layout, navigation, transitions, accessibility announcements, and presenter tooling.
+Every slide is an `<article>` element inside a container. This is not a metaphor — it is the actual DOM structure. An LLM (or a human) authors a presentation by writing `<article>` elements with standard HTML content inside them. Lys handles everything else: layout, navigation, transitions, and accessibility announcements.
 
 ```html
 <div data-lys>
@@ -36,9 +36,9 @@ That's a complete presentation. No frontmatter, no config objects, no build step
 
 Lys has **zero visual opinions** — no default fonts, no color palette, no drop shadows. The authored HTML is styled by whatever CSS the author provides, or by nothing at all.
 
-But Lys is **heavily opinionated about behavior**. This is the gap in AI-generated slideshows: an LLM can produce markup, but it cannot reliably produce correct keyboard navigation, focus management, screen reader announcements, touch gesture handling, presenter mode synchronization, URL hash routing, or motion preference detection. These are exactly the things that make a slide deck *work* as an interactive presentation rather than just a styled document.
+But Lys is **heavily opinionated about behavior**. This is the gap in AI-generated slideshows: an LLM can produce markup, but it cannot reliably produce correct keyboard navigation, focus management, screen reader announcements, touch gesture handling, URL hash routing, or motion preference detection. These are exactly the things that make a slide deck *work* as an interactive presentation rather than just a styled document.
 
-Lys makes strong, correct decisions about all of this so the generated HTML doesn't have to. The behavioral layer handles: focus trapping and restoration on slide change, ARIA live region announcements, keyboard shortcut conventions (following WAI-ARIA carousel patterns), swipe gesture thresholds, transition timing that respects `prefers-reduced-motion`, BroadcastChannel-based presenter sync, and print layout via `@media print`.
+Lys makes strong, correct decisions about all of this so the generated HTML doesn't have to. The behavioral layer handles: focus trapping and restoration on slide change, ARIA live region announcements, keyboard shortcut conventions (following WAI-ARIA carousel patterns), swipe gesture thresholds, transition timing that respects `prefers-reduced-motion`, and print layout via `@media print`.
 
 Theming, branding, and visual design live entirely in user-supplied CSS. Behavior lives entirely in Lys.
 
@@ -69,7 +69,7 @@ Accessibility is not a feature flag. It is a consequence of the structural appro
 A Lys presentation works at three levels:
 
 1. **No JS, no Lys CSS** — A readable HTML document. Articles flow vertically. Printable.
-2. **Lys CSS only** — Scroll-snap slides with CSS-only navigation. No presenter features, but a functional deck.
+2. **Lys CSS only** — Scroll-snap slides with CSS-only navigation. A functional deck.
 3. **Lys CSS + JS** — Full experience: keyboard/touch/swipe navigation, ARIA announcements, URL hash routing.
 
 ## What Lys is NOT

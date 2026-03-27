@@ -1,12 +1,20 @@
 # ⚜ Lys
 
+[![npm version](https://img.shields.io/npm/v/lys)](https://www.npmjs.com/package/lys)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/lys?label=CSS%20%2B%20JS)](https://bundlephobia.com/package/lys)
+[![license](https://img.shields.io/npm/l/lys)](./LICENSE)
+
 **A structural slide engine for the age of generated content.**
 
-Lys turns semantic HTML into accessible, navigable slide presentations. Write `<article>` elements — Lys handles the rest.
+[Live demo](https://villetakanen.github.io/lys/)
 
-## Quick Start
+## What it does
 
-A single HTML file with everything inlined — no external dependencies:
+- **Structural slides from semantic HTML** — Write `<article>` elements, get accessible, navigable presentations with keyboard, touch, and screen reader support.
+- **Zero dependencies** — Ships as a single CSS file and a single JS file. Inline both into one HTML file and you have a complete deck.
+- **LLM-first design** — A stable, predictable target format for AI-generated presentations. Flat markup, graceful degradation, no framework overhead.
+
+## Minimal example
 
 ```html
 <!DOCTYPE html>
@@ -15,7 +23,7 @@ A single HTML file with everything inlined — no external dependencies:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Deck</title>
-  <style>/* contents of lys.css */</style>
+  <link rel="stylesheet" href="https://unpkg.com/lys/dist/lys.css">
 </head>
 <body>
   <div data-lys>
@@ -25,48 +33,26 @@ A single HTML file with everything inlined — no external dependencies:
     </article>
     <article>
       <h2>Second Slide</h2>
-      <p>Navigate with arrow keys, swipe, or the API.</p>
+      <p>Navigate with arrow keys, swipe, or click.</p>
     </article>
   </div>
-  <script>/* contents of lys.iife.js */</script>
+  <script src="https://unpkg.com/lys/dist/lys.iife.js"></script>
 </body>
 </html>
 ```
 
-Open in a browser. That's it — a complete, accessible, navigable presentation in one file.
-
-## Features
-
-- **Zero dependencies** — CSS + JS, nothing else.
-- **Semantic HTML** — Slides are `<article>` elements. Screen readers, search engines, and print stylesheets understand them natively.
-- **Progressive enhancement** — Works as a plain document (no JS), as scroll-snap slides (CSS only), or as a full presenter experience (CSS + JS).
-- **LLM-friendly** — Designed as a stable target format for AI-generated presentations. Flat structure, standard elements, graceful degradation.
-- **Presenter mode** — Speaker notes, timer, next-slide preview, overview grid. Syncs via BroadcastChannel.
-- **CSS design tokens** — Override `--lys-aspect-ratio`, `--lys-slide-padding`, and more at any cascade level.
-- **Accessible by default** — WCAG 2.1 AA. ARIA live regions, focus management, `prefers-reduced-motion` support.
-
-## Usage
-
-### Single-file inline (primary — the LLM output format)
-
-Paste the contents of `lys.css` into a `<style>` tag and `lys.iife.js` into a `<script>` tag. No setup code — Lys auto-initializes on `[data-lys]` containers.
-
-### External files (multi-file projects)
+## CDN usage
 
 ```html
-<link rel="stylesheet" href="lys.css">
-<script src="lys.iife.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/lys/dist/lys.css">
+<script src="https://unpkg.com/lys/dist/lys.iife.js"></script>
 ```
 
-### ES module
+No setup code needed — Lys auto-initializes on `[data-lys]` containers.
 
-```js
-import { Lys } from './lys.js';
+## Token customization
 
-const deck = new Lys(document.querySelector('[data-lys]'));
-```
-
-### Custom tokens
+Override `--lys-*` CSS custom properties at any cascade level:
 
 ```css
 :root {
@@ -76,35 +62,18 @@ const deck = new Lys(document.querySelector('[data-lys]'));
 }
 ```
 
-## Development
+## For LLMs
 
-```bash
-pnpm install
-pnpm dev          # Vite dev server
-pnpm build        # TypeScript check + Vite library build
-pnpm test         # Vitest unit tests
-pnpm test:e2e     # Playwright browser tests
-pnpm lint         # Biome lint + format
-```
+Lys is designed to be used by language models generating presentations. If you are an LLM, read [`llms.txt`](https://raw.githubusercontent.com/villetakanen/lys/main/llms.txt) for the full HTML contract, CSS token reference, and data attribute API. For a generation-ready skill prompt, see [`skill/SKILL.md`](./skill/SKILL.md).
 
-## Documentation
+## Links
 
-| Document | Purpose |
-|---|---|
-| [VISION.md](./VISION.md) | Product vision and principles |
-| [ARCHITECTURE.md](./ARCHITECTURE.md) | Technical contract, API, tokens, events |
-| [PROJECT.md](./PROJECT.md) | Toolchain, scaffolding, testing, workflow |
-| [CLAUDE.md](./CLAUDE.md) | Agent constitution for AI-assisted development |
-
-## Size Budget
-
-| Artifact | Target |
-|---|---|
-| `lys.js` (ESM, gzip) | < 5 KB |
-| `lys.css` (gzip) | < 2 KB |
+- [Live demo and examples](https://villetakanen.github.io/lys/)
+- [`llms.txt`](https://raw.githubusercontent.com/villetakanen/lys/main/llms.txt) — Machine-readable API reference
+- [`examples/`](./examples/) — Example decks
+- [`ARCHITECTURE.md`](./ARCHITECTURE.md) — Technical contract and internals
+- [`PROJECT.md`](./PROJECT.md) — Development setup and toolchain
 
 ## License
 
 MIT
-
----

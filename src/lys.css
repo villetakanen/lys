@@ -84,6 +84,31 @@
 	border: 0;
 }
 
+/* === Fade mode layout === */
+[data-lys][data-lys-mode="fade"] {
+	position: relative;
+	overflow: hidden;
+	scroll-snap-type: none;
+}
+
+[data-lys][data-lys-mode="fade"] > article {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	scroll-snap-align: unset;
+	min-height: unset;
+	height: var(--_lys-slide-max-height);
+	opacity: 0;
+	pointer-events: none;
+	transition-property: opacity;
+}
+
+[data-lys][data-lys-mode="fade"] > article[data-lys-active] {
+	opacity: 1;
+	pointer-events: auto;
+}
+
 /* === Reduced motion === */
 @media (prefers-reduced-motion: reduce) {
 	[data-lys] {
@@ -109,5 +134,12 @@
 	[data-lys] > article:last-child {
 		page-break-after: avoid;
 		break-after: avoid;
+	}
+
+	[data-lys][data-lys-mode="fade"] > article {
+		position: static;
+		transform: none;
+		opacity: 1;
+		pointer-events: auto;
 	}
 }

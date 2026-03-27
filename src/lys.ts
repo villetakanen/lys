@@ -17,6 +17,7 @@ export class Lys implements LysInstance {
 	#slides: HTMLElement[] = [];
 	#current = -1;
 	#classMap = new Map<HTMLElement, string[]>();
+	#fadeMode = false;
 	#navigation: NavigationHandle | null = null;
 	#a11y: A11yHandle | null = null;
 
@@ -64,10 +65,16 @@ export class Lys implements LysInstance {
 			}
 		}
 
-		// Set initial state attributes.
+		// Set initial state attributes (must happen before fade mode detection).
 		if (this.#current >= 0) {
 			this.#slides[this.#current]?.setAttribute("data-lys-active", "");
 			container.setAttribute("data-lys-current", String(this.#current));
+		}
+
+		// Detect fade mode — any slide with data-transition="fade" activates it for the whole deck.
+		this.#fadeMode = this.#slides.some((s) => s.dataset.transition === "fade");
+		if (this.#fadeMode) {
+			container.setAttribute("data-lys-mode", "fade");
 		}
 
 		registry.set(container, this);
@@ -127,12 +134,15 @@ export class Lys implements LysInstance {
 		nextSlide.setAttribute("data-lys-active", "");
 		this.#container.setAttribute("data-lys-current", String(this.#current));
 
-		// Scroll the target slide into view.
-		const prefersReducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-		nextSlide.scrollIntoView({
-			behavior: prefersReducedMotion ? "instant" : "smooth",
-			block: "start",
-		});
+		// In scroll-snap mode, scroll the target slide into view.
+		// In fade mode, CSS handles visibility via data-lys-active — no scrolling needed.
+		if (!this.#fadeMode) {
+			const prefersReducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+			nextSlide.scrollIntoView({
+				behavior: prefersReducedMotion ? "instant" : "smooth",
+				block: "start",
+			});
+		}
 
 		// Dispatch slidechange event.
 		this.#container.dispatchEvent(
@@ -155,6 +165,8 @@ export class Lys implements LysInstance {
 			slide.removeAttribute("data-lys-active");
 		}
 		this.#container.removeAttribute("data-lys-current");
+		this.#container.removeAttribute("data-lys-mode");
+		this.#fadeMode = false;
 
 		// Revert data-class additions.
 		for (const [slide, classes] of this.#classMap) {

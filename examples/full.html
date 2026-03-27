@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>⚜ Lys — Full Feature Demo</title>
+	<link rel="stylesheet" href="/src/lys.css">
+	<style>
+		/* Author theme — dark with blue/purple accents */
+		:root {
+			--lys-slide-padding: 3rem 4rem;
+			--lys-aspect-ratio: 16/9;
+			--lys-transition-duration: 400ms;
+		}
+
+		* { margin: 0; box-sizing: border-box; }
+
+		body {
+			font-family: "Inter", system-ui, -apple-system, sans-serif;
+			color: #f0f0f0;
+			background: #0a0a0a;
+		}
+
+		[data-lys] > article {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		/* Typography */
+		article h2 {
+			font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+			font-weight: 700;
+			margin-bottom: 1em;
+			letter-spacing: -0.01em;
+			color: #c4b5fd;
+		}
+
+		article h3 {
+			font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+			font-weight: 600;
+			margin-bottom: 0.5em;
+			color: #93c5fd;
+		}
+
+		article p, article li {
+			font-size: clamp(0.9rem, 1.8vw, 1.25rem);
+			line-height: 1.6;
+		}
+
+		article ul, article ol {
+			list-style: none;
+			padding: 0;
+		}
+
+		article ul li, article ol li {
+			padding: 0.4em 0;
+			padding-left: 1.5em;
+			position: relative;
+		}
+
+		article ul li::before {
+			content: "⚜";
+			position: absolute;
+			left: 0;
+			opacity: 0.5;
+			font-size: 0.8em;
+		}
+
+		article code {
+			font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+			font-size: 0.9em;
+			background: rgba(255, 255, 255, 0.1);
+			padding: 0.15em 0.4em;
+			border-radius: 0.25rem;
+		}
+
+		article pre code {
+			background: none;
+			padding: 0;
+		}
+
+		/* Title slide */
+		.title-slide {
+			text-align: center;
+			color: #f0f0f0;
+		}
+
+		.title-slide h1 {
+			font-size: clamp(2rem, 5vw, 4rem);
+			font-weight: 800;
+			letter-spacing: -0.02em;
+			margin-bottom: 0.3em;
+			color: #ffffff;
+		}
+
+		.title-slide p {
+			font-size: clamp(1rem, 2vw, 1.5rem);
+			opacity: 0.7;
+		}
+
+		.title-slide .version {
+			display: inline-block;
+			margin-top: 1.5em;
+			padding: 0.3em 1em;
+			border: 1px solid rgba(196, 181, 253, 0.4);
+			border-radius: 2em;
+			font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+			color: #c4b5fd;
+			letter-spacing: 0.05em;
+		}
+
+		/* Code slide */
+		.code-slide pre {
+			background: rgba(0, 0, 0, 0.4);
+			color: #e0def4;
+			padding: 1.5em 2em;
+			border-radius: 0.75rem;
+			font-size: clamp(0.7rem, 1.4vw, 0.95rem);
+			overflow-x: auto;
+			line-height: 1.7;
+			margin-top: 0.5em;
+			border: 1px solid rgba(255, 255, 255, 0.08);
+		}
+
+		/* Light class for light-background slides */
+		.light {
+			color: #1a1a2e;
+		}
+
+		.light h2 {
+			color: #302b63;
+		}
+
+		.light h3 {
+			color: #0f3460;
+		}
+
+		.light code {
+			background: rgba(0, 0, 0, 0.08);
+		}
+
+		/* Table styles */
+		article table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: clamp(0.75rem, 1.4vw, 1rem);
+			margin-top: 0.5em;
+		}
+
+		article th, article td {
+			padding: 0.6em 1em;
+			text-align: left;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+		}
+
+		article th {
+			font-weight: 600;
+			color: #c4b5fd;
+			font-size: 0.9em;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+		}
+
+		article td code {
+			font-size: 0.85em;
+		}
+
+		/* Blockquote */
+		article blockquote {
+			border-left: 3px solid #c4b5fd;
+			padding: 1em 1.5em;
+			margin: 1em 0;
+			font-style: italic;
+			opacity: 0.9;
+			font-size: clamp(1rem, 2vw, 1.3rem);
+			line-height: 1.7;
+		}
+
+		article blockquote footer {
+			font-style: normal;
+			font-size: 0.8em;
+			opacity: 0.6;
+			margin-top: 0.8em;
+		}
+
+		/* Three-tier grid */
+		.tiers {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 1.5rem;
+			margin-top: 1em;
+		}
+
+		.tier {
+			background: rgba(255, 255, 255, 0.05);
+			border-radius: 0.75rem;
+			padding: 1.5em;
+			border: 1px solid rgba(255, 255, 255, 0.08);
+		}
+
+		.tier h3 {
+			margin-bottom: 0.3em;
+		}
+
+		.tier p {
+			font-size: clamp(0.8rem, 1.4vw, 1rem);
+			opacity: 0.8;
+		}
+
+		/* Closing slide */
+		.closing {
+			text-align: center;
+			color: #f0f0f0;
+		}
+
+		.closing h2 {
+			font-size: clamp(2rem, 4vw, 3rem);
+			color: #ffffff;
+		}
+
+		.closing p {
+			font-size: clamp(1rem, 2vw, 1.5rem);
+			opacity: 0.6;
+			margin-top: 0.5em;
+		}
+
+		.closing .links {
+			margin-top: 2em;
+			font-size: clamp(0.8rem, 1.4vw, 1rem);
+			opacity: 0.4;
+		}
+
+		/* Slide counter */
+		.slide-counter {
+			position: fixed;
+			bottom: 1.5rem;
+			right: 2rem;
+			font-size: 0.75rem;
+			color: rgba(255, 255, 255, 0.3);
+			font-family: "SF Mono", "Fira Code", monospace;
+			z-index: 10;
+			pointer-events: none;
+		}
+	</style>
+</head>
+<body>
+	<div data-lys id="deck">
+
+		<!-- Slide 1: Title -->
+		<article
+			id="intro"
+			data-class="title-slide"
+			data-background="linear-gradient(135deg, #0f0c29, #302b63, #24243e)"
+			data-notes="Welcome slide. Introduce Lys as a structural slide engine built for LLM-generated presentations. Mention the 1.0 feature set."
+			data-transition="fade"
+		>
+			<h1>⚜ Building with Lys</h1>
+			<p>A tour of every feature in the structural slide engine</p>
+			<span class="version">v1.0</span>
+		</article>
+
+		<!-- Slide 2: What is Lys -->
+		<article
+			data-background="#1a1a2e"
+			data-notes="Key point: Lys is behaviorally opinionated but visually unopinionated. LLMs generate the markup, Lys handles the hard interactive parts."
+		>
+			<h2>What is Lys?</h2>
+			<ul>
+				<li>Zero-dependency CSS + TypeScript slide engine</li>
+				<li>Turns <code>&lt;article&gt;</code> elements into presentations</li>
+				<li>Visually unopinionated — you bring the theme</li>
+				<li>Behaviorally opinionated — navigation, accessibility, transitions</li>
+				<li>Designed for LLM-generated single-file HTML output</li>
+				<li>JS &lt; 5 KB gzip, CSS &lt; 2 KB gzip</li>
+			</ul>
+		</article>
+
+		<!-- Slide 3: The HTML Contract -->
+		<article
+			data-class="code-slide"
+			data-background="linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)"
+		>
+			<h2>The HTML Contract</h2>
+			<pre><code>&lt;div data-lys&gt;
+  &lt;article&gt;
+    &lt;h1&gt;First Slide&lt;/h1&gt;
+    &lt;p&gt;Any HTML content works here.&lt;/p&gt;
+  &lt;/article&gt;
+
+  &lt;article data-class="dark" data-background="#1a1a2e"&gt;
+    &lt;h2&gt;Second Slide&lt;/h2&gt;
+    &lt;p&gt;Data attributes control behavior.&lt;/p&gt;
+  &lt;/article&gt;
+
+  &lt;article id="named" data-notes="For the speaker"&gt;
+    &lt;h2&gt;Named slides enable hash routing&lt;/h2&gt;
+  &lt;/article&gt;
+&lt;/div&gt;</code></pre>
+		</article>
+
+		<!-- Slide 4: Data Attributes Table -->
+		<article
+			data-background="#16213e"
+			data-timing="45"
+		>
+			<h2>Data Attributes</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Attribute</th>
+						<th>Purpose</th>
+						<th>Example</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><code>data-class</code></td>
+						<td>Add CSS classes to the slide</td>
+						<td><code>"title-slide dark"</code></td>
+					</tr>
+					<tr>
+						<td><code>data-background</code></td>
+						<td>Background color, gradient, or image</td>
+						<td><code>"#1a1a2e"</code></td>
+					</tr>
+					<tr>
+						<td><code>data-notes</code></td>
+						<td>Speaker notes (plain text or HTML)</td>
+						<td><code>"Mention Q3 figures"</code></td>
+					</tr>
+					<tr>
+						<td><code>data-transition</code></td>
+						<td>Transition mode for the deck</td>
+						<td><code>"fade"</code></td>
+					</tr>
+					<tr>
+						<td><code>data-timing</code></td>
+						<td>Suggested duration in seconds</td>
+						<td><code>"30"</code></td>
+					</tr>
+				</tbody>
+			</table>
+		</article>
+
+		<!-- Slide 5: CSS Tokens -->
+		<article
+			data-class="code-slide"
+			data-background="#0f0c29"
+		>
+			<h2>CSS Design Tokens</h2>
+			<pre><code>/* Public tokens — set these to customize */
+--lys-aspect-ratio: 16/9;
+--lys-slide-padding: 2rem;
+--lys-transition-duration: 300ms;
+--lys-transition-easing: ease-in-out;
+--lys-font-size-base: clamp(1rem, 2vw, 1.5rem);
+--lys-slide-gap: 0;
+--lys-slide-max-width: 100vw;
+--lys-slide-max-height: 100vh;
+--lys-focus-ring: 2px solid currentColor;</code></pre>
+		</article>
+
+		<!-- Slide 6: Navigation -->
+		<article
+			id="features"
+			data-background="#302b63"
+			data-notes="Four navigation methods all work simultaneously. Hash routing supports both numeric indices and named slide IDs."
+		>
+			<h2>Navigation</h2>
+			<ul>
+				<li><strong>Keyboard</strong> — Arrow keys, Space/Shift+Space, Home/End, number keys</li>
+				<li><strong>Touch</strong> — Horizontal swipe gestures with configurable threshold</li>
+				<li><strong>Hash routing</strong> — <code>#slide=3</code> or <code>#slide=intro</code> by slide ID</li>
+				<li><strong>Programmatic API</strong> — <code>lys.next()</code>, <code>lys.prev()</code>, <code>lys.goTo(n)</code></li>
+			</ul>
+		</article>
+
+		<!-- Slide 7: Accessibility -->
+		<article
+			data-background="linear-gradient(160deg, #1a1a2e, #16213e)"
+			data-notes="Accessibility is non-negotiable. WCAG 2.1 AA compliance is a hard constraint. All ARIA attributes are managed automatically by the JS layer."
+			data-timing="30"
+		>
+			<h2>Accessibility</h2>
+			<blockquote>
+				<p>Every feature must be accessible. <code>prefers-reduced-motion</code> must be respected in all animation code. ARIA attributes must be correct.</p>
+				<footer>— Lys Hard Constraints</footer>
+			</blockquote>
+			<ul>
+				<li><code>role="group"</code> on each slide with <code>aria-roledescription="slide"</code></li>
+				<li><code>aria-live="polite"</code> region announces slide changes</li>
+				<li>Focus management on navigation — active slide receives focus</li>
+				<li>Reduced motion disables transitions automatically</li>
+			</ul>
+		</article>
+
+		<!-- Slide 8: Progressive Enhancement -->
+		<article data-background="#1a1a2e">
+			<h2>Progressive Enhancement</h2>
+			<div class="tiers">
+				<div class="tier">
+					<h3>No JS, No CSS</h3>
+					<p>Articles flow as a readable document. Content is always accessible regardless of what loads.</p>
+				</div>
+				<div class="tier">
+					<h3>CSS Only</h3>
+					<p>Scroll-snap slides appear. Users navigate by scrolling. Layout and aspect ratio are enforced.</p>
+				</div>
+				<div class="tier">
+					<h3>CSS + JS</h3>
+					<p>Full experience: keyboard navigation, ARIA announcements, hash routing, programmatic API, fade transitions.</p>
+				</div>
+			</div>
+		</article>
+
+		<!-- Slide 9: Closing -->
+		<article
+			data-class="closing"
+			data-background="linear-gradient(135deg, #0f0c29, #302b63, #24243e)"
+		>
+			<h2>⚜</h2>
+			<p>Arrow keys or swipe to navigate</p>
+			<p class="links">View source to see every data attribute in action</p>
+		</article>
+
+	</div>
+
+	<div class="slide-counter" id="counter"></div>
+
+	<script type="module">
+		import { Lys } from "/src/lys.ts";
+
+		const deck = Lys.from(document.getElementById("deck"));
+		const counter = document.getElementById("counter");
+
+		function updateCounter() {
+			counter.textContent = `${deck.current + 1} / ${deck.total}`;
+		}
+
+		updateCounter();
+
+		document.getElementById("deck").addEventListener("lys:slidechange", updateCounter);
+	</script>
+</body>
+</html>

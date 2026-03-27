@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Lys — Structural Slide Engine</title>
+	<meta name="description" content="Zero-dependency CSS+JS slide engine. Turns &lt;article&gt; elements into accessible presentations. Designed for LLM-generated single-file HTML.">
+	<meta property="og:title" content="⚜ Lys — Structural Slide Engine">
+	<meta property="og:description" content="Zero-dependency slide engine for LLM-generated presentations. < 8 KB total.">
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://villetakanen.github.io/lys/">
+	<link rel="canonical" href="https://villetakanen.github.io/lys/">
+	<style>
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+
+		html {
+			font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+			font-size: 16px;
+			line-height: 1.6;
+			color: #e0e0e0;
+			background: #0e0e12;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		body {
+			max-width: 72ch;
+			margin: 0 auto;
+			padding: 3rem 1.5rem 4rem;
+		}
+
+		a {
+			color: #8ab4f8;
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+
+		h1, h2, h3 {
+			color: #f0f0f0;
+			line-height: 1.3;
+		}
+
+		/* Header */
+		header {
+			padding-bottom: 2.5rem;
+			border-bottom: 1px solid #2a2a35;
+			margin-bottom: 2.5rem;
+		}
+
+		header h1 {
+			font-size: 2.25rem;
+			font-weight: 700;
+			letter-spacing: -0.02em;
+			margin-bottom: 0.5rem;
+		}
+
+		header p {
+			font-size: 1.125rem;
+			color: #a0a0b0;
+			margin-bottom: 1rem;
+		}
+
+		header nav a {
+			margin-right: 1.5rem;
+			font-size: 0.9rem;
+		}
+
+		/* Sections */
+		section {
+			margin-bottom: 3rem;
+		}
+
+		section h2 {
+			font-size: 1.5rem;
+			margin-bottom: 1rem;
+			padding-bottom: 0.4rem;
+			border-bottom: 1px solid #2a2a35;
+		}
+
+		section p {
+			margin-bottom: 1rem;
+			color: #c0c0d0;
+		}
+
+		/* Code blocks */
+		pre {
+			background: #1a1a24;
+			border: 1px solid #2a2a35;
+			border-radius: 6px;
+			padding: 1rem 1.25rem;
+			overflow-x: auto;
+			font-size: 0.875rem;
+			line-height: 1.5;
+			margin-bottom: 1.5rem;
+		}
+
+		code {
+			font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+			font-size: 0.875em;
+		}
+
+		p code, td code, li code {
+			background: #1a1a24;
+			padding: 0.15em 0.4em;
+			border-radius: 3px;
+			font-size: 0.85em;
+		}
+
+		/* Tables */
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-bottom: 1.5rem;
+			font-size: 0.9rem;
+		}
+
+		th, td {
+			text-align: left;
+			padding: 0.6rem 0.75rem;
+			border-bottom: 1px solid #2a2a35;
+		}
+
+		th {
+			color: #a0a0b0;
+			font-weight: 600;
+			font-size: 0.8rem;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+		}
+
+		td {
+			color: #c0c0d0;
+		}
+
+		/* Examples list */
+		ul {
+			list-style: none;
+			padding: 0;
+		}
+
+		ul li {
+			margin-bottom: 0.5rem;
+		}
+
+		ul li::before {
+			content: ">";
+			color: #555;
+			margin-right: 0.5rem;
+			font-family: ui-monospace, monospace;
+		}
+
+		/* Footer */
+		footer {
+			border-top: 1px solid #2a2a35;
+			padding-top: 1.5rem;
+			margin-top: 3rem;
+			color: #606070;
+			font-size: 0.85rem;
+		}
+
+		footer nav {
+			display: flex;
+			gap: 1.5rem;
+			flex-wrap: wrap;
+		}
+	</style>
+</head>
+<body>
+
+	<header>
+		<h1>&#x269C; Lys</h1>
+		<p>Zero-dependency CSS+JS slide engine for accessible, LLM-generated presentations.</p>
+		<nav>
+			<a href="https://github.com/villetakanen/lys">GitHub</a>
+			<a href="https://www.npmjs.com/package/lys">npm</a>
+		</nav>
+	</header>
+
+	<section>
+		<h2>Quick Start</h2>
+		<p>Add the stylesheet and script from a CDN:</p>
+<pre><code>&lt;link rel="stylesheet" href="https://unpkg.com/lys/dist/lys.css"&gt;
+&lt;script src="https://unpkg.com/lys/dist/lys.iife.js"&gt;&lt;/script&gt;</code></pre>
+		<p>Then write slides as <code>&lt;article&gt;</code> elements inside a <code>[data-lys]</code> container:</p>
+<pre><code>&lt;div data-lys&gt;
+  &lt;article&gt;&lt;h1&gt;First Slide&lt;/h1&gt;&lt;/article&gt;
+  &lt;article&gt;&lt;h2&gt;Second Slide&lt;/h2&gt;&lt;/article&gt;
+&lt;/div&gt;</code></pre>
+		<p>That is it. The IIFE auto-initializes on <code>DOMContentLoaded</code> — no setup code needed.</p>
+	</section>
+
+	<section>
+		<h2>Token Reference</h2>
+		<p>Override any <code>--lys-*</code> token at <code>:root</code>, on the container, or on a single slide.</p>
+		<table>
+			<thead>
+				<tr>
+					<th>Token</th>
+					<th>Default</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><code>--lys-aspect-ratio</code></td>
+					<td><code>16 / 9</code></td>
+				</tr>
+				<tr>
+					<td><code>--lys-slide-padding</code></td>
+					<td><code>2rem</code></td>
+				</tr>
+				<tr>
+					<td><code>--lys-transition-duration</code></td>
+					<td><code>300ms</code></td>
+				</tr>
+				<tr>
+					<td><code>--lys-transition-easing</code></td>
+					<td><code>ease-in-out</code></td>
+				</tr>
+				<tr>
+					<td><code>--lys-font-size-base</code></td>
+					<td><code>clamp(1rem, 2vw, 1.5rem)</code></td>
+				</tr>
+				<tr>
+					<td><code>--lys-slide-gap</code></td>
+					<td><code>0</code></td>
+				</tr>
+				<tr>
+					<td><code>--lys-slide-max-width</code></td>
+					<td><code>100vw</code></td>
+				</tr>
+				<tr>
+					<td><code>--lys-slide-max-height</code></td>
+					<td><code>100vh</code></td>
+				</tr>
+				<tr>
+					<td><code>--lys-focus-ring</code></td>
+					<td><code>2px solid currentColor</code></td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+
+	<section>
+		<h2>Article Contract</h2>
+		<p>Each <code>&lt;article&gt;</code> inside <code>[data-lys]</code> is a slide. These optional data attributes are recognized:</p>
+		<table>
+			<thead>
+				<tr>
+					<th>Attribute</th>
+					<th>Purpose</th>
+					<th>Example</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><code>data-notes</code></td>
+					<td>Speaker notes (plain text or HTML)</td>
+					<td><code>data-notes="Mention Q3 figures"</code></td>
+				</tr>
+				<tr>
+					<td><code>data-transition</code></td>
+					<td>Transition hint</td>
+					<td><code>data-transition="fade"</code></td>
+				</tr>
+				<tr>
+					<td><code>data-class</code></td>
+					<td>Additional CSS classes for this slide</td>
+					<td><code>data-class="title-slide dark"</code></td>
+				</tr>
+				<tr>
+					<td><code>data-background</code></td>
+					<td>Background shorthand (color, image, gradient)</td>
+					<td><code>data-background="#1a1a2e"</code></td>
+				</tr>
+				<tr>
+					<td><code>data-timing</code></td>
+					<td>Suggested duration in seconds</td>
+					<td><code>data-timing="30"</code></td>
+				</tr>
+			</tbody>
+		</table>
+	</section>
+
+	<section>
+		<h2>Examples</h2>
+		<ul>
+			<li><a href="examples/minimal.html">minimal.html</a> — bare-minimum deck</li>
+			<li><a href="examples/themed.html">themed.html</a> — custom tokens and author CSS</li>
+			<li><a href="examples/full.html">full.html</a> — all features demonstrated</li>
+			<li><a href="examples/square.html">square.html</a> — square aspect ratio deck</li>
+		</ul>
+	</section>
+
+	<footer>
+		<nav>
+			<a href="https://github.com/villetakanen/lys">GitHub</a>
+			<a href="https://www.npmjs.com/package/lys">npm</a>
+			<a href="llms.txt">llms.txt</a>
+			<a href="https://github.com/villetakanen/lys/blob/main/LICENSE">MIT License</a>
+		</nav>
+	</footer>
+
+</body>
+</html>

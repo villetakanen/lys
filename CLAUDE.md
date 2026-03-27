@@ -6,7 +6,7 @@
 
 Lys is a zero-dependency library that turns `<article>` elements into accessible slide presentations. It ships as CSS + JS (ESM and IIFE). The primary consumer is LLMs generating presentations, but humans use it too.
 
-Lys is **visually unopinionated** (no default fonts, colors, or spacing) but **heavily opinionated about behavior** — navigation, focus management, ARIA announcements, touch handling, presenter sync, and transition timing. This is the core value: LLMs can produce markup, but they cannot reliably produce correct interactive presentation behavior. Lys makes those decisions so the generated HTML doesn't have to.
+Lys is **visually unopinionated** (no default fonts, colors, or spacing) but **heavily opinionated about behavior** — navigation, focus management, ARIA announcements, touch handling, and transition timing. This is the core value: LLMs can produce markup, but they cannot reliably produce correct interactive presentation behavior. Lys makes those decisions so the generated HTML doesn't have to.
 
 Read these before working:
 
@@ -95,7 +95,6 @@ feat(core): add slide container initialization
 fix(nav): prevent double-fire on rapid arrow key
 test(a11y): verify live region announces slide changes
 docs(spec): add edge case scenario for empty decks
-refactor(presenter): extract timer into standalone module
 chore(build): update Vite to 6.x
 ```
 
@@ -104,17 +103,15 @@ Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `build`, `ci`, `perf`
 ## Key Architecture Decisions
 
 - **Two-tier CSS tokens.** Internal `--_lys-*` resolve against public `--lys-*` with fallback defaults. Authors only touch `--lys-*`. See ARCHITECTURE.md.
-- **BroadcastChannel for presenter mode.** Presenter window syncs with the main deck via BroadcastChannel on the same origin. No WebSocket, no server.
-- **Lazy-loaded presenter.** `presenter.ts` is dynamically imported only when presenter mode is activated. It must not contribute to the initial bundle size.
 - **Auto-init pattern.** IIFE build auto-discovers `[data-lys]` containers on DOMContentLoaded. ESM build exposes `Lys.init()` for manual control.
 
 ## Test / Spec Alignment
 
 ```
-specs/lys-core.spec.md    →  tests/unit/lys.test.ts + tests/unit/tokens.test.ts
-specs/navigation.spec.md  →  tests/unit/navigation.test.ts + tests/e2e/slides.spec.ts
-specs/presenter.spec.md   →  tests/e2e/presenter.spec.ts
-specs/a11y.spec.md        →  tests/unit/a11y.test.ts + tests/e2e/a11y.spec.ts
+specs/lys-core.spec.md      →  tests/unit/lys.test.ts + tests/unit/tokens.test.ts
+specs/navigation.spec.md    →  tests/unit/navigation.test.ts + tests/e2e/navigation.spec.ts
+specs/a11y.spec.md          →  tests/unit/a11y.test.ts + tests/e2e/a11y.spec.ts
+specs/transitions.spec.md   →  tests/unit/transitions.test.ts + tests/e2e/transitions.spec.ts
 ```
 
 A spec scenario without a test is a gap. A test without a spec scenario means the spec needs updating.

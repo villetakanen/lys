@@ -1,3 +1,4 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
@@ -42,8 +43,15 @@ test.describe("focus ring (CSS)", () => {
 		await page.keyboard.press("ArrowRight");
 
 		const second = page.locator("[data-lys] > article").nth(1);
-		const outlineWidth = await second.evaluate((el) => getComputedStyle(el).outlineWidth);
-		expect(outlineWidth).toBe("3px");
+
+		// Verify the second slide is active and focused.
+		await expect(second).toHaveAttribute("data-lys-active", "");
+
+		// Retry the outline assertion since :focus-visible may take a moment.
+		await expect(async () => {
+			const outlineWidth = await second.evaluate((el) => getComputedStyle(el).outlineWidth);
+			expect(outlineWidth).toBe("3px");
+		}).toPass({ timeout: 2000 });
 	});
 });
 
@@ -81,12 +89,10 @@ test.describe("ARIA attributes in browser", () => {
 });
 
 test.describe("progressive enhancement", () => {
-	test("CSS-only deck has valid article semantics", async ({ page }) => {
-		// Load a page with only CSS (no JS).
+	test("CSS-only deck has valid article semantics", async ({ browser }) => {
+		const context = await browser.newContext({ javaScriptEnabled: false });
+		const page = await context.newPage();
 		await page.goto("/tests/fixtures/minimal.html");
-		// Disable JS and reload to simulate CSS-only.
-		await page.setJavaScriptEnabled(false);
-		await page.reload();
 
 		// Articles should be valid HTML5 elements without ARIA violations.
 		const articles = page.locator("[data-lys] > article");
@@ -96,5 +102,31 @@ test.describe("progressive enhancement", () => {
 		// Without JS, articles should NOT have role="group" (added by a11y module).
 		const role = await articles.first().getAttribute("role");
 		expect(role).toBeNull();
+
+		await context.close();
+	});
+});
+
+test.describe("axe-core accessibility scan", () => {
+	test("initialized deck has zero critical/serious axe-core violations", async ({ page }) => {
+		const results = await new AxeBuilder({ page }).analyze();
+		const critical = results.violations.filter((v) => v.impact === "critical");
+		const serious = results.violations.filter((v) => v.impact === "serious");
+		expect(critical).toHaveLength(0);
+		expect(serious).toHaveLength(0);
+	});
+
+	test("fade-mode deck has zero critical/serious axe-core violations", async ({ page }) => {
+		await page.goto("/tests/fixtures/fade.html");
+		await page.waitForFunction(() => {
+			const container = document.querySelector("[data-lys]");
+			return container?.getAttribute("data-lys-mode") === "fade";
+		});
+
+		const results = await new AxeBuilder({ page }).analyze();
+		const critical = results.violations.filter((v) => v.impact === "critical");
+		const serious = results.violations.filter((v) => v.impact === "serious");
+		expect(critical).toHaveLength(0);
+		expect(serious).toHaveLength(0);
 	});
 });

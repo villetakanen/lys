@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>ASDLC — Agent-Spec-Driven Lifecycle</title>
+	<link rel="stylesheet" href="/src/lys.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..150,100..900;1,62..150,100..900&family=B612+Mono&display=swap" rel="stylesheet">
+	<style>
+		/* ASDLC.io Design System — "Timeless Industrial" */
+		:root {
+			--lys-slide-padding: 3rem 4rem;
+			--lys-aspect-ratio: 16/9;
+			--lys-font-size-base: clamp(1rem, 2vw, 1.25rem);
+			--lys-transition-duration: 400ms;
+			--lys-focus-ring: 2px solid #f04e30;
+
+			--asdlc-bg: #f4f4f0;
+			--asdlc-surface: #ebebe6;
+			--asdlc-border: #d1d1c7;
+			--asdlc-text: #111111;
+			--asdlc-text-secondary: #585855;
+			--asdlc-brand: #f04e30;
+			--asdlc-brand-hover: #d13a1e;
+			--asdlc-success: #00703c;
+			--asdlc-warning: #ffb400;
+			--asdlc-error: #cc0000;
+		}
+
+		* { margin: 0; box-sizing: border-box; }
+
+		body {
+			font-family: "Archivo", sans-serif;
+			color: var(--asdlc-text);
+			background: #0a0a0a;
+		}
+
+		[data-lys] > article {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			max-width: none;
+		}
+
+		/* Typography */
+		article h1,
+		article h2,
+		article h3 {
+			font-family: "Archivo", sans-serif;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.02em;
+			font-variation-settings: "wdth" 110;
+		}
+
+		article h1 {
+			font-size: clamp(2rem, 5vw, 2.5rem);
+			line-height: 1.1;
+		}
+
+		article h2 {
+			font-size: clamp(1.25rem, 3vw, 1.5rem);
+			margin-bottom: 1em;
+		}
+
+		article h3 {
+			font-size: 1.125rem;
+			margin-bottom: 0.5em;
+		}
+
+		article p,
+		article li {
+			font-size: var(--lys-font-size-base);
+			line-height: 1.6;
+			max-width: 67ch;
+		}
+
+		article code {
+			font-family: "B612 Mono", monospace;
+			font-size: 0.875em;
+		}
+
+		article ul {
+			list-style: none;
+			padding: 0;
+		}
+
+		article ul li {
+			padding: 0.5em 0;
+			padding-left: 1.5em;
+			position: relative;
+		}
+
+		article ul li::before {
+			content: "";
+			position: absolute;
+			left: 0;
+			top: 1em;
+			width: 0.5em;
+			height: 2px;
+			background: var(--asdlc-brand);
+		}
+
+		/* --- Slide variants --- */
+
+		/* Title slide */
+		.title-slide {
+			text-align: center;
+			color: #f4f4f0;
+		}
+
+		.title-slide h1 {
+			font-size: clamp(3rem, 8vw, 5rem);
+			color: var(--asdlc-brand);
+			margin-bottom: 0.25em;
+		}
+
+		.title-slide p {
+			font-size: clamp(1rem, 2.5vw, 1.5rem);
+			color: var(--asdlc-text-secondary);
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+			font-weight: 700;
+			font-variation-settings: "wdth" 110;
+			max-width: none;
+		}
+
+		/* Light slides */
+		.light {
+			color: var(--asdlc-text);
+		}
+
+		.light h2 {
+			color: var(--asdlc-text);
+			border-bottom: 2px solid var(--asdlc-brand);
+			padding-bottom: 0.3em;
+			display: inline-block;
+		}
+
+		.light .secondary {
+			color: var(--asdlc-text-secondary);
+		}
+
+		/* Surface slide */
+		.surface-slide {
+			color: var(--asdlc-text);
+		}
+
+		.surface-slide h2 {
+			color: var(--asdlc-text);
+			border-bottom: 2px solid var(--asdlc-brand);
+			padding-bottom: 0.3em;
+			display: inline-block;
+		}
+
+		/* Code block */
+		.surface-slide pre {
+			background: var(--asdlc-text);
+			color: var(--asdlc-bg);
+			padding: 1.5em 2em;
+			font-family: "B612 Mono", monospace;
+			font-size: clamp(0.7rem, 1.4vw, 0.9rem);
+			line-height: 1.7;
+			overflow-x: auto;
+			margin-top: 1em;
+			border-left: 3px solid var(--asdlc-brand);
+		}
+
+		/* Workflow slide */
+		.workflow {
+			color: var(--asdlc-text);
+		}
+
+		.workflow h2 {
+			color: var(--asdlc-text);
+			border-bottom: 2px solid var(--asdlc-brand);
+			padding-bottom: 0.3em;
+			display: inline-block;
+		}
+
+		.workflow-steps {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+			margin-top: 1.5em;
+			flex-wrap: wrap;
+		}
+
+		.workflow-step {
+			background: var(--asdlc-text);
+			color: var(--asdlc-bg);
+			padding: 0.75em 1.25em;
+			font-family: "B612 Mono", monospace;
+			font-size: clamp(0.8rem, 1.5vw, 1rem);
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.04em;
+		}
+
+		.workflow-arrow {
+			color: var(--asdlc-brand);
+			font-size: 1.5rem;
+			font-weight: 700;
+			line-height: 1;
+		}
+
+		.workflow p {
+			margin-top: 1.5em;
+			color: var(--asdlc-text-secondary);
+		}
+
+		/* Closing slide */
+		.closing {
+			text-align: center;
+			color: var(--asdlc-bg);
+		}
+
+		.closing .fleur {
+			font-size: clamp(2.5rem, 6vw, 4rem);
+			color: var(--asdlc-brand);
+			display: block;
+			margin-bottom: 0.5em;
+		}
+
+		.closing p {
+			font-size: clamp(1rem, 2vw, 1.25rem);
+			color: var(--asdlc-text-secondary);
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			max-width: none;
+		}
+
+		.closing .tagline {
+			font-size: clamp(1.25rem, 3vw, 1.75rem);
+			color: var(--asdlc-bg);
+			font-weight: 700;
+			font-variation-settings: "wdth" 110;
+			text-transform: uppercase;
+			letter-spacing: 0.04em;
+			margin-bottom: 0.5em;
+		}
+	</style>
+</head>
+<body>
+	<div data-lys>
+
+		<article data-class="title-slide" data-background="#111111" data-notes="Introduce the ASDLC methodology. Emphasize that this is a lifecycle built for agents, not just humans.">
+			<h1>ASDLC</h1>
+			<p>Agent-Spec-Driven Lifecycle</p>
+		</article>
+
+		<article data-class="light" data-background="#f4f4f0" data-notes="Cover the core idea: specs are the single source of truth that both humans and AI agents work against. The methodology bridges the gap between LLM capabilities and production-grade software.">
+			<h2>What is ASDLC?</h2>
+			<ul>
+				<li>A development methodology where <strong>specs drive every decision</strong></li>
+				<li>Designed for human-agent collaboration, not just human teams</li>
+				<li>Specs are living documents — blueprint + contract in one artifact</li>
+				<li>Agents read specs before writing code, just like engineers should</li>
+				<li>Eliminates ambiguity that causes LLM drift and hallucination</li>
+			</ul>
+		</article>
+
+		<article data-class="workflow" data-background="#f4f4f0" data-notes="Walk through the five phases. Each phase has a clear input and output. The cycle is iterative — shipping feeds back into spec updates.">
+			<h2>The Workflow</h2>
+			<div class="workflow-steps">
+				<span class="workflow-step">Spec</span>
+				<span class="workflow-arrow">&rarr;</span>
+				<span class="workflow-step">Plan</span>
+				<span class="workflow-arrow">&rarr;</span>
+				<span class="workflow-step">Implement</span>
+				<span class="workflow-arrow">&rarr;</span>
+				<span class="workflow-step">Verify</span>
+				<span class="workflow-arrow">&rarr;</span>
+				<span class="workflow-step">Ship</span>
+			</div>
+			<p>Each phase has a clear input and output. The spec is both the starting point and the acceptance gate.</p>
+		</article>
+
+		<article data-class="surface-slide" data-background="#ebebe6" data-notes="Show the anatomy of a spec. The blueprint section captures architecture and constraints. The contract section captures testable acceptance criteria in Gherkin.">
+			<h2>Spec as Contract</h2>
+			<pre><code># feature-name.spec.md
+
+## Blueprint
+- Architecture decisions and constraints
+- API surface and data flow
+- Anti-patterns to avoid
+
+## Contract
+- Definition of Done checklist
+- Regression guardrails
+
+### Scenarios
+Given a valid slide container
+When the user presses ArrowRight
+Then the next slide becomes active
+And the live region announces the change</code></pre>
+		</article>
+
+		<article data-class="light" data-background="#f4f4f0">
+			<h2>Benefits</h2>
+			<ul>
+				<li><strong>Deterministic agent output</strong> — specs constrain what gets built</li>
+				<li><strong>Auditable decisions</strong> — every choice traces to a spec section</li>
+				<li><strong>Testable by default</strong> — Gherkin scenarios map directly to tests</li>
+				<li><strong>Human-agent handoff</strong> — either party can pick up from the spec</li>
+				<li><strong>Drift protection</strong> — verify phase catches spec-code divergence</li>
+			</ul>
+		</article>
+
+		<article data-class="closing" data-background="#111111">
+			<span class="fleur">&fleur;</span>
+			<p class="tagline">Specs are the source of truth.</p>
+			<p>asdlc.io</p>
+		</article>
+
+	</div>
+	<script type="module" src="/src/lys.ts"></script>
+</body>
+</html>

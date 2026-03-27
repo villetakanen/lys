@@ -31,7 +31,7 @@ Each `<article>` direct child of `[data-lys]` is a slide. The following data att
 
 | Attribute | Type | Purpose |
 |---|---|---|
-| `data-notes` | string | Speaker notes (consumed by presenter mode) |
+| `data-notes` | string | Speaker notes (general-purpose metadata) |
 | `data-transition` | string | Transition hint (e.g., `"fade"`) |
 | `data-class` | string | Space-separated CSS classes applied to the slide |
 | `data-background` | string | Background shorthand: color, gradient, or image URL |
@@ -73,7 +73,7 @@ Internal tokens are declared on `[data-lys]` and consumed by `lys.css` rules. Au
 - `src/lys.css` — All layout, tokens, scroll-snap, print styles, `data-background` handling, `prefers-reduced-motion`.
 - `src/types.ts` — `LysInstance` interface, event detail types.
 
-This spec does NOT cover: keyboard/touch navigation (`navigation.spec.md`), ARIA attributes and focus management (`a11y.spec.md`), or presenter mode (`presenter.spec.md`).
+This spec does NOT cover: keyboard/touch navigation (`navigation.spec.md`), ARIA attributes and focus management (`a11y.spec.md`), or transitions (`transitions.spec.md`).
 
 ### Anti-Patterns
 
@@ -278,7 +278,7 @@ Scenario: Transitions are disabled when reduced motion is preferred
 | CSS-only layout | `tests/e2e/slides.spec.ts` |
 | Token resolution | `tests/unit/tokens.test.ts` |
 | JS initialization | `tests/unit/lys.test.ts` |
-| Data attributes | `tests/unit/lys.test.ts` + `tests/e2e/slides.spec.ts` |
+| Data attributes | `tests/unit/lys.test.ts` + `tests/e2e/slides.spec.ts` + `tests/e2e/navigation.spec.ts` |
 | Lifecycle | `tests/unit/lys.test.ts` |
 | Print layout | `tests/e2e/print.spec.ts` |
 | Reduced motion | `tests/unit/tokens.test.ts` + `tests/e2e/slides.spec.ts` |
@@ -292,4 +292,4 @@ Scenario: Transitions are disabled when reduced motion is preferred
 
 - **Navigation** (`specs/navigation.spec.md`) — Keyboard, touch, hash routing, `next()`/`prev()`/`goTo()` methods. Depends on core initialization.
 - **Accessibility** (`specs/a11y.spec.md`) — ARIA roles, live region, focus management. Augments core init with a11y attributes.
-- **Presenter** (`specs/presenter.spec.md`) — `data-notes`, `data-timing` are declared here but consumed by presenter mode. BroadcastChannel sync.
+- **Transitions** (`specs/transitions.spec.md`) — `data-transition` is declared here; transition modes are defined in the transitions spec.
