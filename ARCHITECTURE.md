@@ -123,7 +123,6 @@ Lys emits custom events on the container element:
 
 - `lys:slidechange` — `{ detail: { from: number, to: number, slide: HTMLElement } }`
 - `lys:ready` — Initialization complete.
-- `lys:presenter` — *(Future — not in 1.0)* Presenter mode opened/closed.
 
 ## Programmatic API
 
