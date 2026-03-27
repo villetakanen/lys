@@ -17,7 +17,7 @@
 	],
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc --noEmit && vite build && node scripts/inject-skill.js",
+		"build": "tsc --noEmit && vite build && node scripts/inject-skill.js && node scripts/build-site.js",
 		"preview": "vite preview",
 		"lint": "biome check --write .",
 		"typecheck": "tsc --noEmit",
