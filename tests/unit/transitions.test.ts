@@ -491,3 +491,65 @@ describe("direct mode edge cases", () => {
 		expect(articles[0].hasAttribute("data-lys-active")).toBe(true);
 	});
 });
+
+// === FOUC prevention (#22) ===
+
+describe("FOUC prevention — data-lys-ready", () => {
+	it("data-lys-ready is NOT set synchronously after construction", () => {
+		const { container } = createDeck(3, { fadeSlides: [0] });
+		expect(container.hasAttribute("data-lys-ready")).toBe(false);
+	});
+
+	it("data-lys-ready is set after requestAnimationFrame", async () => {
+		const { container } = createDeck(3, { fadeSlides: [0] });
+		await new Promise((resolve) => requestAnimationFrame(resolve));
+		expect(container.hasAttribute("data-lys-ready")).toBe(true);
+	});
+
+	it("data-lys-ready is set for direct mode", async () => {
+		const { container } = createDeck(3, { directSlides: [0] });
+		await new Promise((resolve) => requestAnimationFrame(resolve));
+		expect(container.hasAttribute("data-lys-ready")).toBe(true);
+	});
+
+	it("data-lys-ready is set for scroll-snap mode", async () => {
+		const { container } = createDeck(3);
+		await new Promise((resolve) => requestAnimationFrame(resolve));
+		expect(container.hasAttribute("data-lys-ready")).toBe(true);
+	});
+
+	it("destroy() removes data-lys-ready", async () => {
+		const { container } = createDeck(3, { fadeSlides: [0] });
+		await new Promise((resolve) => requestAnimationFrame(resolve));
+		expect(container.hasAttribute("data-lys-ready")).toBe(true);
+
+		const instance = popInstance();
+		instance.destroy();
+		expect(container.hasAttribute("data-lys-ready")).toBe(false);
+	});
+
+	it("destroy() before rAF prevents data-lys-ready from being set", async () => {
+		const { container } = createDeck(3, { fadeSlides: [0] });
+		// Destroy immediately, before rAF fires.
+		const instance = popInstance();
+		instance.destroy();
+
+		await new Promise((resolve) => requestAnimationFrame(resolve));
+		expect(container.hasAttribute("data-lys-ready")).toBe(false);
+	});
+
+	it("re-initialization after destroy sets data-lys-ready again", async () => {
+		const { container } = createDeck(3, { fadeSlides: [0] });
+		await new Promise((resolve) => requestAnimationFrame(resolve));
+
+		const instance = popInstance();
+		instance.destroy();
+		expect(container.hasAttribute("data-lys-ready")).toBe(false);
+
+		const newInstance = new Lys(container);
+		instances.push(newInstance);
+		expect(container.hasAttribute("data-lys-ready")).toBe(false);
+		await new Promise((resolve) => requestAnimationFrame(resolve));
+		expect(container.hasAttribute("data-lys-ready")).toBe(true);
+	});
+});

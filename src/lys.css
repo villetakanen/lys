@@ -96,6 +96,10 @@
 	height: var(--_lys-slide-max-height);
 	opacity: 0;
 	pointer-events: none;
+}
+
+/* Enable opacity transitions only after init — prevents FOUC (#22) */
+[data-lys][data-lys-ready][data-lys-mode] > article {
 	transition-property: opacity;
 }
 

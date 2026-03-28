@@ -73,6 +73,11 @@ Stacked layout styles are shared by all non-default modes via the attribute-pres
   min-height: unset;
   opacity: 0;
   pointer-events: none;
+  /* transition-property: opacity — deferred to [data-lys-ready] gate, see fouc-fade.spec.md */
+}
+
+/* Enable opacity transitions only after init — prevents FOUC (#22) */
+[data-lys][data-lys-ready][data-lys-mode] > article {
   transition-property: opacity;
 }
 

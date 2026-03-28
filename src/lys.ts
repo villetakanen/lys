@@ -18,6 +18,7 @@ export class Lys implements LysInstance {
 	#current = -1;
 	#classMap = new Map<HTMLElement, string[]>();
 	#mode: "fade" | "direct" | null = null;
+	#readyFrame = 0;
 	#navigation: NavigationHandle | null = null;
 	#a11y: A11yHandle | null = null;
 
@@ -92,6 +93,12 @@ export class Lys implements LysInstance {
 				bubbles: true,
 			}),
 		);
+
+		// Enable transitions after first paint — prevents FOUC (#22).
+		this.#readyFrame = requestAnimationFrame(() => {
+			container.setAttribute("data-lys-ready", "");
+			this.#readyFrame = 0;
+		});
 	}
 
 	get current(): number {
@@ -158,6 +165,12 @@ export class Lys implements LysInstance {
 	}
 
 	destroy(): void {
+		// Cancel pending ready frame if destroy() is called before first paint.
+		if (this.#readyFrame) {
+			cancelAnimationFrame(this.#readyFrame);
+			this.#readyFrame = 0;
+		}
+
 		// Tear down a11y and navigation listeners.
 		this.#a11y?.destroy();
 		this.#a11y = null;
@@ -170,6 +183,7 @@ export class Lys implements LysInstance {
 		}
 		this.#container.removeAttribute("data-lys-current");
 		this.#container.removeAttribute("data-lys-mode");
+		this.#container.removeAttribute("data-lys-ready");
 		this.#mode = null;
 
 		// Revert data-class additions.
