@@ -61,13 +61,8 @@
 	transition-timing-function: var(--_lys-transition-easing);
 }
 
-/* === Focus ring === */
-[data-lys] > article:focus-visible {
-	outline: var(--_lys-focus-ring);
-	outline-offset: -2px;
-}
-
-[data-lys] > article:focus:not(:focus-visible) {
+/* === Focus — suppress outline (slides fill the viewport; ring adds no orientation) === */
+[data-lys] > article:focus {
 	outline: none;
 }
 

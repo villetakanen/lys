@@ -4,155 +4,126 @@
 
 ### Context
 
-When navigating between slides with arrow keys, the a11y module moves focus to the newly active slide via `slide.focus({ preventScroll: true })`. Because the last user interaction was a keyboard event (arrow key), the browser's `:focus-visible` heuristic activates, showing the focus ring outline on every slide transition. This appears as "extra borders" — a visible outline flashing on each slide change.
+Lys slides fill the entire viewport. Only one slide is ever visible at a time. When the a11y module moves focus to the active slide, the browser's `:focus-visible` rule displays a `2px solid currentColor` outline around it. This outline is entirely redundant — there is nothing else on screen to distinguish the focused element from. The slide *is* the viewport.
 
-The focus ring exists for WCAG 2.1 AA compliance: users who Tab into a slide need a visible indicator of where focus is. But during slide-to-slide navigation, the slide transition itself is the visual feedback — the ring adds noise.
-
-**Desired behavior:**
-- **Tab into a slide** → focus ring shown (user needs orientation)
-- **Arrow key / touch / API navigation** → no focus ring (slide change is the indicator)
-- **Mouse click** → no focus ring (already handled by `:focus:not(:focus-visible)`)
+Focus management must remain for screen reader support (`tabindex="-1"`, `focus({ preventScroll: true })`), but the visible focus ring on slides serves no purpose and creates a distracting border on every navigation.
 
 ### Architecture
 
-#### Root cause
+#### Fix: remove focus ring CSS rules for slides
 
-The a11y module (`src/a11y.ts`) calls `slide.focus({ preventScroll: true })` in its `lys:slidechange` handler. The browser considers this "keyboard-initiated" focus because the triggering event was a keydown, so `:focus-visible` activates. This is correct browser behavior — the issue is that Lys should suppress the ring during programmatic navigation focus.
-
-#### Fix: suppress outline during navigation-driven focus
-
-The fix uses a CSS approach: during programmatic focus (navigation-driven), the container gets a transient `data-lys-focusing` attribute that suppresses the focus ring. The attribute is removed on the next animation frame, so Tab-driven focus (which doesn't go through the a11y handler) shows the ring normally.
-
-**In `src/a11y.ts`** — Before calling `slide.focus()`, set `data-lys-focusing` on the container. Remove it on the next animation frame:
-
-```
-container.setAttribute("data-lys-focusing", "");
-slide.focus({ preventScroll: true });
-requestAnimationFrame(() => container.removeAttribute("data-lys-focusing"));
-```
-
-**In `src/lys.css`** — Suppress the focus ring while the attribute is present:
+Remove the two focus ring rules from `src/lys.css`:
 
 ```css
-[data-lys][data-lys-focusing] > article:focus-visible {
+/* REMOVE */
+[data-lys] > article:focus-visible {
+  outline: var(--_lys-focus-ring);
+  outline-offset: -2px;
+}
+
+[data-lys] > article:focus:not(:focus-visible) {
   outline: none;
 }
 ```
 
-This approach:
-- Is purely CSS-driven once the attribute is set — no inline styles.
-- The attribute is transient (removed next frame) so Tab focus immediately after navigation still shows the ring.
-- Does not affect the existing `:focus:not(:focus-visible)` rule for mouse clicks.
-- Does not modify the `--lys-focus-ring` token or its default value.
-- Progressive enhancement is preserved: without JS, there is no `data-lys-focusing`, so the ring shows normally on `:focus-visible`.
+Replace with a single rule that suppresses the outline on all slide focus states:
 
-**New API surface — `data-lys-focusing` state attribute:**
-This is a transient internal state attribute (like `data-lys-active`, `data-lys-current`, `data-lys-mode`), not author-facing. It is set and removed by the a11y module within a single frame. Authors should not set it manually.
+```css
+[data-lys] > article:focus {
+  outline: none;
+}
+```
+
+The `--lys-focus-ring` token remains defined (it is part of the public token API) but is no longer applied to slides by default. Authors who want a focus ring can still use it in their own CSS.
 
 #### Module boundaries
 
-- **`src/a11y.ts`** — Set/remove `data-lys-focusing` around the `focus()` call in the `lys:slidechange` handler. Remove the attribute in `destroy()` cleanup.
-- **`src/lys.css`** — Add suppression rule for `[data-lys][data-lys-focusing] > article:focus-visible`.
+- **`src/lys.css`** — Replace the two focus ring rules with `outline: none` on `:focus`.
+- **`src/a11y.ts`** — No changes. Focus management (`tabindex`, `focus()`) is unchanged.
 - **`src/lys.ts`** — No changes.
 - **`src/navigation.ts`** — No changes.
 
-#### Interaction with existing modules
-
-- **transitions** — No interaction. The focus ring suppression is independent of transition mode (scroll-snap, fade, direct).
-- **navigation** — Navigation triggers `lys:slidechange`, which triggers the a11y focus handler. The suppression is contained to the a11y module.
-
 ### Anti-Patterns
 
-- **Removing the focus ring entirely.** The ring is required for WCAG 2.1 AA. Tab-into-slide must show it.
-- **Using `outline: none` on all focus states.** This breaks keyboard accessibility.
-- **Using inline styles to suppress the ring.** The CSS attribute selector approach is cleaner and doesn't require cleanup.
-- **Delaying focus to avoid `:focus-visible`.** This would create a race condition and break screen reader announcements.
-- **Using `setTimeout` instead of `requestAnimationFrame`.** `rAF` is the correct timing primitive — it fires after the browser has processed focus but before the next paint.
-- **Leaving `data-lys-focusing` on the container permanently.** The attribute must be removed on the next frame. Forgetting to remove it would permanently suppress the focus ring.
+- **Removing focus management.** The `tabindex="-1"` and `focus()` calls must stay — screen readers need programmatic focus to announce the active slide.
+- **Removing the `--lys-focus-ring` token.** The token is public API. Keep it defined; just stop applying it to slides by default.
+- **Adding JS-based focus suppression.** No `data-lys-focusing` attribute, no `requestAnimationFrame` timing hacks. A single CSS rule is sufficient.
 
 ## Contract (Quality)
 
 ### Definition of Done
 
-1. Arrow key navigation between slides does NOT show a focus ring on the target slide.
-2. Tab into a slide DOES show a focus ring.
-3. Mouse click on a slide does NOT show a focus ring (existing behavior, regression check).
-4. The `--lys-focus-ring` token still works for customizing the ring appearance.
-5. `data-lys-focusing` is set on the container during programmatic focus and removed on the next animation frame.
-6. `destroy()` removes `data-lys-focusing` if present.
-7. The fix works in all three transition modes (scroll-snap, fade, direct).
-8. No WCAG 2.1 AA regressions — axe-core scans still pass.
+1. No visible outline appears on slides during arrow key navigation.
+2. No visible outline appears on slides during Tab focus.
+3. No visible outline appears on slides during mouse click.
+4. Focus management still works — screen readers announce the active slide on navigation.
+5. `tabindex="-1"` is still set on slides.
+6. `focus({ preventScroll: true })` is still called on slide change.
+7. The `--lys-focus-ring` token is still defined in the token block.
+8. No WCAG 2.1 AA regressions — axe-core scans still pass (slides are not actionable controls that require visible focus indicators; they are content regions that receive focus for AT purposes).
+9. The fix works in all three transition modes (scroll-snap, fade, direct).
 
 ### Regression Guardrails
 
-- The `:focus-visible` rule must remain in the CSS — it is only suppressed during navigation, not removed.
-- The `--lys-focus-ring` token default and two-tier resolution must not change.
-- The a11y module must still call `focus({ preventScroll: true })` — focus management is essential for screen readers.
-- The `outline-offset: -2px` must be preserved.
-- Existing a11y tests for focus movement must continue to pass.
+- The `--lys-focus-ring` token definition must remain in the CSS token block.
+- The a11y module must still call `focus({ preventScroll: true })` on slide change.
+- Slides must still have `tabindex="-1"`.
+- Existing a11y tests for focus movement and ARIA attributes must continue to pass.
 
 ### Scenarios (Gherkin)
 
-#### Focus ring suppression during navigation
+#### Focus ring removal
 
 ```gherkin
-Scenario: Arrow key navigation does not show focus ring
+Scenario: No outline on arrow key navigation
   Given an initialized deck at slide 0
   When the user presses ArrowRight
   Then the deck navigates to slide 1
   And the second slide has focus
-  And the second slide does NOT display a focus ring outline
+  And the second slide has no visible outline
 
-Scenario: Tab into slide shows focus ring
+Scenario: No outline on Tab focus
   Given an initialized deck
   When the user presses Tab to focus a slide
-  Then the focused slide displays the focus ring matching --lys-focus-ring
+  Then the focused slide has no visible outline
 
-Scenario: Mouse click does not show focus ring
+Scenario: No outline on mouse click
   Given an initialized deck
   When the user clicks on a slide
-  Then the slide does NOT display a focus ring outline
+  Then the slide has no visible outline
 ```
 
-#### Transient attribute lifecycle
+#### Focus management preserved
 
 ```gherkin
-Scenario: data-lys-focusing is set during programmatic focus
+Scenario: Focus still moves to active slide on navigation
   Given an initialized deck at slide 0
   When navigation changes to slide 1
-  Then data-lys-focusing is set on the container before focus() is called
-  And data-lys-focusing is removed on the next animation frame
+  Then the second slide has focus
 
-Scenario: data-lys-focusing is removed on destroy
-  Given an initialized deck with data-lys-focusing present
-  When destroy() is called
-  Then the container does not have data-lys-focusing
+Scenario: focus() is called with preventScroll
+  Given an initialized deck
+  When navigation changes to slide 1
+  Then focus() is called with { preventScroll: true }
 ```
 
 #### Cross-mode behavior
 
 ```gherkin
-Scenario: Focus ring suppression works in fade mode
+Scenario: No outline in fade mode
   Given a fade-mode deck at slide 0
   When the user presses ArrowRight
-  Then the second slide has focus
-  And the second slide does NOT display a focus ring outline
+  Then the second slide has no visible outline
 
-Scenario: Focus ring suppression works in direct mode
+Scenario: No outline in direct mode
   Given a direct-mode deck at slide 0
   When the user presses ArrowRight
-  Then the second slide has focus
-  And the second slide does NOT display a focus ring outline
+  Then the second slide has no visible outline
 ```
 
 #### Regression
 
 ```gherkin
-Scenario: Custom focus ring token still works
-  Given --lys-focus-ring is set to "3px dashed red"
-  When a slide receives Tab focus
-  Then the focus ring is 3px dashed red
-
 Scenario: axe-core scan passes after fix
   Given an initialized deck
   When an axe-core accessibility scan is run
@@ -163,14 +134,7 @@ Scenario: axe-core scan passes after fix
 
 | Scenario group | Test file |
 |---|---|
-| Focus ring suppression during navigation | `tests/e2e/a11y.spec.ts` |
-| Transient attribute lifecycle | `tests/unit/a11y.test.ts` |
+| Focus ring removal | `tests/e2e/a11y.spec.ts` |
+| Focus management preserved | `tests/unit/a11y.test.ts` (existing tests) |
 | Cross-mode behavior | `tests/e2e/a11y.spec.ts` |
 | Regression | `tests/e2e/a11y.spec.ts` |
-
-Note: Focus ring visual tests require a real browser (`:focus-visible` is not reliable in happy-dom). Unit tests can verify the `data-lys-focusing` attribute lifecycle but not the visual outcome.
-
-## Related / Future
-
-- **Issue #22 — FOUC on fade transition.** Unrelated bug but similar timing concerns (init-time visual flash vs. navigation-time visual flash).
-- **a11y.spec.md** — The existing a11y spec's focus ring scenarios (lines 316–331) describe the desired `:focus-visible` behavior. This spec fixes the gap where programmatic navigation focus was not accounted for.
