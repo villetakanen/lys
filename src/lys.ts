@@ -17,7 +17,7 @@ export class Lys implements LysInstance {
 	#slides: HTMLElement[] = [];
 	#current = -1;
 	#classMap = new Map<HTMLElement, string[]>();
-	#fadeMode = false;
+	#mode: "fade" | "direct" | null = null;
 	#navigation: NavigationHandle | null = null;
 	#a11y: A11yHandle | null = null;
 
@@ -71,10 +71,14 @@ export class Lys implements LysInstance {
 			container.setAttribute("data-lys-current", String(this.#current));
 		}
 
-		// Detect fade mode — any slide with data-transition="fade" activates it for the whole deck.
-		this.#fadeMode = this.#slides.some((s) => s.dataset.transition === "fade");
-		if (this.#fadeMode) {
-			container.setAttribute("data-lys-mode", "fade");
+		// Detect transition mode — fade takes precedence over direct.
+		this.#mode = this.#slides.some((s) => s.dataset.transition === "fade")
+			? "fade"
+			: this.#slides.some((s) => s.dataset.transition === "direct")
+				? "direct"
+				: null;
+		if (this.#mode) {
+			container.setAttribute("data-lys-mode", this.#mode);
 		}
 
 		registry.set(container, this);
@@ -135,8 +139,8 @@ export class Lys implements LysInstance {
 		this.#container.setAttribute("data-lys-current", String(this.#current));
 
 		// In scroll-snap mode, scroll the target slide into view.
-		// In fade mode, CSS handles visibility via data-lys-active — no scrolling needed.
-		if (!this.#fadeMode) {
+		// In fade/direct mode, CSS handles visibility via data-lys-active — no scrolling needed.
+		if (!this.#mode) {
 			const prefersReducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 			nextSlide.scrollIntoView({
 				behavior: prefersReducedMotion ? "instant" : "smooth",
@@ -166,7 +170,7 @@ export class Lys implements LysInstance {
 		}
 		this.#container.removeAttribute("data-lys-current");
 		this.#container.removeAttribute("data-lys-mode");
-		this.#fadeMode = false;
+		this.#mode = null;
 
 		// Revert data-class additions.
 		for (const [slide, classes] of this.#classMap) {

@@ -84,14 +84,14 @@
 	border: 0;
 }
 
-/* === Fade mode layout === */
-[data-lys][data-lys-mode="fade"] {
+/* === Stacked layout (fade + direct modes) === */
+[data-lys][data-lys-mode] {
 	position: relative;
 	overflow: hidden;
 	scroll-snap-type: none;
 }
 
-[data-lys][data-lys-mode="fade"] > article {
+[data-lys][data-lys-mode] > article {
 	position: absolute;
 	top: 0;
 	left: 50%;
@@ -104,9 +104,14 @@
 	transition-property: opacity;
 }
 
-[data-lys][data-lys-mode="fade"] > article[data-lys-active] {
+[data-lys][data-lys-mode] > article[data-lys-active] {
 	opacity: 1;
 	pointer-events: auto;
+}
+
+/* === Direct mode: instant switching, no transition === */
+[data-lys][data-lys-mode="direct"] > article {
+	transition-duration: 0ms;
 }
 
 /* === Reduced motion === */
@@ -136,7 +141,7 @@
 		break-after: avoid;
 	}
 
-	[data-lys][data-lys-mode="fade"] > article {
+	[data-lys][data-lys-mode] > article {
 		position: static;
 		transform: none;
 		opacity: 1;

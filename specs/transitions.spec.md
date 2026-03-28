@@ -1,16 +1,16 @@
-# Transitions — Scroll-Snap and Fade Modes
+# Transitions — Scroll-Snap, Fade, and Direct Modes
 
 ## Blueprint (Design)
 
 ### Context
 
-Lys supports two layout modes for presenting slides: **scroll-snap** (the default) and **fade** (an opacity crossfade). The default scroll-snap mode requires no markup beyond the standard `[data-lys]` + `<article>` structure — it is the CSS-only progressive enhancement baseline. The fade mode is activated by the `data-transition="fade"` attribute and requires JS.
+Lys supports three layout modes for presenting slides: **scroll-snap** (the default), **fade** (an opacity crossfade), and **direct** (instant switching, no animation). The default scroll-snap mode requires no markup beyond the standard `[data-lys]` + `<article>` structure — it is the CSS-only progressive enhancement baseline. Fade and direct modes are activated by the `data-transition` attribute and require JS. See `specs/direct-transition.spec.md` for the full direct mode spec.
 
-This matters because LLMs generating presentations may want crossfade transitions for a polished feel, while keeping the zero-config default for simpler decks. The transition system must be transparent to navigation — keyboard, touch, hash, and API navigation all work identically regardless of transition mode.
+This matters because LLMs generating presentations may want crossfade transitions for a polished feel, instant switching for kiosk/utility decks, or the zero-config default for simpler decks. The transition system must be transparent to navigation — keyboard, touch, hash, and API navigation all work identically regardless of transition mode.
 
 ### Architecture
 
-#### Two layout modes
+#### Three layout modes
 
 **Scroll-snap mode (default):**
 - The current behavior. `[data-lys]` is a scroll-snap container; slides are scroll-snap children.
@@ -25,67 +25,81 @@ This matters because LLMs generating presentations may want crossfade transition
 - Transitions between slides use CSS `opacity` transition, respecting `--lys-transition-duration` and `--lys-transition-easing` tokens (same tokens used by scroll-snap mode for its CSS transitions).
 - Navigation calls **do not** use `scrollIntoView()` in fade mode. Instead, the active slide's opacity is toggled, and the transition is handled by CSS.
 
+**Direct mode (`data-transition="direct"`):**
+- Shares the same stacked layout as fade mode but with `transition-duration: 0ms` — slides switch instantly with no animation.
+- Fade takes precedence over direct if both are present in the same deck.
+- See `specs/direct-transition.spec.md` for full details.
+
 #### Mode detection (`src/lys.ts`)
 
-During `Lys` construction, after collecting slides, detect whether any slide has `data-transition="fade"`:
+During `Lys` construction, after collecting slides, detect the transition mode. Fade takes precedence over direct:
 
 ```
-const hasFade = slides.some(s => s.dataset.transition === "fade");
+this.#mode = slides.some(s => s.dataset.transition === "fade")
+  ? "fade"
+  : slides.some(s => s.dataset.transition === "direct")
+    ? "direct"
+    : null;
 ```
 
-If `hasFade` is true:
-1. Set `data-lys-mode="fade"` on the container (used as a CSS hook).
+If `#mode` is non-null:
+1. Set `data-lys-mode` to the detected value on the container (used as a CSS hook).
 2. Store the mode internally for `goTo()` to branch on.
 
 On `destroy()`:
 1. Remove `data-lys-mode` from the container. Once removed, the scoped CSS rules no longer apply and the deck reverts to scroll-snap behavior. No inline style cleanup is needed because fade mode uses CSS rules (via `data-lys-active` and `data-lys-mode`), not inline styles.
 
 **New API surface — `data-lys-mode` state attribute:**
-This is an internal state attribute (like `data-lys-active` and `data-lys-current`), not an author-facing API. It is set by Lys and used by `lys.css` for layout switching. Authors should not set it manually.
+This is an internal state attribute (like `data-lys-active` and `data-lys-current`), not an author-facing API. It is set by Lys and used by `lys.css` for layout switching. Valid values are `"fade"` and `"direct"`. Authors should not set it manually.
 
 #### CSS layout switching (`src/lys.css`)
 
-Fade mode styles are scoped under `[data-lys][data-lys-mode="fade"]`:
+Stacked layout styles are shared by all non-default modes via the attribute-presence selector `[data-lys][data-lys-mode]`. Mode-specific overrides use value selectors (e.g., `[data-lys-mode="direct"]`). This is safe because `data-lys-mode` is only set by JS with known values — it is never present on default (scroll-snap) decks.
 
 ```css
-/* === Fade mode layout === */
-[data-lys][data-lys-mode="fade"] {
+/* === Stacked layout (fade + direct modes) === */
+[data-lys][data-lys-mode] {
   position: relative;
   overflow: hidden;
-  scroll-snap-type: none;  /* Disable scroll-snap */
-  /* height: 100vh inherited from base [data-lys] rule */
+  scroll-snap-type: none;
 }
 
-[data-lys][data-lys-mode="fade"] > article {
+[data-lys][data-lys-mode] > article {
   position: absolute;
   top: 0;
-  left: 50%;            /* Centering — mirrors margin-inline: auto from scroll-snap mode */
+  left: 50%;
   transform: translateX(-50%);
   scroll-snap-align: unset;
-  min-height: unset;    /* Override scroll-snap min-height; use aspect-ratio + max-height instead */
+  min-height: unset;
   opacity: 0;
   pointer-events: none;
   transition-property: opacity;
-  /* transition-duration and transition-timing-function inherited from base article rule */
 }
 
-[data-lys][data-lys-mode="fade"] > article[data-lys-active] {
+[data-lys][data-lys-mode] > article[data-lys-active] {
   opacity: 1;
   pointer-events: auto;
+}
+
+/* === Direct mode: instant switching, no transition === */
+[data-lys][data-lys-mode="direct"] > article {
+  transition-duration: 0ms;
 }
 ```
 
 This approach:
 - Uses the existing `data-lys-active` state attribute (already toggled by `goTo()`) as the CSS hook for visibility.
-- Reuses `--_lys-transition-duration` and `--_lys-transition-easing` tokens — no new tokens needed.
-- Respects `prefers-reduced-motion` automatically because the reduced motion media query already sets `--_lys-transition-duration: 0ms`, which makes the opacity transition instant.
+- Reuses `--_lys-transition-duration` and `--_lys-transition-easing` tokens for fade mode — no new tokens needed.
+- Direct mode overrides `transition-duration` to `0ms` regardless of token values.
+- Respects `prefers-reduced-motion` automatically for fade mode because the reduced motion media query sets `--_lys-transition-duration: 0ms`. Direct mode is always instant regardless.
 
-**Print layout override:** The existing `@media print` rules reset scroll-snap. For fade mode, print must also reset `position`, `opacity`, and `pointer-events` so all slides are visible and flow vertically:
+**Print layout override:** The existing `@media print` rules reset scroll-snap. For stacked modes, print must also reset `position`, `opacity`, and `pointer-events` so all slides are visible and flow vertically:
 
 ```css
 @media print {
-  [data-lys][data-lys-mode="fade"] > article {
+  [data-lys][data-lys-mode] > article {
     position: static;
+    transform: none;
     opacity: 1;
     pointer-events: auto;
   }
@@ -98,7 +112,7 @@ The `goTo()` method currently calls `scrollIntoView()`. In fade mode, this call 
 
 ```
 // In goTo(), after updating data-lys-active:
-if (!this.#fadeMode) {
+if (!this.#mode) {
   nextSlide.scrollIntoView({ behavior: ..., block: "start" });
 }
 ```
@@ -118,8 +132,8 @@ This is the correct progressive enhancement behavior: fade mode is a JS enhancem
 
 #### Module boundaries
 
-- **`src/lys.ts`** — Mode detection in constructor. Branching in `goTo()` to skip `scrollIntoView()` in fade mode. Setting/removing `data-lys-mode` attribute. No inline style manipulation — visibility is controlled entirely by CSS via `data-lys-active` and `data-lys-mode` attributes.
-- **`src/lys.css`** — Fade mode layout rules scoped under `[data-lys][data-lys-mode="fade"]`. No new tokens.
+- **`src/lys.ts`** — Mode detection in constructor (`#mode: "fade" | "direct" | null`). Branching in `goTo()` to skip `scrollIntoView()` for any non-default mode. Setting/removing `data-lys-mode` attribute. No inline style manipulation — visibility is controlled entirely by CSS via `data-lys-active` and `data-lys-mode` attributes.
+- **`src/lys.css`** — Stacked layout rules shared via `[data-lys][data-lys-mode]`. Direct mode zero-duration override via `[data-lys-mode="direct"]`. No new tokens.
 - **`src/navigation.ts`** — No changes. Navigation calls `instance.next()`/`prev()`/`goTo()` which are mode-agnostic.
 - **`src/a11y.ts`** — No changes. A11y listens for `lys:slidechange` which fires identically in both modes.
 - **`src/types.ts`** — No changes. The `LysInstance` interface is unchanged.
@@ -142,7 +156,7 @@ This is the correct progressive enhancement behavior: fade mode is a JS enhancem
 - **JS-driven opacity animation.** Do not use `requestAnimationFrame`, `Web Animations API`, or inline style manipulation for the crossfade. Use CSS `transition: opacity` and let the browser handle it. The CSS approach is simpler, respects `prefers-reduced-motion` via the token system, and has zero JS overhead per transition.
 - **Hiding slides with `display: none` or `visibility: hidden`.** Use `opacity: 0` + `pointer-events: none`. The slides must remain in the accessibility tree (the a11y module manages `aria-hidden` separately). `display: none` would remove them from layout and break the a11y module.
 - **Modifying the navigation module.** Navigation is mode-agnostic. It calls `instance.goTo()` — the mode branching happens inside `goTo()`, not in the navigation module.
-- **Breaking scroll-snap for decks without `data-transition`.** The default mode must remain exactly as it is today. Fade mode CSS is scoped under `[data-lys-mode="fade"]` and does not affect default decks.
+- **Breaking scroll-snap for decks without `data-transition`.** The default mode must remain exactly as it is today. Stacked layout CSS is scoped under `[data-lys-mode]` (attribute-presence) and does not affect default decks because `data-lys-mode` is only set by JS for recognized modes.
 - **Setting `data-lys-mode` from author markup.** This is an internal state attribute managed by Lys. If an author manually sets `data-lys-mode="fade"` without JS, the stacked layout will be applied but no slide will have `data-lys-active`, making all slides invisible. The attribute must only be set by the constructor.
 - **Using `scrollIntoView()` in fade mode.** In a stacked layout, `scrollIntoView()` is meaningless (all slides share the same position). It would cause a no-op or unexpected scroll behavior on the container.
 
@@ -168,14 +182,14 @@ This is the correct progressive enhancement behavior: fade mode is a JS enhancem
 
 ### Regression Guardrails
 
-- A deck with no `data-transition` attributes must produce byte-identical CSS behavior to v0.1.0. The fade mode CSS must be fully scoped under `[data-lys-mode="fade"]`.
+- A deck with no `data-transition` attributes must produce byte-identical CSS behavior to v0.1.0. Stacked layout CSS is scoped under `[data-lys-mode]` (attribute-presence selector), which only matches when JS sets the attribute for a recognized mode — never for default decks.
 - `scrollIntoView()` must still be called in scroll-snap mode. The branching must not accidentally disable it for default decks.
 - The existing `--lys-transition-duration` and `--lys-transition-easing` tokens must not change default values. Fade mode reuses them, not overrides them.
 - The `data-lys-active` attribute semantics must not change. It still marks the current slide in both modes.
 - `prefers-reduced-motion` media query must continue to set `--_lys-transition-duration: 0ms` — this is the mechanism that makes fade transitions instant.
 - An empty deck (0 slides) with `data-transition` on the container (nonsensical but possible) must not throw.
 - A single-slide deck in fade mode must display the slide at `opacity: 1` without transitions.
-- The constructor must always set `data-lys-active` on the initial slide before setting `data-lys-mode="fade"`. This guarantees at least one slide is visible in fade mode — if `data-lys-active` were absent from all slides, all would be `opacity: 0` and the deck would appear blank.
+- The constructor must always set `data-lys-active` on the initial slide before setting `data-lys-mode`. This guarantees at least one slide is visible in stacked modes — if `data-lys-active` were absent from all slides, all would be `opacity: 0` and the deck would appear blank.
 
 ### Scenarios (Gherkin)
 
@@ -385,7 +399,7 @@ Scenario: Unknown data-transition value is ignored
 
 ## Related / Future
 
-- **Additional transition values** — `slide`, `zoom`, `none`, etc. could be added post-1.0. The mode detection would need to support a set of known values rather than just checking for `"fade"`.
+- **Additional transition values** — `slide`, `zoom`, etc. could be added post-1.0. The mode detection already supports a discriminated union (`"fade" | "direct" | null`) and can be extended. `"direct"` (no animation) is now implemented — see `specs/direct-transition.spec.md`.
 - **Per-slide transitions** — The current design is per-deck. A future enhancement could support different transitions per slide, but this requires significantly more complex layout management. Deferred.
 - **View Transitions API** — The browser-native `document.startViewTransition()` API could provide smoother crossfades without the stacked layout hack. Browser support is still limited (Chrome/Edge only as of 2026). Worth revisiting post-1.0.
 - **Transition events** — A `lys:transitionend` event could notify when the opacity transition completes. Not needed for 1.0 — the `lys:slidechange` event fires synchronously on navigation, before the visual transition starts.

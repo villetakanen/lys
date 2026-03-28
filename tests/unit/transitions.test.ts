@@ -7,6 +7,7 @@ function createDeck(
 	articleCount: number,
 	extras?: {
 		fadeSlides?: number[];
+		directSlides?: number[];
 		slideAttrs?: Record<number, Record<string, string>>;
 	},
 ): { container: HTMLElement; articles: HTMLElement[] } {
@@ -19,6 +20,10 @@ function createDeck(
 
 		if (extras?.fadeSlides?.includes(i)) {
 			article.setAttribute("data-transition", "fade");
+		}
+
+		if (extras?.directSlides?.includes(i)) {
+			article.setAttribute("data-transition", "direct");
 		}
 
 		const attrs = extras?.slideAttrs?.[i];
@@ -294,5 +299,195 @@ describe("edge cases", () => {
 		const { container, articles } = createDeck(3, { fadeSlides: [0] });
 		expect(articles[0].hasAttribute("data-lys-active")).toBe(true);
 		expect(container.getAttribute("data-lys-mode")).toBe("fade");
+	});
+});
+
+// === Direct mode detection ===
+
+describe("direct mode detection", () => {
+	it("deck with data-transition='direct' gets data-lys-mode='direct'", () => {
+		const { container } = createDeck(3, { directSlides: [0] });
+		expect(container.getAttribute("data-lys-mode")).toBe("direct");
+	});
+
+	it("any slide with direct activates direct for the whole deck", () => {
+		const { container } = createDeck(5, { directSlides: [2] });
+		expect(container.getAttribute("data-lys-mode")).toBe("direct");
+	});
+
+	it("fade takes precedence over direct", () => {
+		const { container } = createDeck(3, { fadeSlides: [0], directSlides: [1] });
+		expect(container.getAttribute("data-lys-mode")).toBe("fade");
+	});
+});
+
+// === Direct mode layout ===
+
+describe("direct mode layout", () => {
+	it("active slide has data-lys-active, inactive slides do not", () => {
+		const { articles } = createDeck(3, { directSlides: [0] });
+		expect(articles[0].hasAttribute("data-lys-active")).toBe(true);
+		expect(articles[1].hasAttribute("data-lys-active")).toBe(false);
+		expect(articles[2].hasAttribute("data-lys-active")).toBe(false);
+	});
+
+	it("navigation updates data-lys-active", () => {
+		const { articles } = createDeck(3, { directSlides: [0] });
+		const instance = instances[instances.length - 1];
+		instance.goTo(1);
+
+		expect(articles[0].hasAttribute("data-lys-active")).toBe(false);
+		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
+	});
+});
+
+// === Navigation in direct mode ===
+
+describe("navigation in direct mode", () => {
+	it("scrollIntoView is NOT called in direct mode", () => {
+		const { articles } = createDeck(3, { directSlides: [0] });
+		const spy = vi.spyOn(articles[1], "scrollIntoView");
+		const instance = instances[instances.length - 1];
+		instance.goTo(1);
+
+		expect(spy).not.toHaveBeenCalled();
+	});
+
+	it("keyboard navigation works in direct mode", () => {
+		const { container, articles } = createDeck(3, { directSlides: [0] });
+		container.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+
+		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
+	});
+
+	it("touch navigation works in direct mode", () => {
+		const { container, articles } = createDeck(3, { directSlides: [0] });
+		const startX = 200;
+		const startY = 200;
+		container.dispatchEvent(
+			new TouchEvent("touchstart", {
+				touches: [
+					new Touch({ identifier: 0, target: container, clientX: startX, clientY: startY }),
+				],
+				bubbles: true,
+			}),
+		);
+		container.dispatchEvent(
+			new TouchEvent("touchend", {
+				changedTouches: [
+					new Touch({ identifier: 0, target: container, clientX: startX - 60, clientY: startY }),
+				],
+				bubbles: true,
+			}),
+		);
+
+		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
+	});
+
+	it("API navigation works in direct mode", () => {
+		createDeck(5, { directSlides: [0] });
+		const instance = instances[instances.length - 1];
+		instance.goTo(2);
+
+		expect(instance.current).toBe(2);
+	});
+
+	it("lys:slidechange fires with correct detail in direct mode", () => {
+		const { container } = createDeck(3, { directSlides: [0] });
+		const instance = instances[instances.length - 1];
+		const handler = vi.fn();
+		container.addEventListener("lys:slidechange", handler);
+
+		instance.goTo(2);
+
+		expect(handler).toHaveBeenCalledOnce();
+		const detail = (handler.mock.calls[0][0] as CustomEvent).detail;
+		expect(detail.from).toBe(0);
+		expect(detail.to).toBe(2);
+	});
+
+	it("hash routing works in direct mode", () => {
+		history.replaceState(null, "", "#slide=2");
+		const { articles } = createDeck(3, { directSlides: [0] });
+		const instance = instances[instances.length - 1];
+
+		expect(instance.current).toBe(1);
+		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
+	});
+});
+
+// === A11y in direct mode ===
+
+describe("a11y in direct mode", () => {
+	it("ARIA attributes are set in direct mode", () => {
+		const { container, articles } = createDeck(3, { directSlides: [0] });
+
+		expect(container.getAttribute("role")).toBe("group");
+		expect(container.getAttribute("aria-roledescription")).toBe("slide deck");
+
+		for (const article of articles) {
+			expect(article.getAttribute("role")).toBe("group");
+			expect(article.getAttribute("aria-roledescription")).toBe("slide");
+		}
+	});
+
+	it("aria-hidden is managed in direct mode", () => {
+		const { articles } = createDeck(3, { directSlides: [0] });
+
+		expect(articles[0].hasAttribute("aria-hidden")).toBe(false);
+		expect(articles[1].getAttribute("aria-hidden")).toBe("true");
+		expect(articles[2].getAttribute("aria-hidden")).toBe("true");
+	});
+
+	it("live region announces in direct mode", () => {
+		const { container } = createDeck(3, { directSlides: [0] });
+		const instance = instances[instances.length - 1];
+		instance.goTo(1);
+
+		const liveRegion = container.querySelector('[role="status"]') as HTMLElement;
+		expect(liveRegion.textContent).toBe("Slide 2 of 3");
+	});
+
+	it("focus moves to active slide in direct mode", () => {
+		const { articles } = createDeck(3, { directSlides: [0] });
+		const instance = instances[instances.length - 1];
+		const focusSpy = vi.spyOn(articles[1], "focus");
+		instance.goTo(1);
+
+		expect(focusSpy).toHaveBeenCalledWith({ preventScroll: true });
+	});
+});
+
+// === Direct mode cleanup ===
+
+describe("direct mode cleanup", () => {
+	it("destroy removes data-lys-mode='direct'", () => {
+		const { container } = createDeck(3, { directSlides: [0] });
+		const instance = popInstance();
+		instance.destroy();
+
+		expect(container.hasAttribute("data-lys-mode")).toBe(false);
+	});
+
+	it("re-initialization after destroy preserves direct mode", () => {
+		const { container } = createDeck(3, { directSlides: [0] });
+		const instance = popInstance();
+		instance.destroy();
+
+		expect(container.hasAttribute("data-lys-mode")).toBe(false);
+
+		const newInstance = new Lys(container);
+		instances.push(newInstance);
+		expect(container.getAttribute("data-lys-mode")).toBe("direct");
+	});
+});
+
+// === Direct mode edge cases ===
+
+describe("direct mode edge cases", () => {
+	it("single-slide direct deck has data-lys-active", () => {
+		const { container, articles } = createDeck(1, { directSlides: [0] });
+		expect(container.getAttribute("data-lys-mode")).toBe("direct");
+		expect(articles[0].hasAttribute("data-lys-active")).toBe(true);
 	});
 });
