@@ -10,20 +10,18 @@ test.beforeEach(async ({ page }) => {
 	});
 });
 
-test.describe("focus ring (CSS)", () => {
-	test("focus ring visible on keyboard focus", async ({ page }) => {
-		const slide = page.locator("[data-lys] > article").first();
-
-		// Tab into the container then navigate to trigger focus.
+test.describe("focus outline suppressed (#23)", () => {
+	test("no outline on arrow key navigation", async ({ page }) => {
 		await page.keyboard.press("ArrowRight");
-		await page.keyboard.press("ArrowLeft");
 
-		// The active slide should have a visible outline via :focus-visible.
-		const outline = await slide.evaluate((el) => getComputedStyle(el).outlineStyle);
-		expect(outline).not.toBe("none");
+		const second = page.locator("[data-lys] > article").nth(1);
+		await expect(second).toHaveAttribute("data-lys-active", "");
+
+		const outline = await second.evaluate((el) => getComputedStyle(el).outlineStyle);
+		expect(outline).toBe("none");
 	});
 
-	test("focus ring hidden on mouse click", async ({ page }) => {
+	test("no outline on mouse click", async ({ page }) => {
 		const slide = page.locator("[data-lys] > article").first();
 		await slide.click();
 
@@ -31,27 +29,13 @@ test.describe("focus ring (CSS)", () => {
 		expect(outline).toBe("none");
 	});
 
-	test("custom focus ring token is respected", async ({ page }) => {
-		// Set a custom focus ring token.
-		await page.evaluate(() => {
-			document
-				.querySelector("[data-lys]")
-				?.setAttribute("style", "--lys-focus-ring: 3px dashed red");
-		});
-
-		// Navigate to trigger focus-visible on the second slide.
+	test("focus still moves to active slide", async ({ page }) => {
 		await page.keyboard.press("ArrowRight");
 
-		const second = page.locator("[data-lys] > article").nth(1);
-
-		// Verify the second slide is active and focused.
-		await expect(second).toHaveAttribute("data-lys-active", "");
-
-		// Retry the outline assertion since :focus-visible may take a moment.
-		await expect(async () => {
-			const outlineWidth = await second.evaluate((el) => getComputedStyle(el).outlineWidth);
-			expect(outlineWidth).toBe("3px");
-		}).toPass({ timeout: 2000 });
+		const focused = await page.evaluate(() => {
+			return document.activeElement?.getAttribute("aria-label");
+		});
+		expect(focused).toBe("Slide 2 of 3");
 	});
 });
 

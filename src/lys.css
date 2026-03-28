@@ -61,13 +61,8 @@
 	transition-timing-function: var(--_lys-transition-easing);
 }
 
-/* === Focus ring === */
-[data-lys] > article:focus-visible {
-	outline: var(--_lys-focus-ring);
-	outline-offset: -2px;
-}
-
-[data-lys] > article:focus:not(:focus-visible) {
+/* === Focus — suppress outline (slides fill the viewport; ring adds no orientation) === */
+[data-lys] > article:focus {
 	outline: none;
 }
 
@@ -84,14 +79,14 @@
 	border: 0;
 }
 
-/* === Fade mode layout === */
-[data-lys][data-lys-mode="fade"] {
+/* === Stacked layout (fade + direct modes) === */
+[data-lys][data-lys-mode] {
 	position: relative;
 	overflow: hidden;
 	scroll-snap-type: none;
 }
 
-[data-lys][data-lys-mode="fade"] > article {
+[data-lys][data-lys-mode] > article {
 	position: absolute;
 	top: 0;
 	left: 50%;
@@ -101,12 +96,21 @@
 	height: var(--_lys-slide-max-height);
 	opacity: 0;
 	pointer-events: none;
+}
+
+/* Enable opacity transitions only after init — prevents FOUC (#22) */
+[data-lys][data-lys-ready][data-lys-mode] > article {
 	transition-property: opacity;
 }
 
-[data-lys][data-lys-mode="fade"] > article[data-lys-active] {
+[data-lys][data-lys-mode] > article[data-lys-active] {
 	opacity: 1;
 	pointer-events: auto;
+}
+
+/* === Direct mode: instant switching, no transition === */
+[data-lys][data-lys-mode="direct"] > article {
+	transition-duration: 0ms;
 }
 
 /* === Reduced motion === */
@@ -136,7 +140,7 @@
 		break-after: avoid;
 	}
 
-	[data-lys][data-lys-mode="fade"] > article {
+	[data-lys][data-lys-mode] > article {
 		position: static;
 		transform: none;
 		opacity: 1;

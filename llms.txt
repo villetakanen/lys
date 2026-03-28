@@ -102,5 +102,5 @@ IIFE build auto-initializes on DOMContentLoaded. ESM build exposes `Lys` for man
 | File | Raw | Gzip |
 |---|---|---|
 | `lys.css` | 2.3 KB | 0.8 KB |
-| `lys.iife.js` | 5.5 KB | 2.1 KB |
+| `lys.iife.js` | 5.7 KB | 2.2 KB |
 <!-- /LYS:SIZES -->
