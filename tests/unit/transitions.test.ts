@@ -70,12 +70,12 @@ describe("mode detection", () => {
 
 	it("deck with data-transition='fade' gets data-lys-mode='fade'", () => {
 		const { container } = createDeck(3, { fadeSlides: [1] });
-		expect(container.getAttribute("data-lys-mode")).toBe("fade");
+		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
 	});
 
 	it("any slide with fade activates fade for the whole deck", () => {
 		const { container } = createDeck(5, { fadeSlides: [2] });
-		expect(container.getAttribute("data-lys-mode")).toBe("fade");
+		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
 	});
 
 	it("unknown data-transition value is ignored", () => {
@@ -275,7 +275,7 @@ describe("destroy cleanup", () => {
 		// Re-init: data-transition is still on the article.
 		const newInstance = new Lys(container);
 		instances.push(newInstance);
-		expect(container.getAttribute("data-lys-mode")).toBe("fade");
+		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
 	});
 });
 
@@ -289,7 +289,7 @@ describe("edge cases", () => {
 
 	it("single-slide fade deck has data-lys-active", () => {
 		const { container, articles } = createDeck(1, { fadeSlides: [0] });
-		expect(container.getAttribute("data-lys-mode")).toBe("fade");
+		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
 		expect(articles[0].hasAttribute("data-lys-active")).toBe(true);
 	});
 
@@ -298,7 +298,7 @@ describe("edge cases", () => {
 		// The container should have both attributes after init.
 		const { container, articles } = createDeck(3, { fadeSlides: [0] });
 		expect(articles[0].hasAttribute("data-lys-active")).toBe(true);
-		expect(container.getAttribute("data-lys-mode")).toBe("fade");
+		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
 	});
 });
 
@@ -307,17 +307,17 @@ describe("edge cases", () => {
 describe("direct mode detection", () => {
 	it("deck with data-transition='direct' gets data-lys-mode='direct'", () => {
 		const { container } = createDeck(3, { directSlides: [0] });
-		expect(container.getAttribute("data-lys-mode")).toBe("direct");
+		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
 	});
 
 	it("any slide with direct activates direct for the whole deck", () => {
 		const { container } = createDeck(5, { directSlides: [2] });
-		expect(container.getAttribute("data-lys-mode")).toBe("direct");
+		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
 	});
 
 	it("fade takes precedence over direct", () => {
 		const { container } = createDeck(3, { fadeSlides: [0], directSlides: [1] });
-		expect(container.getAttribute("data-lys-mode")).toBe("fade");
+		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
 	});
 });
 
@@ -478,7 +478,7 @@ describe("direct mode cleanup", () => {
 
 		const newInstance = new Lys(container);
 		instances.push(newInstance);
-		expect(container.getAttribute("data-lys-mode")).toBe("direct");
+		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
 	});
 });
 
@@ -487,8 +487,89 @@ describe("direct mode cleanup", () => {
 describe("direct mode edge cases", () => {
 	it("single-slide direct deck has data-lys-active", () => {
 		const { container, articles } = createDeck(1, { directSlides: [0] });
-		expect(container.getAttribute("data-lys-mode")).toBe("direct");
+		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
 		expect(articles[0].hasAttribute("data-lys-active")).toBe(true);
+	});
+});
+
+// === Mixed-mode decks (per-slide transitions) ===
+
+describe("mixed-mode decks", () => {
+	it("mixed fade and direct slides use stacked mode", () => {
+		const { container } = createDeck(4, { fadeSlides: [0], directSlides: [2] });
+		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
+	});
+
+	it("navigation works through mixed slides", () => {
+		const { articles } = createDeck(4, { fadeSlides: [0, 3], directSlides: [1] });
+		const instance = instances[instances.length - 1];
+
+		instance.goTo(1);
+		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
+		expect(articles[0].hasAttribute("data-lys-active")).toBe(false);
+
+		instance.goTo(2);
+		expect(articles[2].hasAttribute("data-lys-active")).toBe(true);
+
+		instance.goTo(3);
+		expect(articles[3].hasAttribute("data-lys-active")).toBe(true);
+	});
+
+	it("scrollIntoView is NOT called in mixed-mode deck", () => {
+		const { articles } = createDeck(3, { fadeSlides: [0], directSlides: [2] });
+		const spy = vi.spyOn(articles[1], "scrollIntoView");
+		const instance = instances[instances.length - 1];
+		instance.goTo(1);
+
+		expect(spy).not.toHaveBeenCalled();
+	});
+
+	it("lys:slidechange fires for each transition in mixed deck", () => {
+		const { container } = createDeck(4, { fadeSlides: [0, 3], directSlides: [1] });
+		const instance = instances[instances.length - 1];
+		const handler = vi.fn();
+		container.addEventListener("lys:slidechange", handler);
+
+		instance.goTo(1);
+		instance.goTo(2);
+		instance.goTo(3);
+
+		expect(handler).toHaveBeenCalledTimes(3);
+	});
+
+	it("single fade slide in otherwise plain deck triggers stacked mode", () => {
+		const { container } = createDeck(5, { fadeSlides: [2] });
+		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
+	});
+
+	it("ARIA attributes work in mixed-mode deck", () => {
+		const { container, articles } = createDeck(3, { fadeSlides: [0], directSlides: [2] });
+
+		expect(container.getAttribute("role")).toBe("group");
+		expect(container.getAttribute("aria-roledescription")).toBe("slide deck");
+
+		for (const article of articles) {
+			expect(article.getAttribute("role")).toBe("group");
+			expect(article.getAttribute("aria-roledescription")).toBe("slide");
+		}
+	});
+
+	it("live region announces in mixed-mode deck", () => {
+		const { container } = createDeck(3, { fadeSlides: [0], directSlides: [2] });
+		const instance = instances[instances.length - 1];
+		instance.goTo(1);
+
+		const liveRegion = container.querySelector('[role="status"]') as HTMLElement;
+		expect(liveRegion.textContent).toBe("Slide 2 of 3");
+	});
+
+	it("hash routing works in mixed-mode deck", () => {
+		history.replaceState(null, "", "#slide=3");
+		const { articles } = createDeck(3, { fadeSlides: [0], directSlides: [2] });
+		const instance = instances[instances.length - 1];
+
+		expect(instance.current).toBe(2);
+		expect(articles[2].hasAttribute("data-lys-active")).toBe(true);
 	});
 });
 

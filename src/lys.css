@@ -98,19 +98,19 @@
 	pointer-events: none;
 }
 
-/* Enable opacity transitions only after init — prevents FOUC (#22) */
-[data-lys][data-lys-ready][data-lys-mode] > article {
+/* Enable opacity transitions only after init, only for fade slides — prevents FOUC (#22) */
+[data-lys][data-lys-ready][data-lys-mode] > article[data-transition="fade"] {
 	transition-property: opacity;
+}
+
+/* Non-fade slides in stacked mode: instant switch */
+[data-lys][data-lys-mode] > article:not([data-transition="fade"]) {
+	transition-duration: 0ms;
 }
 
 [data-lys][data-lys-mode] > article[data-lys-active] {
 	opacity: 1;
 	pointer-events: auto;
-}
-
-/* === Direct mode: instant switching, no transition === */
-[data-lys][data-lys-mode="direct"] > article {
-	transition-duration: 0ms;
 }
 
 /* === Reduced motion === */

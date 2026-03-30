@@ -74,6 +74,10 @@ Lys is designed to be used by language models generating presentations. If you a
 - [`ARCHITECTURE.md`](./ARCHITECTURE.md) — Technical contract and internals
 - [`PROJECT.md`](./PROJECT.md) — Development setup and toolchain
 
+## Built with ASDLC
+
+Lys is developed using the [ASDLC](https://asdlc.io) (Agent-Spec-Driven Lifecycle) methodology — specs define the contract, agents fulfill it.
+
 ## License
 
 MIT

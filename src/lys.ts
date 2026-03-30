@@ -17,7 +17,7 @@ export class Lys implements LysInstance {
 	#slides: HTMLElement[] = [];
 	#current = -1;
 	#classMap = new Map<HTMLElement, string[]>();
-	#mode: "fade" | "direct" | null = null;
+	#mode: "stacked" | null = null;
 	#readyFrame = 0;
 	#navigation: NavigationHandle | null = null;
 	#a11y: A11yHandle | null = null;
@@ -72,12 +72,11 @@ export class Lys implements LysInstance {
 			container.setAttribute("data-lys-current", String(this.#current));
 		}
 
-		// Detect transition mode — fade takes precedence over direct.
-		this.#mode = this.#slides.some((s) => s.dataset.transition === "fade")
-			? "fade"
-			: this.#slides.some((s) => s.dataset.transition === "direct")
-				? "direct"
-				: null;
+		// Detect transition mode — any recognized data-transition triggers stacked layout.
+		const hasStacked = this.#slides.some(
+			(s) => s.dataset.transition === "fade" || s.dataset.transition === "direct",
+		);
+		this.#mode = hasStacked ? "stacked" : null;
 		if (this.#mode) {
 			container.setAttribute("data-lys-mode", this.#mode);
 		}

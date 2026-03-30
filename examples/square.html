@@ -3,34 +3,70 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>FREE//FALL — Square Deck</title>
+	<title>FREE//FALL — Playtest Pitch</title>
 	<link rel="stylesheet" href="/src/lys.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Orbitron:wght@500;700;800&display=swap" rel="stylesheet">
 	<style>
-		/* FREE//FALL Design — cyberpunk industrial, 1:1 square slides */
-		:root {
-			--lys-aspect-ratio: 1 / 1;
-			--lys-slide-padding: 3rem;
-			--lys-font-size-base: clamp(0.875rem, 2vw, 1.125rem);
-			--lys-transition-duration: 500ms;
-			--lys-slide-max-width: 100vh;
-			--lys-focus-ring: 2px solid #ccda0b;
+		/* === FREE//FALL Design System — Playtest Pitch === */
 
-			--ff-bg: #0c0c10;
-			--ff-surface: #16161c;
-			--ff-border: #2a2a35;
-			--ff-text: #d6e1ec;
-			--ff-text-muted: #7a8594;
-			--ff-accent: #ccda0b;
-			--ff-accent-dim: #99a308;
-			--ff-danger: #e03030;
+		/* --- Palette: Deep Space Cobalt --- */
+		:root {
+			--ff-primary-50: #d6e1ec;
+			--ff-primary-100: #b8c8d9;
+			--ff-primary-200: #8fa5be;
+			--ff-primary-300: #6a83a0;
+			--ff-primary-400: #4d6580;
+			--ff-primary-500: #374a61;
+			--ff-primary-600: #2a3a4f;
+			--ff-primary-700: #1f2b3d;
+			--ff-primary-800: #16161c;
+			--ff-primary-900: #111118;
+			--ff-primary-950: #0c0c10;
+
+			/* Palette: Isotope Neon */
+			--ff-accent-400: #ccda0b;
+			--ff-accent-500: #a8b309;
+			--ff-accent-900: #3d4003;
+
+			/* Palette: Flare Orange */
+			--ff-body-400: #e06030;
+			--ff-body-900: #4a1a0a;
+
+			/* Palette: Tritium Green */
+			--ff-mind-400: #30c878;
+			--ff-mind-900: #0a3a22;
+
+			/* --- Semantic tokens --- */
+			--ff-bg-canvas: var(--ff-primary-950);
+			--ff-bg-surface-1: var(--ff-primary-900);
+			--ff-bg-surface-2: var(--ff-primary-800);
+			--ff-text-display: var(--ff-primary-50);
+			--ff-text-body: var(--ff-primary-100);
+			--ff-text-muted: var(--ff-primary-300);
+			--ff-border-subtle: var(--ff-primary-800);
+			--ff-border-strong: var(--ff-primary-700);
+			--ff-alert-base: var(--ff-accent-400);
+
+			/* --- Spacing --- */
+			--ff-space-1: 0.5rem;
+
+			/* --- Lys overrides --- */
+			--lys-aspect-ratio: 24 / 10;
+			--lys-slide-padding: 3rem 4rem;
+			--lys-font-size-base: 1.125rem;
+			--lys-transition-duration: 500ms;
+			--lys-focus-ring: 2px solid var(--ff-accent-400);
 		}
 
 		* { margin: 0; box-sizing: border-box; }
 
 		body {
-			font-family: "SF Mono", "Cascadia Code", "Fira Code", monospace;
-			color: var(--ff-text);
+			font-family: "Lato", system-ui, sans-serif;
+			color: var(--ff-text-body);
 			background: #000;
+			letter-spacing: 0.0138em;
 		}
 
 		[data-lys] > article {
@@ -39,39 +75,54 @@
 			justify-content: center;
 		}
 
-		/* Typography */
+		/* --- Typography scale (perfect fourth 1.333) --- */
 		article h1,
 		article h2,
 		article h3 {
-			font-family: system-ui, -apple-system, sans-serif;
-			font-weight: 800;
+			font-family: "Orbitron", system-ui, sans-serif;
+			font-weight: 700;
 			text-transform: uppercase;
-			letter-spacing: 0.06em;
+			color: var(--ff-text-display);
 		}
 
 		article h1 {
-			font-size: clamp(2.5rem, 8vw, 4rem);
-			line-height: 1;
+			font-size: clamp(2.5rem, 6vw, 3.56rem);
+			line-height: calc(var(--ff-space-1) * 10);
+			letter-spacing: 0.1em;
 		}
 
 		article h2 {
-			font-size: clamp(1.25rem, 3.5vw, 1.75rem);
-			margin-bottom: 1em;
-			color: var(--ff-accent);
+			font-size: clamp(1.5rem, 3.5vw, 2.67rem);
+			line-height: calc(var(--ff-space-1) * 7);
+			margin-bottom: 0.75em;
+			color: var(--ff-accent-400);
 		}
 
 		article h3 {
-			font-size: 1rem;
-			color: var(--ff-accent);
+			font-size: clamp(1.125rem, 2.5vw, 2rem);
+			line-height: calc(var(--ff-space-1) * 5);
+			color: var(--ff-accent-400);
 			margin-bottom: 0.5em;
 		}
 
 		article p,
 		article li {
-			line-height: 1.65;
-			max-width: 50ch;
+			line-height: calc(var(--ff-space-1) * 4);
+			max-width: 65ch;
 		}
 
+		.lead {
+			font-size: 1.5rem;
+			line-height: calc(var(--ff-space-1) * 4);
+		}
+
+		.caption {
+			font-size: calc(var(--ff-space-1) * 2);
+			line-height: calc(var(--ff-space-1) * 2);
+			color: var(--ff-text-muted);
+		}
+
+		/* --- Lists --- */
 		article ul {
 			list-style: none;
 			padding: 0;
@@ -79,7 +130,7 @@
 
 		article ul li {
 			padding: 0.4em 0;
-			padding-left: 1.25em;
+			padding-left: 1.5em;
 			position: relative;
 		}
 
@@ -87,14 +138,67 @@
 			content: "//";
 			position: absolute;
 			left: 0;
-			color: var(--ff-accent-dim);
-			font-size: 0.75em;
+			color: var(--ff-accent-500);
+			font-family: "Orbitron", monospace;
+			font-size: 0.7em;
 			font-weight: 700;
 		}
 
-		article code {
-			color: var(--ff-accent);
-			font-size: 0.9em;
+		/* --- Utility classes --- */
+		.accent { color: var(--ff-accent-400); }
+		.red { color: var(--ff-body-400); }
+		.cyan { color: var(--ff-mind-400); }
+		.muted { color: var(--ff-text-muted); }
+
+		.tag {
+			display: inline-block;
+			font-family: "Orbitron", monospace;
+			font-size: 0.7rem;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.1em;
+			padding: 0.3em 0.8em;
+			border: 1px solid var(--ff-border-strong);
+			color: var(--ff-text-muted);
+		}
+
+		.big-num {
+			font-family: "Orbitron", monospace;
+			font-size: clamp(2rem, 5vw, 3.5rem);
+			font-weight: 800;
+			color: var(--ff-accent-400);
+			line-height: 1;
+		}
+
+		/* --- Layout --- */
+		.grid-2 {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 2rem;
+			width: 100%;
+		}
+
+		.grid-3 {
+			display: grid;
+			grid-template-columns: 1fr 1fr 1fr;
+			gap: 2rem;
+			width: 100%;
+		}
+
+		.card {
+			border: 1px solid var(--ff-border-subtle);
+			background: var(--ff-bg-surface-1);
+			padding: 1.5em;
+		}
+
+		.card h3 {
+			font-size: 0.9rem;
+			margin-bottom: 0.75em;
+		}
+
+		.card p {
+			font-size: 0.95rem;
+			color: var(--ff-text-body);
 		}
 
 		/* --- Slide variants --- */
@@ -106,83 +210,27 @@
 		}
 
 		.title-slide h1 {
-			font-size: clamp(3.5rem, 12vw, 6rem);
-			letter-spacing: 0.12em;
-			background: linear-gradient(180deg, var(--ff-text), var(--ff-text-muted));
-			-webkit-background-clip: text;
-			-webkit-text-fill-color: transparent;
-			background-clip: text;
+			font-size: clamp(3rem, 8vw, 5rem);
+			letter-spacing: 0.15em;
+			font-weight: 800;
 		}
 
 		.title-slide .tagline {
-			font-size: clamp(0.75rem, 1.8vw, 1rem);
-			color: var(--ff-accent);
+			font-family: "Lato", sans-serif;
+			font-size: clamp(0.9rem, 1.8vw, 1.25rem);
+			color: var(--ff-accent-400);
 			text-transform: uppercase;
-			letter-spacing: 0.2em;
+			letter-spacing: 0.25em;
 			margin-top: 0.75em;
+			font-weight: 300;
 		}
 
 		.title-slide .version {
-			font-size: 0.75rem;
+			font-family: "Orbitron", monospace;
+			font-size: 0.7rem;
 			color: var(--ff-text-muted);
-			margin-top: 1.5em;
-			letter-spacing: 0.08em;
-		}
-
-		/* Content with left accent border */
-		.accented {
-			border-left: 3px solid var(--ff-accent);
-			padding-left: 2rem;
-		}
-
-		.accented h2 {
-			margin-left: -2rem;
-			padding-left: 2rem;
-		}
-
-		/* Stats grid */
-		.stats {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			gap: 1.5rem;
-			margin-top: 1em;
-		}
-
-		.stat {
-			border: 1px solid var(--ff-border);
-			padding: 1.25em;
-		}
-
-		.stat-value {
-			font-family: system-ui, -apple-system, sans-serif;
-			font-size: clamp(1.5rem, 4vw, 2.5rem);
-			font-weight: 800;
-			color: var(--ff-accent);
-			display: block;
-		}
-
-		.stat-label {
-			font-size: 0.75rem;
-			color: var(--ff-text-muted);
-			text-transform: uppercase;
+			margin-top: 2em;
 			letter-spacing: 0.1em;
-			margin-top: 0.25em;
-			display: block;
-		}
-
-		/* Quote */
-		article blockquote {
-			border-left: 3px solid var(--ff-accent);
-			padding-left: 1.5em;
-			font-style: italic;
-			max-width: 40ch;
-		}
-
-		article blockquote footer {
-			font-style: normal;
-			color: var(--ff-text-muted);
-			font-size: 0.85em;
-			margin-top: 0.75em;
 		}
 
 		/* Closing */
@@ -192,77 +240,294 @@
 		}
 
 		.closing h2 {
-			font-size: clamp(2rem, 6vw, 3rem);
-			color: var(--ff-text);
-			letter-spacing: 0.1em;
+			font-size: clamp(2.5rem, 6vw, 4rem);
+			color: var(--ff-text-display);
+			letter-spacing: 0.12em;
+			font-weight: 800;
 		}
 
-		.closing p {
+		.closing .tagline {
+			font-family: "Lato", sans-serif;
+			font-size: 1.1rem;
+			color: var(--ff-accent-400);
+			text-transform: uppercase;
+			letter-spacing: 0.2em;
+			margin-top: 0.75em;
+			font-weight: 300;
+		}
+
+		.closing .cta {
+			font-family: "Orbitron", monospace;
+			font-size: 0.8rem;
 			color: var(--ff-text-muted);
 			text-transform: uppercase;
-			letter-spacing: 0.15em;
-			font-size: 0.8rem;
-			max-width: none;
+			letter-spacing: 0.1em;
+			margin-top: 2em;
+		}
+
+		.closing .cta a {
+			color: var(--ff-accent-400);
+			text-decoration: none;
+			border-bottom: 1px solid var(--ff-accent-900);
+		}
+
+		/* Harm slot indicators */
+		.harm-slots {
+			display: flex;
+			gap: 1rem;
+			margin-top: 1em;
+		}
+
+		.harm-slot {
+			width: 3rem;
+			height: 3rem;
+			border: 2px solid var(--ff-body-400);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-family: "Orbitron", monospace;
+			font-weight: 700;
+			font-size: 1rem;
+			color: var(--ff-body-400);
+		}
+
+		.harm-slot.filled {
+			background: var(--ff-body-900);
+		}
+
+		/* Scanline overlay */
+		.scanline::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background: repeating-linear-gradient(
+				0deg,
+				transparent,
+				transparent 2px,
+				rgba(0, 0, 0, 0.03) 2px,
+				rgba(0, 0, 0, 0.03) 4px
+			);
+			pointer-events: none;
+		}
+
+		/* TN table */
+		.tn-table {
+			width: 100%;
+			max-width: 30rem;
+			border-collapse: collapse;
+			font-size: 0.9rem;
+			margin-top: 1em;
+		}
+
+		.tn-table th,
+		.tn-table td {
+			padding: 0.5em 1em;
+			text-align: left;
+			border-bottom: 1px solid var(--ff-border-subtle);
+		}
+
+		.tn-table th {
+			font-family: "Orbitron", monospace;
+			font-size: 0.7rem;
+			color: var(--ff-text-muted);
+			text-transform: uppercase;
+			letter-spacing: 0.08em;
+		}
+
+		.tn-table td:first-child {
+			font-family: "Orbitron", monospace;
+			font-weight: 700;
+			color: var(--ff-accent-400);
 		}
 	</style>
 </head>
 <body>
 	<div data-lys>
 
-		<article data-class="title-slide" data-transition="fade" data-background="#0c0c10" data-notes="Introduce FREE//FALL — a tabletop RPG set in 2048. Cyberpunk mercenary setting, MIT licensed.">
+		<!-- 1. Title -->
+		<article data-class="title-slide scanline" data-transition="fade" data-background="radial-gradient(ellipse at 50% 40%, #16161c 0%, #0c0c10 70%)" data-notes="Introduce FREE//FALL — a tabletop RPG set in 2048. Cyberpunk mercenary setting. This is a playtest recruitment pitch.">
 			<h1>FREE//FALL</h1>
-			<p class="tagline">Tabletop RPG — 2048</p>
-			<p class="version">v7 Alpha — CC-BY / MIT</p>
+			<p class="tagline">Gravity kills. The void is worse.</p>
+			<p class="version">v7 Alpha &mdash; Rules 0.7.4</p>
 		</article>
 
-		<article data-background="linear-gradient(160deg, #0c0c10 0%, #16161c 100%)" data-notes="Set the scene. The world broke — climate collapse, dead Mediterranean, Fortress Europe. Humanity spread to the solar system but brought its problems along.">
-			<h2>The World</h2>
-			<p>Year 2048. The climate changed, the Mediterranean died, and Europe walled itself off.</p>
-			<p style="margin-top: 0.75em;">Humanity scattered across a fractured solar system — but brought every war, grudge, and power grab with it.</p>
-		</article>
-
-		<article data-class="accented" data-background="#0c0c10" data-notes="Explain the player fantasy. You're not a hero — you're a mercenary taking jobs no one else will. The tension is between capability and cost.">
-			<h2>Operators</h2>
-			<ul>
-				<li>Mercenary operators in a fractured solar system</li>
-				<li>Jobs too dirty, too dangerous, or too illegal for corporate militaries</li>
-				<li>Capability is bought, spliced, or installed</li>
-				<li>But power is never free</li>
-			</ul>
-		</article>
-
-		<article data-background="#16161c" data-notes="Show the mechanical pillars of the game. Four stats, 2d6 core resolution, gear matters more than levels.">
-			<h2>The System</h2>
-			<div class="stats">
-				<div class="stat">
-					<span class="stat-value">2d6</span>
-					<span class="stat-label">Core Resolution</span>
+		<!-- 2. Year 2048 -->
+		<article data-transition="fade" data-background="linear-gradient(135deg, #0c0c10 0%, #111118 50%, #16161c 100%)" data-notes="Set the scene. Climate collapsed, Mediterranean dead, Europe walled off. Humanity spread to the solar system — the Gravity Well vs the Void.">
+			<h2>Year 2048</h2>
+			<div class="grid-2">
+				<div>
+					<p class="lead">The climate changed. The Mediterranean died. Europe walled itself off.</p>
+					<p style="margin-top: 1em;">Humanity scattered across a fractured solar system — but brought every war, grudge, and power grab along for the ride.</p>
 				</div>
-				<div class="stat">
-					<span class="stat-value">4</span>
-					<span class="stat-label">Core Stats</span>
-				</div>
-				<div class="stat">
-					<span class="stat-value">Gear</span>
-					<span class="stat-label">Over Levels</span>
-				</div>
-				<div class="stat">
-					<span class="stat-value">Crew</span>
-					<span class="stat-label">Over Solo</span>
+				<div class="grid-2" style="gap: 1rem;">
+					<div class="card">
+						<h3 class="red">Gravity Well</h3>
+						<p class="caption">Earth, Luna, orbitals. Dense, surveilled, corporate-controlled.</p>
+					</div>
+					<div class="card">
+						<h3 class="cyan">The Void</h3>
+						<p class="caption">Mars, Belt, outer stations. Sparse, lawless, opportunity.</p>
+					</div>
 				</div>
 			</div>
 		</article>
 
-		<article data-background="linear-gradient(160deg, #16161c 0%, #0c0c10 100%)" data-notes="The central thematic question. Every augmentation, every job, every deal chips away at something. What's left when the chrome outweighs the meat?">
-			<blockquote>
-				<p>What will be left of you when the job is done?</p>
-				<footer>— FREE//FALL core question</footer>
-			</blockquote>
+		<!-- 3. Deniable Asset -->
+		<article data-transition="fade" data-background="linear-gradient(160deg, #0c0c10 0%, #16161c 100%)" data-notes="Explain the player fantasy. You're a deniable asset — mercenary operators. No levels, no classes. Your identity is your gear and augments.">
+			<h2>Deniable Asset</h2>
+			<p class="lead" style="margin-bottom: 1em;">You are a mercenary operator. Jobs too dirty, too dangerous, or too illegal for corporate militaries.</p>
+			<ul>
+				<li>No levels, no classes — capability is <span class="accent">bought, spliced, or installed</span></li>
+				<li>Your identity is your loadout: weapons, augments, contacts, debts</li>
+				<li>Every upgrade has a cost. Every job leaves a mark.</li>
+				<li>The crew is your safety net — and your complication</li>
+			</ul>
 		</article>
 
-		<article data-class="closing" data-background="#0c0c10" data-notes="Close with the project link. This is an open experiment in RPG development — SRD and registry available.">
+		<!-- 4. Action Pool -->
+		<article data-transition="fade" data-background="linear-gradient(160deg, #111118 0%, #0c0c10 100%)" data-notes="Core mechanic. Build a pool of 2–5 d20s from your stats and gear. Split them across action axes. All dice resolve simultaneously. Exploding 20s, fumble on all-fail.">
+			<h2>Action Pool</h2>
+			<div class="grid-2">
+				<div>
+					<p>Build a pool of <span class="big-num">2–5</span> <span class="muted">d20s</span></p>
+					<p style="margin-top: 1em;">Split dice across action axes. All resolve simultaneously — every die does something.</p>
+					<table class="tn-table">
+						<thead><tr><th>TN</th><th>Difficulty</th></tr></thead>
+						<tbody>
+							<tr><td>6</td><td>Routine — trained operators auto-pass</td></tr>
+							<tr><td>10</td><td>Contested — even odds, gear matters</td></tr>
+							<tr><td>14</td><td>Hard — need specialization or luck</td></tr>
+							<tr><td>18</td><td>Extreme — augment-territory</td></tr>
+						</tbody>
+					</table>
+				</div>
+				<div>
+					<div class="card" style="margin-bottom: 1rem;">
+						<h3 class="accent">Exploding 20s</h3>
+						<p>Natural 20 succeeds and grants a bonus die. Chain indefinitely.</p>
+					</div>
+					<div class="card">
+						<h3 class="red">All-Fail</h3>
+						<p>Every die misses? Catastrophic failure. The GM gets a complication.</p>
+					</div>
+				</div>
+			</div>
+		</article>
+
+		<!-- 5. Harm & Consequences -->
+		<article data-transition="fade" data-background="linear-gradient(135deg, #1a100c 0%, #0c0c10 40%, #111118 100%)" data-notes="Harm system. 3 harm slots — fill all 3 and you're ousted (out of the scene). Gear can be transient (lost), permanent (damaged), or broken (gone). Consequences persist between sessions.">
+			<h2>Harm &amp; Consequences</h2>
+			<div class="grid-2">
+				<div>
+					<p style="margin-bottom: 1em;">Three harm slots. Fill them all and you're <span class="red">ousted</span> — out of the scene, not dead (unless fiction demands it).</p>
+					<div class="harm-slots">
+						<div class="harm-slot filled">1</div>
+						<div class="harm-slot filled">2</div>
+						<div class="harm-slot">3</div>
+					</div>
+					<p class="caption" style="margin-top: 1em;">Harm clears between scenes. Consequences don't.</p>
+				</div>
+				<div>
+					<div class="card" style="margin-bottom: 1rem;">
+						<h3>Gear State</h3>
+						<ul>
+							<li><span class="accent">Transient</span> — lost this scene, recoverable</li>
+							<li><span class="red">Permanent</span> — damaged, needs repair</li>
+							<li><span class="muted">Broken</span> — gone until replaced</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</article>
+
+		<!-- 6. Three Principles -->
+		<article data-transition="fade" data-background="linear-gradient(160deg, #0c0c10 0%, #111118 100%)" data-notes="Three design principles. Optionality: always multiple valid choices. Equality: GM and players use the same rules. Specificity: mechanics care about the specific fiction.">
+			<h2>Three Principles</h2>
+			<div class="grid-3">
+				<div class="card">
+					<h3 class="accent">Optionality</h3>
+					<p>Every situation has multiple valid approaches. The system never funnels you into a single correct play.</p>
+				</div>
+				<div class="card">
+					<h3 class="accent">Equality</h3>
+					<p>NPCs use the same rules as players. If you can do it, so can they. No GM fiat dice.</p>
+				</div>
+				<div class="card">
+					<h3 class="accent">Specificity</h3>
+					<p>Mechanics care about the fiction. A monofilament blade and a breaching charge solve different problems differently.</p>
+				</div>
+			</div>
+		</article>
+
+		<!-- 7. Why FREE//FALL? -->
+		<article data-transition="fade" data-background="linear-gradient(160deg, #16161c 0%, #0c0c10 100%)" data-notes="Differentiators. Why play this instead of Cyberpunk RED or Shadowrun? Simultaneous resolution, no initiative order, gear > levels, crew-first design.">
+			<h2>Why FREE//FALL?</h2>
+			<div class="grid-2">
+				<ul>
+					<li><span class="accent">Simultaneous resolution</span> — no initiative, no waiting for your turn</li>
+					<li><span class="accent">Gear over levels</span> — your loadout is your character sheet</li>
+					<li><span class="accent">Crew-first</span> — solo play works, but the game sings with a crew</li>
+				</ul>
+				<ul>
+					<li><span class="accent">Fiction-weight</span> — light rules, heavy narrative consequences</li>
+					<li><span class="accent">Open license</span> — CC-BY / MIT, hack it, fork it, ship it</li>
+					<li><span class="accent">Built for one-shots</span> — session zero in 15 minutes</li>
+				</ul>
+			</div>
+		</article>
+
+		<!-- 8. The Playtest -->
+		<article data-transition="fade" data-background="linear-gradient(135deg, #0c0c10 0%, #16161c 100%)" data-notes="What we're testing. Core action pool, harm/consequence loop, crew dynamics. Testers get their name in the credits and early access to the final rules.">
+			<h2>The Playtest</h2>
+			<div class="grid-2">
+				<div>
+					<h3>What's Being Tested</h3>
+					<ul>
+						<li>Action pool split — does the axis system feel intuitive?</li>
+						<li>Harm & consequence loop — too punishing? Too lenient?</li>
+						<li>Crew dynamics — does shared gear create interesting tension?</li>
+						<li>Session pacing — can you run a full op in 3 hours?</li>
+					</ul>
+				</div>
+				<div>
+					<h3>What Testers Get</h3>
+					<ul>
+						<li>Name in the credits (or alias — your call)</li>
+						<li>Early access to rules revisions</li>
+						<li>Direct feedback channel with the designer</li>
+						<li>A free copy of the final release</li>
+					</ul>
+				</div>
+			</div>
+		</article>
+
+		<!-- 9. What We Need -->
+		<article data-transition="fade" data-background="linear-gradient(160deg, #111118 0%, #0c0c10 100%)" data-notes="Time commitment: one 3–4 hour session. Feedback areas: character creation flow, combat feel, gear economy, session pacing.">
+			<h2>What We Need</h2>
+			<div class="grid-2">
+				<div>
+					<p class="big-num" style="margin-bottom: 0.25em;">3–4h</p>
+					<p>One session. Pregens provided, or build your own in ~15 minutes.</p>
+					<p style="margin-top: 1em;" class="muted">Online (Discord + VTT) or in-person. We'll coordinate scheduling.</p>
+				</div>
+				<div>
+					<h3>Feedback Areas</h3>
+					<ul>
+						<li>Character creation flow</li>
+						<li>Action pool — split decisions and pacing</li>
+						<li>Gear economy — cost vs power</li>
+						<li>Harm pressure — do consequences feel meaningful?</li>
+						<li>Session arc — does it build to a satisfying close?</li>
+					</ul>
+				</div>
+			</div>
+		</article>
+
+		<!-- 10. Close -->
+		<article data-class="closing scanline" data-transition="fade" data-background="radial-gradient(ellipse at 50% 60%, #16161c 0%, #0c0c10 70%)" data-notes="Close with the tagline. Link to the project site for sign-up.">
 			<h2>FREE//FALL</h2>
-			<p>free-fall.myrrys.com</p>
+			<p class="tagline">Gravity kills. The void is worse.</p>
+			<p class="cta">Sign up at <a href="https://free-fall.myrrys.com">free-fall.myrrys.com</a></p>
 		</article>
 
 	</div>
