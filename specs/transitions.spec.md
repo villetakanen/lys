@@ -32,32 +32,33 @@ This matters because LLMs generating presentations may want crossfade transition
 
 #### Mode detection (`src/lys.ts`)
 
-During `Lys` construction, after collecting slides, detect the transition mode. Fade takes precedence over direct:
+During `Lys` construction, after collecting slides, detect whether any slide has a recognized `data-transition` value. If so, the deck enters stacked mode:
 
 ```
-this.#mode = slides.some(s => s.dataset.transition === "fade")
-  ? "fade"
-  : slides.some(s => s.dataset.transition === "direct")
-    ? "direct"
-    : null;
+const hasStacked = slides.some(s =>
+  s.dataset.transition === "fade" || s.dataset.transition === "direct"
+);
+this.#mode = hasStacked ? "stacked" : null;
 ```
 
 If `#mode` is non-null:
-1. Set `data-lys-mode` to the detected value on the container (used as a CSS hook).
+1. Set `data-lys-mode="stacked"` on the container (used as a CSS hook for stacked layout).
 2. Store the mode internally for `goTo()` to branch on.
+
+Per-slide transition behavior (fade vs instant) is handled entirely by CSS, based on each article's `data-transition` attribute. See `specs/per-slide-transitions.spec.md` for the full model.
 
 On `destroy()`:
 1. Remove `data-lys-mode` from the container. Once removed, the scoped CSS rules no longer apply and the deck reverts to scroll-snap behavior. No inline style cleanup is needed because fade mode uses CSS rules (via `data-lys-active` and `data-lys-mode`), not inline styles.
 
-**New API surface — `data-lys-mode` state attribute:**
-This is an internal state attribute (like `data-lys-active` and `data-lys-current`), not an author-facing API. It is set by Lys and used by `lys.css` for layout switching. Valid values are `"fade"` and `"direct"`. Authors should not set it manually.
+**`data-lys-mode` state attribute:**
+This is an internal state attribute (like `data-lys-active` and `data-lys-current`), not an author-facing API. It is set by Lys and used by `lys.css` for layout switching. The only valid value is `"stacked"`. Authors should not set it manually.
 
 #### CSS layout switching (`src/lys.css`)
 
-Stacked layout styles are shared by all non-default modes via the attribute-presence selector `[data-lys][data-lys-mode]`. Mode-specific overrides use value selectors (e.g., `[data-lys-mode="direct"]`). This is safe because `data-lys-mode` is only set by JS with known values — it is never present on default (scroll-snap) decks.
+Stacked layout styles are shared via the attribute-presence selector `[data-lys][data-lys-mode]`. Per-slide transition behavior is controlled by targeting `data-transition` on each article. This is safe because `data-lys-mode` is only set by JS — it is never present on default (scroll-snap) decks.
 
 ```css
-/* === Stacked layout (fade + direct modes) === */
+/* === Stacked layout (all non-default modes) === */
 [data-lys][data-lys-mode] {
   position: relative;
   overflow: hidden;
@@ -73,22 +74,21 @@ Stacked layout styles are shared by all non-default modes via the attribute-pres
   min-height: unset;
   opacity: 0;
   pointer-events: none;
-  /* transition-property: opacity — deferred to [data-lys-ready] gate, see fouc-fade.spec.md */
 }
 
-/* Enable opacity transitions only after init — prevents FOUC (#22) */
-[data-lys][data-lys-ready][data-lys-mode] > article {
+/* Enable opacity transitions only after init, only for fade slides — prevents FOUC (#22) */
+[data-lys][data-lys-ready][data-lys-mode] > article[data-transition="fade"] {
   transition-property: opacity;
+}
+
+/* Non-fade slides in stacked mode: instant switch */
+[data-lys][data-lys-mode] > article:not([data-transition="fade"]) {
+  transition-duration: 0ms;
 }
 
 [data-lys][data-lys-mode] > article[data-lys-active] {
   opacity: 1;
   pointer-events: auto;
-}
-
-/* === Direct mode: instant switching, no transition === */
-[data-lys][data-lys-mode="direct"] > article {
-  transition-duration: 0ms;
 }
 ```
 
@@ -156,13 +156,13 @@ This is the correct progressive enhancement behavior: fade mode is a JS enhancem
 
 ### Anti-Patterns
 
-- **Per-slide transition mixing.** Do not support different transition modes on different slides within one deck. If any slide has `data-transition="fade"`, the whole deck uses fade. Mixing scroll-snap and absolute positioning within a container produces broken layout.
+- **Mixing scroll-snap and absolute positioning.** Cannot have some slides in scroll-snap flow and others absolute. The layout mode (stacked vs scroll-snap) is always uniform for all slides in a deck. Per-slide `data-transition` controls the transition style, not the layout mode.
 - **Adding new CSS tokens for transitions.** Reuse `--lys-transition-duration` and `--lys-transition-easing`. These already exist and are already respected by the reduced motion media query.
 - **JS-driven opacity animation.** Do not use `requestAnimationFrame`, `Web Animations API`, or inline style manipulation for the crossfade. Use CSS `transition: opacity` and let the browser handle it. The CSS approach is simpler, respects `prefers-reduced-motion` via the token system, and has zero JS overhead per transition.
 - **Hiding slides with `display: none` or `visibility: hidden`.** Use `opacity: 0` + `pointer-events: none`. The slides must remain in the accessibility tree (the a11y module manages `aria-hidden` separately). `display: none` would remove them from layout and break the a11y module.
 - **Modifying the navigation module.** Navigation is mode-agnostic. It calls `instance.goTo()` — the mode branching happens inside `goTo()`, not in the navigation module.
 - **Breaking scroll-snap for decks without `data-transition`.** The default mode must remain exactly as it is today. Stacked layout CSS is scoped under `[data-lys-mode]` (attribute-presence) and does not affect default decks because `data-lys-mode` is only set by JS for recognized modes.
-- **Setting `data-lys-mode` from author markup.** This is an internal state attribute managed by Lys. If an author manually sets `data-lys-mode="fade"` without JS, the stacked layout will be applied but no slide will have `data-lys-active`, making all slides invisible. The attribute must only be set by the constructor.
+- **Setting `data-lys-mode` from author markup.** This is an internal state attribute managed by Lys. If an author manually sets `data-lys-mode="stacked"` without JS, the stacked layout will be applied but no slide will have `data-lys-active`, making all slides invisible. The attribute must only be set by the constructor.
 - **Using `scrollIntoView()` in fade mode.** In a stacked layout, `scrollIntoView()` is meaningless (all slides share the same position). It would cause a no-op or unexpected scroll behavior on the container.
 
 ## Contract (Quality)
@@ -208,17 +208,17 @@ Scenario: Default deck uses scroll-snap mode
   Then the container does not have data-lys-mode
   And the container has scroll-snap-type: y mandatory
 
-Scenario: Deck with data-transition="fade" uses fade mode
+Scenario: Deck with any recognized data-transition uses stacked mode
   Given a [data-lys] container with 3 <article> children
   And the second article has data-transition="fade"
   When the deck is initialized
-  Then the container has data-lys-mode="fade"
+  Then the container has data-lys-mode="stacked"
 
-Scenario: Any slide with fade activates fade for the whole deck
+Scenario: Any slide with a recognized transition activates stacked for the whole deck
   Given a [data-lys] container with 5 <article> children
   And only the third article has data-transition="fade"
   When the deck is initialized
-  Then the container has data-lys-mode="fade"
+  Then the container has data-lys-mode="stacked"
   And all slides use stacked layout (position: absolute)
 ```
 
@@ -404,7 +404,6 @@ Scenario: Unknown data-transition value is ignored
 
 ## Related / Future
 
-- **Additional transition values** — `slide`, `zoom`, etc. could be added post-1.0. The mode detection already supports a discriminated union (`"fade" | "direct" | null`) and can be extended. `"direct"` (no animation) is now implemented — see `specs/direct-transition.spec.md`.
-- **Per-slide transitions** — The current design is per-deck. A future enhancement could support different transitions per slide, but this requires significantly more complex layout management. Deferred.
-- **View Transitions API** — The browser-native `document.startViewTransition()` API could provide smoother crossfades without the stacked layout hack. Browser support is still limited (Chrome/Edge only as of 2026). Worth revisiting post-1.0.
+- **Additional transition values** — `slide`, `zoom`, etc. could be added post-1.0. The per-slide model supports this naturally: add CSS rules for `article[data-transition="slide"]`, etc.
+- **View Transitions API** — The browser-native `document.startViewTransition()` API could provide smoother transitions. Browser support is improving. Worth revisiting post-1.0.
 - **Transition events** — A `lys:transitionend` event could notify when the opacity transition completes. Not needed for 1.0 — the `lys:slidechange` event fires synchronously on navigation, before the visual transition starts.
