@@ -27,10 +27,10 @@ Override on `:root`, `[data-lys]`, or per-slide `<article>`:
 | Token | Default |
 |---|---|
 | `--lys-aspect-ratio` | `16 / 9` |
-| `--lys-slide-padding` | `2rem` |
+| `--lys-slide-padding` | `4cqi` |
 | `--lys-transition-duration` | `300ms` |
 | `--lys-transition-easing` | `ease-in-out` |
-| `--lys-font-size-base` | `clamp(1rem, 2vw, 1.5rem)` |
+| `--lys-font-size-base` | `clamp(0.75rem, 2.5cqi, 1.5rem)` |
 | `--lys-slide-gap` | `0` |
 | `--lys-slide-max-width` | `100vw` |
 | `--lys-slide-max-height` | `100vh` |
