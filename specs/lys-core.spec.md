@@ -146,9 +146,9 @@ Scenario: Empty container renders without error
 Scenario: Tokens resolve to defaults when no overrides are set
   Given a [data-lys] container with default markup
   Then --_lys-aspect-ratio resolves to 16/9
-  And --_lys-slide-padding resolves to 2rem
+  And --_lys-slide-padding resolves to 4cqi
   And --_lys-transition-duration resolves to 300ms
-  And --_lys-font-size-base resolves to clamp(1rem, 2vw, 1.5rem)
+  And --_lys-font-size-base resolves to clamp(0.75rem, 2.5cqi, 1.5rem)
 
 Scenario: Author overrides a token at :root level
   Given :root sets --lys-aspect-ratio: 4/3
@@ -157,7 +157,7 @@ Scenario: Author overrides a token at :root level
 Scenario: Author overrides a token at container level
   Given a [data-lys] container sets --lys-slide-padding: 3rem
   Then --_lys-slide-padding resolves to 3rem on slides in that container
-  And other containers retain the default 2rem
+  And other containers retain the default 4cqi
 
 Scenario: Author overrides a token at article level
   Given an <article> sets --lys-slide-padding: 1rem
