@@ -34,6 +34,7 @@
 	box-sizing: border-box;
 	position: relative;
 	overflow: hidden;
+	container-type: size;
 }
 
 /* === Aspect ratio constraint === */
@@ -133,6 +134,7 @@
 		min-height: auto;
 		page-break-after: always;
 		break-after: page;
+		container-type: normal;
 	}
 
 	[data-lys] > article:last-child {

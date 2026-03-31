@@ -30,6 +30,26 @@ test.describe("print layout", () => {
 		}
 	});
 
+	test("print layout resets container-type for content-driven sizing", async ({ page }) => {
+		await page.goto("/tests/fixtures/minimal.html");
+		await page.waitForFunction(() => {
+			const container = document.querySelector("[data-lys]");
+			return container?.getAttribute("role") === "group";
+		});
+
+		await page.emulateMedia({ media: "print" });
+
+		const slides = page.locator("[data-lys] > article");
+		const count = await slides.count();
+
+		for (let i = 0; i < count; i++) {
+			const containerType = await slides
+				.nth(i)
+				.evaluate((el) => getComputedStyle(el).containerType);
+			expect(containerType).toBe("normal");
+		}
+	});
+
 	test("fade-mode print layout shows all slides", async ({ page }) => {
 		await page.goto("/tests/fixtures/fade.html");
 		await page.waitForFunction(() => {

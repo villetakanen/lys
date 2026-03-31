@@ -52,6 +52,68 @@ test.describe("scroll-snap layout", () => {
 	});
 });
 
+test.describe("container-type size", () => {
+	test.beforeEach(async ({ page }) => {
+		await setupMinimalDeck(page);
+	});
+
+	test("articles are CSS size containers", async ({ page }) => {
+		const slides = page.locator("[data-lys] > article");
+		const count = await slides.count();
+
+		for (let i = 0; i < count; i++) {
+			const containerType = await slides
+				.nth(i)
+				.evaluate((el) => getComputedStyle(el).containerType);
+			expect(containerType).toBe("size");
+		}
+	});
+
+	test("cqi units resolve relative to article inline size", async ({ page }) => {
+		// Inject a paragraph with 5cqi font-size into the first slide
+		// cqi resolves against the container's content-box inline size
+		const { fontSize, contentWidth } = await page.evaluate(() => {
+			const article = document.querySelector("[data-lys] > article");
+			if (!article) throw new Error("No article found");
+			const p = document.createElement("p");
+			p.style.fontSize = "5cqi";
+			p.textContent = "test";
+			article.appendChild(p);
+			const style = getComputedStyle(article);
+			const width =
+				article.clientWidth -
+				Number.parseFloat(style.paddingLeft) -
+				Number.parseFloat(style.paddingRight);
+			return { fontSize: getComputedStyle(p).fontSize, contentWidth: width };
+		});
+
+		// 5cqi = 5% of the article's content-box inline size
+		const expected = contentWidth * 0.05;
+		const actual = Number.parseFloat(fontSize);
+
+		expect(actual).toBeCloseTo(expected, -1);
+	});
+
+	test("stacked mode articles are CSS size containers", async ({ page }) => {
+		// Manually set stacked mode on the minimal deck to avoid fade fixture dependency
+		await page.evaluate(() => {
+			const container = document.querySelector("[data-lys]");
+			if (!container) throw new Error("No container found");
+			container.setAttribute("data-lys-mode", "stacked");
+		});
+
+		const slides = page.locator("[data-lys] > article");
+		const count = await slides.count();
+
+		for (let i = 0; i < count; i++) {
+			const containerType = await slides
+				.nth(i)
+				.evaluate((el) => getComputedStyle(el).containerType);
+			expect(containerType).toBe("size");
+		}
+	});
+});
+
 test.describe("edge cases", () => {
 	test("single-slide deck renders without error", async ({ page }) => {
 		const errors: string[] = [];
