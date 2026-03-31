@@ -70,10 +70,10 @@ Lys uses a two-tier custom property convention to give authors full control whil
 ```css
 /* Internal — consumed by lys.css, never set by authors */
 --_lys-aspect-ratio: var(--lys-aspect-ratio, 16/9);
---_lys-slide-padding: var(--lys-slide-padding, 2rem);
+--_lys-slide-padding: var(--lys-slide-padding, 4cqi);
 --_lys-transition-duration: var(--lys-transition-duration, 300ms);
 --_lys-transition-easing: var(--lys-transition-easing, ease-in-out);
---_lys-font-size-base: var(--lys-font-size-base, clamp(1rem, 2vw, 1.5rem));
+--_lys-font-size-base: var(--lys-font-size-base, clamp(0.75rem, 2.5cqi, 1.5rem));
 --_lys-slide-gap: var(--lys-slide-gap, 0);
 --_lys-slide-max-width: var(--lys-slide-max-width, 100vw);
 --_lys-slide-max-height: var(--lys-slide-max-height, 100vh);

@@ -46,10 +46,10 @@ Two-tier custom property system per ARCHITECTURE.md:
 | Internal token | Public token | Default |
 |---|---|---|
 | `--_lys-aspect-ratio` | `--lys-aspect-ratio` | `16/9` |
-| `--_lys-slide-padding` | `--lys-slide-padding` | `2rem` |
+| `--_lys-slide-padding` | `--lys-slide-padding` | `4cqi` |
 | `--_lys-transition-duration` | `--lys-transition-duration` | `300ms` |
 | `--_lys-transition-easing` | `--lys-transition-easing` | `ease-in-out` |
-| `--_lys-font-size-base` | `--lys-font-size-base` | `clamp(1rem, 2vw, 1.5rem)` |
+| `--_lys-font-size-base` | `--lys-font-size-base` | `clamp(0.75rem, 2.5cqi, 1.5rem)` |
 | `--_lys-slide-gap` | `--lys-slide-gap` | `0` |
 | `--_lys-slide-max-width` | `--lys-slide-max-width` | `100vw` |
 | `--_lys-slide-max-height` | `--lys-slide-max-height` | `100vh` |

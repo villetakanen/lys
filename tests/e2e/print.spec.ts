@@ -50,6 +50,45 @@ test.describe("print layout", () => {
 		}
 	});
 
+	test("print layout has readable font-size", async ({ page }) => {
+		await page.goto("/tests/fixtures/minimal.html");
+		await page.waitForFunction(() => {
+			const container = document.querySelector("[data-lys]");
+			return container?.getAttribute("role") === "group";
+		});
+
+		await page.emulateMedia({ media: "print" });
+
+		const slides = page.locator("[data-lys] > article");
+		const count = await slides.count();
+
+		for (let i = 0; i < count; i++) {
+			const fontSize = await slides
+				.nth(i)
+				.evaluate((el) => Number.parseFloat(getComputedStyle(el).fontSize));
+			// clamp floor (0.75rem = 12px) applies when container-type is reset in print
+			expect(fontSize).toBeCloseTo(12, 0);
+		}
+	});
+
+	test("print layout padding resolves when container-type is reset", async ({ page }) => {
+		await page.goto("/tests/fixtures/minimal.html");
+		await page.waitForFunction(() => {
+			const container = document.querySelector("[data-lys]");
+			return container?.getAttribute("role") === "group";
+		});
+
+		await page.emulateMedia({ media: "print" });
+
+		const paddingLeft = await page
+			.locator("[data-lys] > article")
+			.first()
+			.evaluate((el) => Number.parseFloat(getComputedStyle(el).paddingLeft));
+
+		// With cqi and no container (container-type: normal in print), padding resolves to 0.
+		expect(paddingLeft).toBeCloseTo(0, 0);
+	});
+
 	test("fade-mode print layout shows all slides", async ({ page }) => {
 		await page.goto("/tests/fixtures/fade.html");
 		await page.waitForFunction(() => {
