@@ -2,7 +2,12 @@
 /* No visual opinions. No @import. No url(). */
 
 /* === Two-tier design tokens === */
-/* Resolved on the article so per-slide overrides of --lys-* tokens work. */
+/* Container-level tokens resolved on [data-lys]. */
+[data-lys] {
+	--_lys-backdrop: var(--lys-backdrop, light-dark(#fff, #000));
+}
+
+/* Slide-level tokens resolved on the article so per-slide overrides of --lys-* tokens work. */
 [data-lys] > article {
 	--_lys-aspect-ratio: var(--lys-aspect-ratio, 16 / 9);
 	--_lys-slide-padding: var(--lys-slide-padding, 4cqi);
@@ -23,6 +28,8 @@
 	scroll-snap-type: y mandatory;
 	height: 100vh;
 	margin: 0;
+	color-scheme: light dark;
+	background: var(--_lys-backdrop);
 }
 
 /* === Slide layout === */
@@ -126,6 +133,7 @@
 		overflow: visible;
 		height: auto;
 		scroll-snap-type: none;
+		background: transparent;
 	}
 
 	[data-lys] > article {

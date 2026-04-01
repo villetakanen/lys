@@ -93,6 +93,22 @@ test.describe("print layout", () => {
 		expect(paddingLeft).toBeGreaterThan(0);
 	});
 
+	test("print layout backdrop is transparent", async ({ page }) => {
+		await page.goto("/tests/fixtures/minimal.html");
+		await page.waitForFunction(() => {
+			const container = document.querySelector("[data-lys]");
+			return container?.getAttribute("role") === "group";
+		});
+
+		await page.emulateMedia({ media: "print" });
+
+		const bg = await page
+			.locator("[data-lys]")
+			.evaluate((el) => getComputedStyle(el).backgroundColor);
+		// Transparent resolves to rgba(0, 0, 0, 0) in browsers
+		expect(bg).toBe("rgba(0, 0, 0, 0)");
+	});
+
 	test("fade-mode print layout shows all slides", async ({ page }) => {
 		await page.goto("/tests/fixtures/fade.html");
 		await page.waitForFunction(() => {

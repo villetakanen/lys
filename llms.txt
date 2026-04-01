@@ -31,6 +31,7 @@ Set `--lys-*` properties on `:root`, `[data-lys]`, or individual `<article>` ele
 | `--lys-slide-max-width` | `100vw` |
 | `--lys-slide-max-height` | `100vh` |
 | `--lys-focus-ring` | `2px solid currentColor` |
+| `--lys-backdrop` | `light-dark(#fff, #000)` |
 
 ## Events
 
@@ -101,6 +102,6 @@ IIFE build auto-initializes on DOMContentLoaded. ESM build exposes `Lys` for man
 <!-- LYS:SIZES -->
 | File | Raw | Gzip |
 |---|---|---|
-| `lys.css` | 2.4 KB | 0.8 KB |
+| `lys.css` | 2.7 KB | 0.9 KB |
 | `lys.iife.js` | 5.7 KB | 2.2 KB |
 <!-- /LYS:SIZES -->

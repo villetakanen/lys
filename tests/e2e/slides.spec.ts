@@ -341,6 +341,65 @@ test.describe("extreme aspect ratios", () => {
 	});
 });
 
+test.describe("backdrop color", () => {
+	test("light mode shows white backdrop", async ({ page }) => {
+		await page.emulateMedia({ colorScheme: "light" });
+		await setupMinimalDeck(page);
+
+		const bg = await page
+			.locator("[data-lys]")
+			.evaluate((el) => getComputedStyle(el).backgroundColor);
+		expect(bg).toBe("rgb(255, 255, 255)");
+	});
+
+	test("dark mode shows black backdrop", async ({ page }) => {
+		await page.emulateMedia({ colorScheme: "dark" });
+		await setupMinimalDeck(page);
+
+		const bg = await page
+			.locator("[data-lys]")
+			.evaluate((el) => getComputedStyle(el).backgroundColor);
+		expect(bg).toBe("rgb(0, 0, 0)");
+	});
+
+	test("author override sets custom backdrop color", async ({ page }) => {
+		await page.emulateMedia({ colorScheme: "light" });
+		await setupMinimalDeck(page);
+
+		await page.addStyleTag({ content: "[data-lys] { --lys-backdrop: #1a1a2e; }" });
+		await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+
+		const bg = await page
+			.locator("[data-lys]")
+			.evaluate((el) => getComputedStyle(el).backgroundColor);
+		// #1a1a2e → rgb(26, 26, 46)
+		expect(bg).toBe("rgb(26, 26, 46)");
+	});
+
+	test("author can set transparent backdrop", async ({ page }) => {
+		await setupMinimalDeck(page);
+		await page.addStyleTag({ content: "[data-lys] { --lys-backdrop: transparent; }" });
+		await page.evaluate(() => new Promise((r) => requestAnimationFrame(r)));
+		const bg = await page
+			.locator("[data-lys]")
+			.evaluate((el) => getComputedStyle(el).backgroundColor);
+		expect(bg).toBe("rgba(0, 0, 0, 0)");
+	});
+
+	test("backdrop works without JS (progressive enhancement)", async ({ page }) => {
+		await page.emulateMedia({ colorScheme: "dark" });
+		// Load CSS-only: navigate to minimal but block the JS file
+		await page.route("**/lys.js", (route) => route.abort());
+		await page.goto("/tests/fixtures/minimal.html");
+		// No need to wait for JS init — testing CSS-only behavior
+
+		const bg = await page
+			.locator("[data-lys]")
+			.evaluate((el) => getComputedStyle(el).backgroundColor);
+		expect(bg).toBe("rgb(0, 0, 0)");
+	});
+});
+
 test.describe("reduced motion", () => {
 	test("reduced motion disables transitions", async ({ page }) => {
 		await page.emulateMedia({ reducedMotion: "reduce" });

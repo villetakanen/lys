@@ -18,6 +18,7 @@ const cssText = cssRaw.replace(/\/\*[\s\S]*?\*\//g, "");
 
 describe("token default values", () => {
 	const expectedTokens = [
+		["--_lys-backdrop", "--lys-backdrop", "light-dark(#fff, #000)"],
 		["--_lys-aspect-ratio", "--lys-aspect-ratio", "16"],
 		["--_lys-slide-padding", "--lys-slide-padding", "4cqi"],
 		["--_lys-transition-duration", "--lys-transition-duration", "300ms"],
@@ -37,9 +38,9 @@ describe("token default values", () => {
 		});
 	}
 
-	it("defines all nine two-tier tokens", () => {
+	it("defines all ten two-tier tokens", () => {
 		const internalTokenCount = (cssText.match(/--_lys-[\w-]+:\s*var\(--lys-/g) ?? []).length;
-		expect(internalTokenCount).toBe(9);
+		expect(internalTokenCount).toBe(10);
 	});
 });
 
