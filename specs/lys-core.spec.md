@@ -55,7 +55,7 @@ Two-tier custom property system per ARCHITECTURE.md:
 | `--_lys-slide-max-height` | `--lys-slide-max-height` | `100vh` |
 | `--_lys-focus-ring` | `--lys-focus-ring` | `2px solid currentColor` |
 
-Internal tokens are declared on `[data-lys]` and consumed by `lys.css` rules. Authors set the public `--lys-*` tokens at any cascade level (`:root`, `[data-lys]`, individual `<article>`).
+Internal tokens are declared on `[data-lys] > article` and consumed by `lys.css` rules. This ensures per-article overrides of public `--lys-*` tokens are visible at the declaration site where `var()` fallbacks are evaluated. Authors set the public `--lys-*` tokens at any cascade level (`:root`, `[data-lys]`, individual `<article>`).
 
 #### Layout engine (`src/lys.css`)
 

@@ -30,7 +30,7 @@ async function setupFadeDeck(page: import("@playwright/test").Page) {
 	await page.goto("/tests/fixtures/fade.html");
 	await page.waitForFunction(() => {
 		const container = document.querySelector("[data-lys]");
-		return container?.getAttribute("data-lys-mode") === "fade";
+		return container?.getAttribute("data-lys-mode") === "stacked";
 	});
 	await waitForTransitions(page);
 }
@@ -49,9 +49,9 @@ test.describe("fade mode layout", () => {
 		await setupFadeDeck(page);
 	});
 
-	test("container has data-lys-mode='fade'", async ({ page }) => {
+	test("container has data-lys-mode='stacked'", async ({ page }) => {
 		const container = page.locator("[data-lys]");
-		await expect(container).toHaveAttribute("data-lys-mode", "fade");
+		await expect(container).toHaveAttribute("data-lys-mode", "stacked");
 	});
 
 	test("active slide is visible, inactive slides are hidden", async ({ page }) => {
@@ -89,12 +89,26 @@ test.describe("fade mode layout", () => {
 				);
 		});
 
-		const slide = page.locator("[data-lys] > article").nth(1);
+		// Check the fade slide (nth(0)) — only fade slides have transitions
+		const slide = page.locator("[data-lys] > article").nth(0);
 		const duration = await slide.evaluate((el) => getComputedStyle(el).transitionDuration);
 		expect(duration).toBe("0.5s");
 
 		const easing = await slide.evaluate((el) => getComputedStyle(el).transitionTimingFunction);
 		expect(easing).toBe("linear");
+	});
+
+	test("mixed transitions — fade slide has transition, non-fade is instant", async ({ page }) => {
+		const fadeSlide = page.locator("[data-lys] > article").nth(0);
+		const plainSlide = page.locator("[data-lys] > article").nth(1);
+
+		const fadeProp = await fadeSlide.evaluate((el) => getComputedStyle(el).transitionProperty);
+		expect(fadeProp).toContain("opacity");
+
+		const plainDuration = await plainSlide.evaluate(
+			(el) => getComputedStyle(el).transitionDuration,
+		);
+		expect(plainDuration).toBe("0s");
 	});
 
 	test("navigation changes opacity", async ({ page }) => {
@@ -149,7 +163,7 @@ test.describe("fade mode reduced motion", () => {
 		await page.goto("/tests/fixtures/fade.html");
 		await page.waitForFunction(() => {
 			const container = document.querySelector("[data-lys]");
-			return container?.getAttribute("data-lys-mode") === "fade";
+			return container?.getAttribute("data-lys-mode") === "stacked";
 		});
 
 		const slide = page.locator("[data-lys] > article").nth(1);
@@ -165,7 +179,7 @@ async function setupDirectDeck(page: import("@playwright/test").Page) {
 	await page.goto("/tests/fixtures/direct.html");
 	await page.waitForFunction(() => {
 		const container = document.querySelector("[data-lys]");
-		return container?.getAttribute("data-lys-mode") === "direct";
+		return container?.getAttribute("data-lys-mode") === "stacked";
 	});
 }
 
@@ -174,9 +188,9 @@ test.describe("direct mode layout", () => {
 		await setupDirectDeck(page);
 	});
 
-	test("container has data-lys-mode='direct'", async ({ page }) => {
+	test("container has data-lys-mode='stacked'", async ({ page }) => {
 		const container = page.locator("[data-lys]");
-		await expect(container).toHaveAttribute("data-lys-mode", "direct");
+		await expect(container).toHaveAttribute("data-lys-mode", "stacked");
 	});
 
 	test("active slide is visible, inactive slides are hidden", async ({ page }) => {
@@ -234,6 +248,54 @@ test.describe("direct mode layout", () => {
 		expect(firstOpacity).toBe("0");
 
 		const secondOpacity = await second.evaluate((el) => getComputedStyle(el).opacity);
+		expect(secondOpacity).toBe("1");
+	});
+});
+
+test.describe("stacked mode navigation on full example (#35)", () => {
+	test.beforeEach(async ({ page }) => {
+		await page.goto("/examples/full.html");
+		await page.waitForFunction(() => {
+			const container = document.querySelector("[data-lys]");
+			return container?.getAttribute("data-lys-mode") === "stacked";
+		});
+	});
+
+	test("ArrowRight advances slide in stacked mode", async ({ page }) => {
+		await page.keyboard.press("ArrowRight");
+		const second = page.locator("[data-lys] > article").nth(1);
+		await expect(second).toHaveAttribute("data-lys-active", "");
+	});
+
+	test("ArrowLeft goes back in stacked mode", async ({ page }) => {
+		await page.keyboard.press("ArrowRight");
+		await page.keyboard.press("ArrowLeft");
+		const first = page.locator("[data-lys] > article").nth(0);
+		await expect(first).toHaveAttribute("data-lys-active", "");
+	});
+
+	test("multiple arrow presses traverse all slides", async ({ page }) => {
+		const total = await page.locator("[data-lys] > article").count();
+		for (let i = 0; i < total - 1; i++) {
+			await page.keyboard.press("ArrowRight");
+		}
+		const last = page.locator("[data-lys] > article").nth(total - 1);
+		await expect(last).toHaveAttribute("data-lys-active", "");
+	});
+
+	test("only active slide is visible", async ({ page }) => {
+		// Disable transitions so opacity changes are instant.
+		await page.evaluate(() => {
+			document.querySelector("[data-lys]")?.setAttribute("style", "--lys-transition-duration: 0ms");
+		});
+		await page.keyboard.press("ArrowRight");
+
+		const first = page.locator("[data-lys] > article").nth(0);
+		const second = page.locator("[data-lys] > article").nth(1);
+
+		const firstOpacity = await first.evaluate((el) => getComputedStyle(el).opacity);
+		const secondOpacity = await second.evaluate((el) => getComputedStyle(el).opacity);
+		expect(firstOpacity).toBe("0");
 		expect(secondOpacity).toBe("1");
 	});
 });

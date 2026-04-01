@@ -36,9 +36,10 @@ Run in parallel:
 - `pnpm lint`
 - `pnpm build`
 - `pnpm test`
+- `pnpm test:e2e`
 - `pnpm typecheck`
 
-All four must pass. On failure: report which gate failed with the error output and stop. Do not attempt to fix — that is the developer's job.
+All five must pass. On failure: report which gate failed with the error output and stop. Do not attempt to fix — that is the developer's job.
 
 ### Step 3 — Spec Verification
 

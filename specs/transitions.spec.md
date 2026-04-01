@@ -147,8 +147,8 @@ This is the correct progressive enhancement behavior: fade mode is a JS enhancem
 
 | Token | Scroll-snap mode | Fade mode |
 |---|---|---|
-| `--lys-transition-duration` | Applied to `transition-duration` on articles (general CSS transitions) | Controls opacity transition duration |
-| `--lys-transition-easing` | Applied to `transition-timing-function` on articles | Controls opacity transition easing |
+| `--lys-transition-duration` | No transition properties on articles (navigation uses `scrollIntoView`) | Controls opacity transition duration on fade articles |
+| `--lys-transition-easing` | No transition properties on articles | Controls opacity transition easing on fade articles |
 | `--lys-aspect-ratio` | Constrains article dimensions | Same — base `aspect-ratio` rule still applies; slides are sized by aspect-ratio within container |
 | `--lys-slide-padding` | Article padding | Same — base padding rule still applies |
 | `--lys-slide-max-width` | Constrains article width | Same — base `max-width` rule still applies; slide is centered via `left: 50%; transform: translateX(-50%)` |

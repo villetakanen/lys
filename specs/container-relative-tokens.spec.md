@@ -48,7 +48,7 @@ At a 1920x1080 viewport with 16:9 slides, the article content-box width is appro
 #### Integration points
 
 - **Container type** (`container-type.spec.md`): Depends on #28. `cqi` units only work because articles are now size containers.
-- **Print layout**: `@media print` resets `container-type: normal` (#28). With `cqi` in a non-contained context, the browser falls back to the `clamp()` floor value (`0.75rem` for font-size). This is intentional — `0.75rem` (12px) is readable in print. For padding, `4cqi` without a container resolves to `0` — the print reset should be verified.
+- **Print layout**: `@media print` resets `container-type: normal` (#28). With `cqi` in a non-contained context, the browser falls back to viewport-relative resolution (confirmed across Chromium, Firefox, and WebKit). For font-size, the `clamp()` ceiling (`1.5rem`) typically applies at print-sized viewports. For padding, `4cqi` falls back to a viewport-relative value — not zero.
 - **Reduced motion**: Unaffected. These tokens control sizing, not animation.
 - **Transitions**: Unaffected. `--lys-transition-duration` and `--lys-transition-easing` are unchanged.
 
@@ -72,7 +72,7 @@ At a 1920x1080 viewport with 16:9 slides, the article content-box width is appro
 5. At extreme aspect ratios (1:1 on a widescreen viewport), text scales with the slide and does not overflow.
 6. `clamp()` floor prevents font-size from dropping below `0.75rem` on very small containers.
 7. Authors can override both tokens with absolute values (`rem`, `px`) and the overrides take effect.
-8. Print layout: text is readable (clamp floor applies when containment is reset).
+8. Print layout: text is readable (cqi falls back to viewport; clamp ceiling applies).
 9. `prefers-reduced-motion` still works (transition tokens unchanged).
 10. ARCHITECTURE.md token table reflects new defaults.
 11. `specs/lys-core.spec.md` token table reflects new defaults.
@@ -151,13 +151,14 @@ Scenario: author override at container level
 Scenario: print layout has readable text
   Given a [data-lys] container with articles
   When @media print applies (container-type reset to normal)
-  Then font-size falls back to the clamp floor (0.75rem = 12px)
+  Then cqi falls back to viewport-relative resolution
+  And font-size is clamped by the clamp ceiling (1.5rem = 24px)
   And text is visible and readable
 
 Scenario: print layout padding behavior
   Given a [data-lys] container with articles
   When @media print applies (container-type reset to normal)
-  Then padding resolves to 0 (cqi without container = 0)
+  Then padding falls back to a viewport-relative value (cqi resolves against viewport when no container exists)
   Or padding is overridden by author CSS
 ```
 

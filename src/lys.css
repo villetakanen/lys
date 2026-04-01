@@ -2,7 +2,8 @@
 /* No visual opinions. No @import. No url(). */
 
 /* === Two-tier design tokens === */
-[data-lys] {
+/* Resolved on the article so per-slide overrides of --lys-* tokens work. */
+[data-lys] > article {
 	--_lys-aspect-ratio: var(--lys-aspect-ratio, 16 / 9);
 	--_lys-slide-padding: var(--lys-slide-padding, 4cqi);
 	--_lys-transition-duration: var(--lys-transition-duration, 300ms);
@@ -56,11 +57,7 @@
 
 /* Fallback: JS applies background from data-background for broader support */
 
-/* === Transitions === */
-[data-lys] > article {
-	transition-duration: var(--_lys-transition-duration);
-	transition-timing-function: var(--_lys-transition-easing);
-}
+/* === Transitions — only stacked/fade slides need transitions === */
 
 /* === Focus — suppress outline (slides fill the viewport; ring adds no orientation) === */
 [data-lys] > article:focus {
@@ -102,6 +99,8 @@
 /* Enable opacity transitions only after init, only for fade slides — prevents FOUC (#22) */
 [data-lys][data-lys-ready][data-lys-mode] > article[data-transition="fade"] {
 	transition-property: opacity;
+	transition-duration: var(--_lys-transition-duration);
+	transition-timing-function: var(--_lys-transition-easing);
 }
 
 /* Non-fade slides in stacked mode: instant switch */
