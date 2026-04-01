@@ -78,6 +78,7 @@ Lys uses a two-tier custom property convention to give authors full control whil
 --_lys-slide-max-width: var(--lys-slide-max-width, 100vw);
 --_lys-slide-max-height: var(--lys-slide-max-height, 100vh);
 --_lys-focus-ring: var(--lys-focus-ring, 2px solid currentColor);
+--_lys-backdrop: var(--lys-backdrop, light-dark(#fff, #000));
 ```
 
 Authors override by setting the public token at any level — `:root`, the `[data-lys]` container, or a single `<article>`:

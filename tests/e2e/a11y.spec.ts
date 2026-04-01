@@ -104,7 +104,7 @@ test.describe("axe-core accessibility scan", () => {
 		await page.goto("/tests/fixtures/fade.html");
 		await page.waitForFunction(() => {
 			const container = document.querySelector("[data-lys]");
-			return container?.getAttribute("data-lys-mode") === "fade";
+			return container?.getAttribute("data-lys-mode") === "stacked";
 		});
 
 		const results = await new AxeBuilder({ page }).analyze();

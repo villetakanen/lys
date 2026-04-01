@@ -2,7 +2,13 @@
 /* No visual opinions. No @import. No url(). */
 
 /* === Two-tier design tokens === */
+/* Container-level tokens resolved on [data-lys]. */
 [data-lys] {
+	--_lys-backdrop: var(--lys-backdrop, light-dark(#fff, #000));
+}
+
+/* Slide-level tokens resolved on the article so per-slide overrides of --lys-* tokens work. */
+[data-lys] > article {
 	--_lys-aspect-ratio: var(--lys-aspect-ratio, 16 / 9);
 	--_lys-slide-padding: var(--lys-slide-padding, 4cqi);
 	--_lys-transition-duration: var(--lys-transition-duration, 300ms);
@@ -22,6 +28,8 @@
 	scroll-snap-type: y mandatory;
 	height: 100vh;
 	margin: 0;
+	color-scheme: light dark;
+	background: var(--_lys-backdrop);
 }
 
 /* === Slide layout === */
@@ -56,11 +64,7 @@
 
 /* Fallback: JS applies background from data-background for broader support */
 
-/* === Transitions === */
-[data-lys] > article {
-	transition-duration: var(--_lys-transition-duration);
-	transition-timing-function: var(--_lys-transition-easing);
-}
+/* === Transitions — only stacked/fade slides need transitions === */
 
 /* === Focus — suppress outline (slides fill the viewport; ring adds no orientation) === */
 [data-lys] > article:focus {
@@ -102,6 +106,8 @@
 /* Enable opacity transitions only after init, only for fade slides — prevents FOUC (#22) */
 [data-lys][data-lys-ready][data-lys-mode] > article[data-transition="fade"] {
 	transition-property: opacity;
+	transition-duration: var(--_lys-transition-duration);
+	transition-timing-function: var(--_lys-transition-easing);
 }
 
 /* Non-fade slides in stacked mode: instant switch */
@@ -127,6 +133,7 @@
 		overflow: visible;
 		height: auto;
 		scroll-snap-type: none;
+		background: transparent;
 	}
 
 	[data-lys] > article {

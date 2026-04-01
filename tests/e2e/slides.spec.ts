@@ -206,7 +206,7 @@ test.describe("container-relative token scaling", () => {
 		expect(fontSize).toBeCloseTo(12, 0);
 	});
 
-	test("font-size scales down at half viewport", async ({ page }) => {
+	test("font-size scales down at smaller viewport", async ({ page }) => {
 		await page.setViewportSize({ width: 1920, height: 1080 });
 		await setupMinimalDeck(page);
 		const fontSizeLarge = await page
@@ -214,7 +214,10 @@ test.describe("container-relative token scaling", () => {
 			.first()
 			.evaluate((el) => Number.parseFloat(getComputedStyle(el).fontSize));
 
-		await page.setViewportSize({ width: 960, height: 540 });
+		// Navigate fresh at a viewport narrow enough for cqi to fall below the clamp ceiling.
+		// 2.5cqi hits 24px ceiling at 960px. Use 640px to get ~16px (below ceiling).
+		await page.setViewportSize({ width: 640, height: 360 });
+		await setupMinimalDeck(page);
 		const fontSizeSmall = await page
 			.locator("[data-lys] > article")
 			.first()
@@ -232,7 +235,9 @@ test.describe("container-relative token scaling", () => {
 			.first()
 			.evaluate((el) => Number.parseFloat(getComputedStyle(el).paddingLeft));
 
+		// Navigate fresh at the smaller viewport to ensure layout recalculates.
 		await page.setViewportSize({ width: 960, height: 540 });
+		await setupMinimalDeck(page);
 		const paddingSmall = await page
 			.locator("[data-lys] > article")
 			.first()
@@ -333,6 +338,65 @@ test.describe("extreme aspect ratios", () => {
 
 		// clamp floor prevents text from becoming invisible
 		expect(fontSize).toBeGreaterThanOrEqual(12);
+	});
+});
+
+test.describe("backdrop color", () => {
+	test("light mode shows white backdrop", async ({ page }) => {
+		await page.emulateMedia({ colorScheme: "light" });
+		await setupMinimalDeck(page);
+
+		const bg = await page
+			.locator("[data-lys]")
+			.evaluate((el) => getComputedStyle(el).backgroundColor);
+		expect(bg).toBe("rgb(255, 255, 255)");
+	});
+
+	test("dark mode shows black backdrop", async ({ page }) => {
+		await page.emulateMedia({ colorScheme: "dark" });
+		await setupMinimalDeck(page);
+
+		const bg = await page
+			.locator("[data-lys]")
+			.evaluate((el) => getComputedStyle(el).backgroundColor);
+		expect(bg).toBe("rgb(0, 0, 0)");
+	});
+
+	test("author override sets custom backdrop color", async ({ page }) => {
+		await page.emulateMedia({ colorScheme: "light" });
+		await setupMinimalDeck(page);
+
+		await page.addStyleTag({ content: "[data-lys] { --lys-backdrop: #1a1a2e; }" });
+		await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+
+		const bg = await page
+			.locator("[data-lys]")
+			.evaluate((el) => getComputedStyle(el).backgroundColor);
+		// #1a1a2e → rgb(26, 26, 46)
+		expect(bg).toBe("rgb(26, 26, 46)");
+	});
+
+	test("author can set transparent backdrop", async ({ page }) => {
+		await setupMinimalDeck(page);
+		await page.addStyleTag({ content: "[data-lys] { --lys-backdrop: transparent; }" });
+		await page.evaluate(() => new Promise((r) => requestAnimationFrame(r)));
+		const bg = await page
+			.locator("[data-lys]")
+			.evaluate((el) => getComputedStyle(el).backgroundColor);
+		expect(bg).toBe("rgba(0, 0, 0, 0)");
+	});
+
+	test("backdrop works without JS (progressive enhancement)", async ({ page }) => {
+		await page.emulateMedia({ colorScheme: "dark" });
+		// Load CSS-only: navigate to minimal but block the JS file
+		await page.route("**/lys.js", (route) => route.abort());
+		await page.goto("/tests/fixtures/minimal.html");
+		// No need to wait for JS init — testing CSS-only behavior
+
+		const bg = await page
+			.locator("[data-lys]")
+			.evaluate((el) => getComputedStyle(el).backgroundColor);
+		expect(bg).toBe("rgb(0, 0, 0)");
 	});
 });
 
