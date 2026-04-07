@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.0] — 2026-04-07
+
+### Added
+
+- TypeScript declaration files (`lys.d.ts`) now included in the npm package.
+- Automated npm publish workflow — tagged releases are built, tested, and published via CI.
+
 ## [1.0.0-beta.4] — 2026-03-31
 
 ### Added
@@ -56,7 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Example decks: minimal, themed, full-featured, and 1:1 aspect ratio.
 - GitHub Pages site with token reference, article contract, and live examples.
 
-[Unreleased]: https://github.com/villetakanen/lys/compare/6e5ed84...HEAD
+[Unreleased]: https://github.com/villetakanen/lys/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/villetakanen/lys/compare/6e5ed84...v1.0.0
 [1.0.0-beta.4]: https://github.com/villetakanen/lys/compare/d2d7b46...6e5ed84
 [1.0.0-beta.3]: https://github.com/villetakanen/lys/compare/7ea5fef...d2d7b46
 [1.0.0-beta.1]: https://github.com/villetakanen/lys/compare/v0.1.0...7ea5fef
