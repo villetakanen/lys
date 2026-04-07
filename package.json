@@ -5,6 +5,7 @@
 	"description": "A structural CSS+TS slide engine for LLM-generated presentations",
 	"main": "dist/lys.js",
 	"module": "dist/lys.js",
+	"types": "dist/lys.d.ts",
 	"exports": {
 		".": {
 			"import": "./dist/lys.js",
@@ -17,7 +18,7 @@
 	],
 	"scripts": {
 		"dev": "vite",
-		"build": "tsc --noEmit && vite build && node scripts/inject-skill.js && node scripts/build-site.js",
+		"build": "tsc --noEmit && vite build && tsc --emitDeclarationOnly --outDir dist && node scripts/inject-skill.js && node scripts/build-site.js",
 		"preview": "vite preview",
 		"lint": "biome check --write .",
 		"typecheck": "tsc --noEmit",
