@@ -1,6 +1,6 @@
 {
 	"name": "lys",
-	"version": "1.0.0-beta.4",
+	"version": "1.0.0",
 	"type": "module",
 	"description": "A structural CSS+TS slide engine for LLM-generated presentations",
 	"main": "dist/lys.js",
