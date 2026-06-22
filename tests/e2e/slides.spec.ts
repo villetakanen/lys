@@ -30,25 +30,30 @@ test.describe("scroll-snap layout", () => {
 		expect(snapType).toContain("mandatory");
 	});
 
-	test("articles have scroll-snap-align start", async ({ page }) => {
+	test("articles snap centered and always stop (one slide per swipe)", async ({ page }) => {
 		const slides = page.locator("[data-lys] > article");
 		const count = await slides.count();
 
 		for (let i = 0; i < count; i++) {
-			const snapAlign = await slides.nth(i).evaluate((el) => getComputedStyle(el).scrollSnapAlign);
-			expect(snapAlign).toBe("start");
+			const snap = await slides.nth(i).evaluate((el) => {
+				const s = getComputedStyle(el);
+				return { align: s.scrollSnapAlign, stop: s.scrollSnapStop };
+			});
+			expect(snap.align).toBe("center");
+			expect(snap.stop).toBe("always");
 		}
 	});
 
-	test("articles fill viewport height", async ({ page }) => {
-		const slides = page.locator("[data-lys] > article");
-		const count = await slides.count();
+	test("each article occupies a full-viewport snap page", async ({ page }) => {
+		// Contain-fit slides are smaller than the viewport, but the grid snap row is
+		// full-viewport-tall so scrolling still advances exactly one slide (#45).
 		const viewportHeight = await page.evaluate(() => window.innerHeight);
-
-		for (let i = 0; i < count; i++) {
-			const height = await slides.nth(i).evaluate((el) => el.offsetHeight);
-			expect(height).toBeGreaterThanOrEqual(viewportHeight * 0.9);
-		}
+		const containerScrollHeight = await page
+			.locator("[data-lys]")
+			.evaluate((el) => el.scrollHeight);
+		const count = await page.locator("[data-lys] > article").count();
+		// scrollHeight ≈ one full viewport per slide
+		expect(containerScrollHeight).toBeGreaterThanOrEqual(viewportHeight * count * 0.95);
 	});
 });
 
@@ -338,6 +343,79 @@ test.describe("extreme aspect ratios", () => {
 
 		// clamp floor prevents text from becoming invisible
 		expect(fontSize).toBeGreaterThanOrEqual(12);
+	});
+});
+
+test.describe("aspect-ratio conformity (#45)", () => {
+	// Each slide must honor --lys-aspect-ratio on every viewport — never adopt the
+	// viewport's own ratio — and must fit within the viewport (contain-fit).
+	const RATIOS = [
+		{ css: "16/9", value: 16 / 9 },
+		{ css: "4/3", value: 4 / 3 },
+		{ css: "3/4", value: 3 / 4 },
+		{ css: "1/1", value: 1 },
+	];
+	const VIEWPORTS = [
+		{ name: "mobile portrait", width: 430, height: 932 },
+		{ name: "small landscape", width: 667, height: 375 },
+		{ name: "desktop 16:9", width: 1920, height: 1080 },
+		{ name: "desktop 16:10", width: 1920, height: 1200 },
+		{ name: "tablet portrait", width: 1024, height: 1366 },
+	];
+
+	/** Set viewport + ratio, then return the first slide's rendered box. */
+	async function measureFirstSlide(
+		page: import("@playwright/test").Page,
+		viewport: { width: number; height: number },
+		ratioCss: string,
+		mode?: string,
+	) {
+		await page.setViewportSize(viewport);
+		await setupMinimalDeck(page);
+		if (mode) {
+			await page.evaluate((m) => {
+				document.querySelector("[data-lys]")?.setAttribute("data-lys-mode", m);
+			}, mode);
+		}
+		await page.addStyleTag({ content: `[data-lys] { --lys-aspect-ratio: ${ratioCss}; }` });
+		await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
+		return page
+			.locator("[data-lys] > article")
+			.first()
+			.evaluate((el) => {
+				const r = el.getBoundingClientRect();
+				return { width: r.width, height: r.height };
+			});
+	}
+
+	for (const ratio of RATIOS) {
+		for (const vp of VIEWPORTS) {
+			test(`${ratio.css} on ${vp.name} (${vp.width}×${vp.height}) — ratio honored, fits viewport`, async ({
+				page,
+			}) => {
+				const box = await measureFirstSlide(page, vp, ratio.css);
+
+				// Rendered ratio equals the configured ratio, not the viewport's.
+				expect(box.width / box.height).toBeCloseTo(ratio.value, 1);
+
+				// Slide fits within the viewport (contain-fit, no overflow).
+				expect(box.width).toBeLessThanOrEqual(vp.width + 1);
+				expect(box.height).toBeLessThanOrEqual(vp.height + 1);
+
+				// And it uses one of the bounds (touches an edge) — not arbitrarily small.
+				const touchesWidth = box.width >= vp.width - 1;
+				const touchesHeight = box.height >= vp.height - 1;
+				expect(touchesWidth || touchesHeight).toBe(true);
+			});
+		}
+	}
+
+	test("stacked mode (fade) honors the ratio too", async ({ page }) => {
+		const vp = { width: 1920, height: 1080 };
+		const box = await measureFirstSlide(page, vp, "4/3", "fade");
+		expect(box.width / box.height).toBeCloseTo(4 / 3, 1);
+		expect(box.width).toBeLessThanOrEqual(vp.width + 1);
+		expect(box.height).toBeLessThanOrEqual(vp.height + 1);
 	});
 });
 

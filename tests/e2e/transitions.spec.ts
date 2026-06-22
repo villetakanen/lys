@@ -146,7 +146,7 @@ test.describe("scroll-snap mode unchanged", () => {
 			expect(position).not.toBe("absolute");
 
 			const snapAlign = await slides.nth(i).evaluate((el) => getComputedStyle(el).scrollSnapAlign);
-			expect(snapAlign).toBe("start");
+			expect(snapAlign).toBe("center");
 		}
 	});
 
