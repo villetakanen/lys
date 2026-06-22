@@ -12,7 +12,7 @@ Lys ships as:
 
 - **`lys.css`** — The structural stylesheet. Can be used standalone for CSS-only decks.
 - **`lys.ts` / `lys.js`** — The behavioral layer. Auto-initializes on `data-lys` containers.
-- **ESM module** — `import { Lys } from 'lys'`
+- **ESM module** — `import { Lys } from '@11thdeg/lys'`
 - **Script tag** — `<script src="lys.js"></script>` (auto-init via IIFE, exposes `window.Lys`)
 
 ### Single-File Inline Usage

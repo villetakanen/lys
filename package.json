@@ -1,5 +1,5 @@
 {
-	"name": "lys",
+	"name": "@11thdeg/lys",
 	"version": "1.0.2",
 	"type": "module",
 	"description": "A structural CSS+TS slide engine for LLM-generated presentations",
@@ -16,6 +16,9 @@
 	"files": [
 		"dist"
 	],
+	"publishConfig": {
+		"access": "public"
+	},
 	"scripts": {
 		"dev": "vite",
 		"build": "tsc --noEmit && vite build && tsc --emitDeclarationOnly --outDir dist && node scripts/inject-skill.js && node scripts/build-site.js",

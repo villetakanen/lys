@@ -22,7 +22,7 @@ A single Markdown file at the project root. Sections in order:
 3. **Live demo link** — Points to the GitHub Pages site.
 4. **"What it does"** — 3 bullets max: structural slides, zero-dependency, LLM-first.
 5. **Minimal example** — The 4-line deck from `examples/minimal.html` (the `<div data-lys>` + `<article>` pattern). Copy-paste ready.
-6. **CDN usage** — `<script>` and `<link>` tags using `unpkg.com/lys`.
+6. **CDN usage** — `<script>` and `<link>` tags using `unpkg.com/@11thdeg/lys`.
 7. **Token customization** — A `--lys-*` override snippet showing 2-3 tokens.
 8. **"For LLMs"** — Points to `llms.txt` (raw URL on GitHub) and `skill/SKILL.md`. Explains that LLMs should read `llms.txt` for the full API reference.
 9. **Links** — Pages site, `llms.txt`, `examples/`, `ARCHITECTURE.md`.
@@ -117,7 +117,7 @@ No changes to `src/`, `specs/` (other than this spec), `tests/`, or `dist/`.
 
 1. `README.md` exists and contains all 10 sections listed in the Architecture.
 2. `README.md` minimal example is valid HTML that works with Lys.
-3. `README.md` CDN URLs use `unpkg.com/lys` (the npm package name).
+3. `README.md` CDN URLs use `unpkg.com/@11thdeg/lys` (the npm package name).
 4. `README.md` links to the Pages site, `llms.txt`, examples, and ARCHITECTURE.md — all links resolve.
 5. `README.md` contains no install-from-source instructions in the body.
 6. `site/index.html` exists and is a valid HTML5 document (not a Lys deck).
