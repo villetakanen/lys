@@ -23,7 +23,7 @@
 pnpm init
 ```
 
-Set `"name": "lys"`, `"type": "module"` in `package.json`.
+Set `"name": "@11thdeg/lys"`, `"type": "module"` in `package.json`.
 
 ### 2. Install dev dependencies
 

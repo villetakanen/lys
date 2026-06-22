@@ -1,8 +1,8 @@
 # ⚜ Lys
 
-[![npm version](https://img.shields.io/npm/v/lys)](https://www.npmjs.com/package/lys)
-[![bundle size](https://img.shields.io/bundlephobia/minzip/lys?label=CSS%20%2B%20JS)](https://bundlephobia.com/package/lys)
-[![license](https://img.shields.io/npm/l/lys)](./LICENSE)
+[![npm version](https://img.shields.io/npm/v/@11thdeg/lys)](https://www.npmjs.com/package/@11thdeg/lys)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/@11thdeg/lys?label=CSS%20%2B%20JS)](https://bundlephobia.com/package/@11thdeg/lys)
+[![license](https://img.shields.io/npm/l/@11thdeg/lys)](./LICENSE)
 
 **A structural slide engine for the age of generated content.**
 
@@ -23,7 +23,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Deck</title>
-  <link rel="stylesheet" href="https://unpkg.com/lys/dist/lys.css">
+  <link rel="stylesheet" href="https://unpkg.com/@11thdeg/lys/dist/lys.css">
 </head>
 <body>
   <div data-lys>
@@ -36,7 +36,7 @@
       <p>Navigate with arrow keys, swipe, or click.</p>
     </article>
   </div>
-  <script src="https://unpkg.com/lys/dist/lys.iife.js"></script>
+  <script src="https://unpkg.com/@11thdeg/lys/dist/lys.iife.js"></script>
 </body>
 </html>
 ```
@@ -44,8 +44,8 @@
 ## CDN usage
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/lys/dist/lys.css">
-<script src="https://unpkg.com/lys/dist/lys.iife.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/@11thdeg/lys/dist/lys.css">
+<script src="https://unpkg.com/@11thdeg/lys/dist/lys.iife.js"></script>
 ```
 
 No setup code needed — Lys auto-initializes on `[data-lys]` containers.
