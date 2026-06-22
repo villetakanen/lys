@@ -69,7 +69,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Example decks: minimal, themed, full-featured, and 1:1 aspect ratio.
 - GitHub Pages site with token reference, article contract, and live examples.
 
-[Unreleased]: https://github.com/villetakanen/lys/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/villetakanen/lys/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/villetakanen/lys/compare/v1.0.0...v1.0.2
 [1.0.0]: https://github.com/villetakanen/lys/compare/6e5ed84...v1.0.0
 [1.0.0-beta.4]: https://github.com/villetakanen/lys/compare/d2d7b46...6e5ed84
 [1.0.0-beta.3]: https://github.com/villetakanen/lys/compare/7ea5fef...d2d7b46
