@@ -21,8 +21,14 @@
 }
 
 /* === Container layout === */
+/* Grid gives each slide a full-viewport snap page (grid-auto-rows), so a slide
+   smaller than the viewport (contain-fit, below) still pages one-per-swipe
+   without wrapping author HTML. */
 [data-lys] {
-	display: block;
+	display: grid;
+	grid-auto-rows: var(--lys-slide-max-height, 100vh);
+	justify-items: center;
+	align-items: center;
 	overflow-x: hidden;
 	overflow-y: auto;
 	scroll-snap-type: y mandatory;
@@ -34,9 +40,8 @@
 
 /* === Slide layout === */
 [data-lys] > article {
-	scroll-snap-align: start;
-	min-height: var(--_lys-slide-max-height);
-	max-width: var(--_lys-slide-max-width);
+	scroll-snap-align: center;
+	scroll-snap-stop: always;
 	padding: var(--_lys-slide-padding);
 	font-size: var(--_lys-font-size-base);
 	box-sizing: border-box;
@@ -45,11 +50,18 @@
 	container-type: size;
 }
 
-/* === Aspect ratio constraint === */
+/* === Aspect ratio (contain-fit) === */
+/* Both axes bound the slide; the smaller governs. Width is the lesser of the
+   max width and the width the ratio implies at the max height
+   (max-height × ratio), so a height-governed ratio (taller than the viewport)
+   shrinks the width too — aspect-ratio then derives a fitting height. A
+   definite max-width alone can't do this: max-height clamps height but never
+   feeds back to width, leaving the slide at the viewport ratio (the #45 bug).
+   No min-height: pinning height would force the viewport ratio. */
 [data-lys] > article {
+	width: min(var(--_lys-slide-max-width), var(--_lys-slide-max-height) * var(--_lys-aspect-ratio));
 	aspect-ratio: var(--_lys-aspect-ratio);
 	max-height: var(--_lys-slide-max-height);
-	margin-inline: auto;
 }
 
 /* === Slide gap === */
@@ -86,19 +98,21 @@
 
 /* === Stacked layout (fade + direct modes) === */
 [data-lys][data-lys-mode] {
+	display: block;
 	position: relative;
 	overflow: hidden;
 	scroll-snap-type: none;
 }
 
+/* Slides stack centered; contain-fit (width + aspect-ratio + max-height) is
+   inherited from the base rule, so stacked slides honor the ratio too. */
 [data-lys][data-lys-mode] > article {
 	position: absolute;
-	top: 0;
+	top: 50%;
 	left: 50%;
-	transform: translateX(-50%);
+	transform: translate(-50%, -50%);
 	scroll-snap-align: unset;
-	min-height: unset;
-	height: var(--_lys-slide-max-height);
+	scroll-snap-stop: unset;
 	opacity: 0;
 	pointer-events: none;
 }
@@ -130,6 +144,7 @@
 /* === Print layout === */
 @media print {
 	[data-lys] {
+		display: block;
 		overflow: visible;
 		height: auto;
 		scroll-snap-type: none;
@@ -138,7 +153,7 @@
 
 	[data-lys] > article {
 		scroll-snap-align: unset;
-		min-height: auto;
+		max-height: none;
 		page-break-after: always;
 		break-after: page;
 		container-type: normal;
