@@ -11,7 +11,7 @@ This feature exists because LLMs can reliably produce flat HTML (`<div data-lys>
 Three progressive enhancement tiers drive the design:
 
 1. **No JS, no Lys CSS** — Articles flow vertically as a readable document.
-2. **Lys CSS only** — Scroll-snap slides fill the viewport. Navigable by scrolling.
+2. **Lys CSS only** — Scroll-snap slides, each sized to the configured aspect ratio and centered in the viewport. Navigable by scrolling.
 3. **Lys CSS + JS** — Full initialization: slide indexing, state tracking, `lys:ready` event, programmatic API.
 
 ### Architecture
@@ -60,8 +60,8 @@ Internal tokens are declared on `[data-lys] > article` and consumed by `lys.css`
 #### Layout engine (`src/lys.css`)
 
 - **Container:** `[data-lys]` is a scroll-snap container (`overflow-x: hidden; overflow-y: auto; scroll-snap-type: y mandatory`). Full viewport by default.
-- **Slides:** Each `article` is a scroll-snap child (`scroll-snap-align: start`), sized to the viewport with `min-height: 100vh` (or constrained by `--_lys-slide-max-height`). Content is padded per `--_lys-slide-padding`.
-- **Aspect ratio:** When `--lys-aspect-ratio` is set, slides are constrained to that ratio within the viewport using `aspect-ratio` + `max-width`/`max-height` + centering.
+- **Slides:** Each `article` is a scroll-snap child. Each slide occupies exactly one scroll-snap page so that scrolling/swiping advances exactly one slide. The slide's rendered box is sized by the aspect-ratio rule below and is **not** forced to fill the viewport height. Snap paging must be preserved **without wrapping author HTML** in extra elements (see Anti-Patterns). Content is padded per `--_lys-slide-padding`.
+- **Aspect ratio (contain-fit):** Slides always honor `--lys-aspect-ratio` (default `16/9`). The slide is sized to **fit within** the viewport at that ratio: **both** axes are bounded — width by `--_lys-slide-max-width` (default `100vw`) and height by `--_lys-slide-max-height` (default `100vh`) — and whichever bound is reached first governs, so the configured ratio is preserved on every viewport (mobile portrait, small landscape, desktop 16:9 *and* 16:10). The slide is centered; `--lys-backdrop` shows in the letterbox/pillarbox margins (per `backdrop-color.spec.md`). A slide must **never** stretch to the viewport's own ratio. Both axes stay definite so `container-type: size` and `cqi`/`cqh` scaling keep working (see `container-type.spec.md`).
 - **`data-background` handling:** CSS rule applies the value as `background` shorthand on the article. Supports colors (`#hex`, `rgb()`, named), gradients (`linear-gradient(...)`), and images (`url(...)`).
 - **`data-class` handling:** JS reads `data-class` and adds those classes to the `<article>` element's `classList` on init.
 - **Print layout:** `@media print` removes scroll-snap, shows all slides vertically, applies `page-break-after: always` to each article.
@@ -82,6 +82,7 @@ This spec does NOT cover: keyboard/touch navigation (`navigation.spec.md`), ARIA
 - **Nesting slides.** Slides are always direct `<article>` children of `[data-lys]`. Never traverse deeper.
 - **Mutating author HTML.** Do not wrap articles in extra `<div>`s, rewrite the DOM tree, or move elements around. Lys operates on the structure as authored. The only mutations allowed are: adding/removing classes (from `data-class`), adding/removing ARIA attributes (covered by a11y spec), and setting `data-lys-*` state attributes.
 - **Using `innerHTML` with data attribute values.** `data-background`, `data-class`, etc. come from author markup but must never be injected as HTML. Use DOM APIs (`classList.add`, `style.background`).
+- **Pinning a slide to the viewport ratio.** Never bound a slide's height on both sides to the same viewport value (e.g. `min-height` *and* `max-height` both `100vh`). That pins the height, leaves only width free, and makes the slide silently adopt the viewport's ratio — ignoring `--lys-aspect-ratio` on any non-matching viewport. Size to contain-fit (both axes bounded, smaller bound governs) instead. This was the root cause of the pre-1.1.0 aspect-ratio bug (#45). Note the converse trap: a *definite* `width` (e.g. `100vw`) plus `aspect-ratio` plus `max-height` does **not** contain-fit either — `max-height` clamps the height but never feeds back to shrink the width, so a ratio taller than the viewport still renders at the viewport ratio. The width itself must take the smaller bound, e.g. `width: min(max-width, max-height × ratio)`.
 - **Breaking the size budget.** The entire `lys.css` must stay under 2 KB gzipped. Do not add utilities, resets, or helpers.
 - **Using `@import` or `url()` in lys.css.** The CSS must be fully self-contained for inline usage.
 
@@ -89,7 +90,8 @@ This spec does NOT cover: keyboard/touch navigation (`navigation.spec.md`), ARIA
 
 ### Definition of Done
 
-1. `lys.css` renders a `[data-lys]` container with `<article>` children as full-viewport scroll-snap slides without any JS.
+1. `lys.css` renders a `[data-lys]` container with `<article>` children as aspect-ratio-constrained scroll-snap slides (contain-fit, centered, one slide per scroll page) without any JS.
+1a. Slides honor `--lys-aspect-ratio` (default `16/9`) on every viewport — mobile portrait, small landscape, and desktop (16:9 and 16:10) — never adopting the viewport's own ratio, and never overflowing it.
 2. All nine CSS tokens resolve through the two-tier system with correct defaults.
 3. Author overrides at `:root`, `[data-lys]`, and `<article>` levels cascade correctly.
 4. `Lys.init()` discovers all `[data-lys]` containers and returns `LysInstance[]`.
@@ -107,7 +109,8 @@ This spec does NOT cover: keyboard/touch navigation (`navigation.spec.md`), ARIA
 
 ### Regression Guardrails
 
-- A 4-line deck (`<div data-lys><article>Hello</article></div>`) must always render as a visible, full-viewport slide with only `lys.css` loaded.
+- A 4-line deck (`<div data-lys><article>Hello</article></div>`) must always render as a visible slide sized to the configured aspect ratio within the viewport (contain-fit, centered) with only `lys.css` loaded.
+- A configured `--lys-aspect-ratio` must be honored regardless of viewport ratio — the rendered slide's measured `width/height` must equal the configured ratio (within rounding), not the viewport's, on mobile, small, and desktop screens.
 - `[data-lys]` with zero `<article>` children must not throw.
 - `[data-lys]` with one `<article>` child must work identically to multi-slide decks (no off-by-one).
 - Token defaults must never change without a major version bump (they are public API).
@@ -123,14 +126,14 @@ This spec does NOT cover: keyboard/touch navigation (`navigation.spec.md`), ARIA
 Scenario: Minimal deck renders as scroll-snap slides
   Given a [data-lys] container with 3 <article> children
   And only lys.css is loaded (no JS)
-  Then each article fills the viewport height
+  Then each article is sized to the configured aspect ratio (default 16/9), centered within the viewport
+  And each article occupies one scroll-snap page (scrolling advances exactly one slide)
   And the container has scroll-snap-type: y mandatory
-  And each article has scroll-snap-align: start
 
 Scenario: Single-slide deck renders without error
   Given a [data-lys] container with 1 <article> child
   And only lys.css is loaded
-  Then the article fills the viewport height
+  Then the article is sized to the configured aspect ratio, centered within the viewport
   And no scroll-snap artifacts are visible
 
 Scenario: Empty container renders without error
@@ -163,6 +166,53 @@ Scenario: Author overrides a token at article level
   Given an <article> sets --lys-slide-padding: 1rem
   Then --_lys-slide-padding resolves to 1rem on that article only
   And sibling articles retain the container or root value
+```
+
+#### Aspect-ratio conformity
+
+These scenarios assert the *rendered* slide ratio (measured `width/height`), not just token
+resolution. They map to `tests/e2e/slides.spec.ts` (extend the existing "extreme aspect ratios"
+block, which today only asserts font-size). Each scenario waits a frame for layout, then
+measures the article's bounding box.
+
+```gherkin
+Scenario: Default 16:9 slide is contained within a 16:10 desktop viewport
+  Given a [data-lys] container with default markup (--lys-aspect-ratio: 16/9)
+  And the viewport is 1920x1200
+  And only lys.css is loaded
+  Then the rendered slide's width/height ratio equals 16/9 (within rounding)
+  And the slide fits within the viewport on both axes (no overflow)
+  And the slide is centered, with --lys-backdrop visible above and below
+
+Scenario: 3:4 portrait ratio is honored on a mobile portrait viewport
+  Given a [data-lys] container with --lys-aspect-ratio: 3/4
+  And the viewport is 430x932
+  Then the rendered slide's width/height ratio equals 3/4 (within rounding)
+  And the slide fits within the viewport on both axes
+  And the slide is centered, with --lys-backdrop visible left and right
+
+Scenario: 16:9 ratio is honored on a tall tablet viewport
+  Given a [data-lys] container with --lys-aspect-ratio: 16/9
+  And the viewport is 1024x1366
+  Then the rendered slide's width/height ratio equals 16/9 (within rounding)
+  And the slide fits within the viewport on both axes
+
+Scenario: A slide never adopts the viewport's own ratio
+  Given any --lys-aspect-ratio R and any viewport whose ratio differs from R
+  Then the rendered slide's ratio equals R, not the viewport ratio
+  And the slide is contained within the viewport on both axes
+
+Scenario: One slide per scroll-snap page is preserved at contain-fit size
+  Given a [data-lys] container with 3 contain-fit slides shorter than the viewport
+  When the user scrolls or swipes once
+  Then exactly one slide advances
+  And the resting slide is centered in the viewport
+
+Scenario: Stacked mode honors the aspect ratio too
+  Given a deck in stacked mode (data-lys-mode) with --lys-aspect-ratio: 4/3
+  And a viewport whose ratio differs from 4/3
+  Then the active slide's rendered ratio equals 4/3 (within rounding)
+  And the slide is contained within the viewport on both axes
 ```
 
 #### JS initialization

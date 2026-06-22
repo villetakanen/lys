@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.2] — 2026-06-22
+
+### Fixed
+
+- Aspect-ratio conformity (#45): slides now honor `--lys-aspect-ratio` on every viewport instead of silently adopting the viewport's own ratio. Slides are sized to fit inside the viewport at the configured ratio (contain-fit — both axes bounded, smaller governs, centered with `--lys-backdrop` in the letterbox/pillarbox margins). Previously a `100vh` height pin forced the viewport ratio on mobile and non-16:9 desktops. Applies to both default scroll-snap and stacked (fade/direct) modes.
+
 ## [1.0.0] — 2026-04-07
 
 ### Added
@@ -63,7 +69,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Example decks: minimal, themed, full-featured, and 1:1 aspect ratio.
 - GitHub Pages site with token reference, article contract, and live examples.
 
-[Unreleased]: https://github.com/villetakanen/lys/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/villetakanen/lys/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/villetakanen/lys/compare/v1.0.0...v1.0.2
 [1.0.0]: https://github.com/villetakanen/lys/compare/6e5ed84...v1.0.0
 [1.0.0-beta.4]: https://github.com/villetakanen/lys/compare/d2d7b46...6e5ed84
 [1.0.0-beta.3]: https://github.com/villetakanen/lys/compare/7ea5fef...d2d7b46

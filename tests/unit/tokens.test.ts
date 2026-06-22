@@ -67,7 +67,10 @@ describe("CSS structural rules", () => {
 		expect(cssText).toContain("scroll-snap-type: y mandatory");
 	});
 
-	it("uses scroll-snap-align: start on slides", () => {
-		expect(cssText).toContain("scroll-snap-align: start");
+	it("centers slides on a snap page that always stops", () => {
+		// Contain-fit slides are shorter than the viewport, so they are centered
+		// in a full-viewport snap row and scroll-snap-stop forces one-per-swipe (#45).
+		expect(cssText).toContain("scroll-snap-align: center");
+		expect(cssText).toContain("scroll-snap-stop: always");
 	});
 });
