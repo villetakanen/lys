@@ -103,6 +103,22 @@ article.compact {
 
 The `--_lys-` prefix signals "hands off" — authors interact only with the `--lys-` API surface.
 
+## Aspect-ratio sizing (contain-fit)
+
+Slides always render at `--lys-aspect-ratio` (default `16/9`), sized to **fit inside**
+the viewport — never stretched to the viewport's own ratio. Both axes are bounded:
+width by `--lys-slide-max-width` (default `100vw`), height by `--lys-slide-max-height`
+(default `100vh`), and the smaller bound governs. Concretely, the slide width is
+`min(max-width, max-height × ratio)` and `aspect-ratio` derives the height from it, so a
+ratio taller than the viewport shrinks the width (rather than overflowing or snapping to
+the screen ratio). The unused margin shows `--lys-backdrop` as a letterbox/pillarbox.
+
+Both axes stay definite so `container-type: size` and the `cqi`/`cqh` scaling tokens keep
+working inside slides. The slide is **not** pinned to the viewport height — pinning both
+height bounds to `100vh` was the pre-1.1.0 bug (#45) that forced the viewport ratio. Snap
+paging stays one-slide-per-swipe via a full-viewport grid track plus `scroll-snap-stop`,
+not a forced full-height article.
+
 ## Navigation
 
 Lys handles navigation through:

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Aspect-ratio conformity (#45): slides now honor `--lys-aspect-ratio` on every viewport instead of silently adopting the viewport's own ratio. Slides are sized to fit inside the viewport at the configured ratio (contain-fit — both axes bounded, smaller governs, centered with `--lys-backdrop` in the letterbox/pillarbox margins). Previously a `100vh` height pin forced the viewport ratio on mobile and non-16:9 desktops. Applies to both default scroll-snap and stacked (fade/direct) modes.
+
 ## [1.0.0] — 2026-04-07
 
 ### Added
