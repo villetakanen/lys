@@ -112,6 +112,7 @@ specs/lys-core.spec.md      →  tests/unit/lys.test.ts + tests/unit/tokens.test
 specs/navigation.spec.md    →  tests/unit/navigation.test.ts + tests/e2e/navigation.spec.ts
 specs/a11y.spec.md          →  tests/unit/a11y.test.ts + tests/e2e/a11y.spec.ts
 specs/transitions.spec.md   →  tests/unit/transitions.test.ts + tests/e2e/transitions.spec.ts
+specs/spa-nav.spec.md       →  tests/unit/nav.test.ts + tests/e2e/nav.spec.ts
 ```
 
 A spec scenario without a test is a gap. A test without a spec scenario means the spec needs updating.
