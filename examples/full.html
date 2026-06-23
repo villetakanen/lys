@@ -259,6 +259,22 @@
 			border-bottom-color: #c4b5fd;
 		}
 
+		/* The nav region is just author content — it can hold a brand title,
+		   a flex spacer, anything. Lys only positions it and tracks the active link. */
+		[data-lys-nav] .nav-brand {
+			margin: 0;
+			font-size: 1rem;
+			font-weight: 800;
+			letter-spacing: -0.01em;
+		}
+
+		[data-lys-nav] .nav-brand a {
+			color: #ffffff;
+			border-bottom: none;
+		}
+
+		[data-lys-nav] .nav-spacer { flex: 1; }
+
 		@media (prefers-reduced-motion: reduce) {
 			[data-lys-nav] a { transition: none; }
 		}
@@ -285,7 +301,8 @@
 		     clicks to goTo(); scroll-snap decks need no script — the #id anchors
 		     scroll natively.) -->
 		<nav data-lys-nav aria-label="Chapters">
-			<a href="#intro">Intro</a>
+			<h3 class="nav-brand"><a href="#intro">⚜ Lys</a></h3>
+			<div class="nav-spacer"></div>
 			<a href="#contract">Contract</a>
 			<a href="#tokens">Tokens</a>
 			<a href="#features">Navigation</a>
