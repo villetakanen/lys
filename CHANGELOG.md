@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Opt-in chapter navigation (#42): add `data-lys-nav` to a nav region inside the deck with `<a href="#id">` links to slide `id`s. Lys positions the region out of the scroll-snap flow and marks the current slide's link with `aria-current="true"` and `data-lys-nav-active`; you provide the links and all styling. The active link follows scroll position and slide changes; links work as anchors without JavaScript. No new tokens and no per-article attribute. See `examples/nav.html`.
 
+### Fixed
+
+- Dark-mode legibility (#47): unstyled decks were black-on-black (illegible) in dark mode — the backdrop adapted but slide text inherited black. Slides now get an accessible default `color: light-dark(#000, #fff)` (the inverse of the backdrop, maximum contrast) so minimal markup stays readable in both color schemes. The slide background stays transparent and authors override with standard `color` CSS; no new token.
+
 ## [1.0.2] — 2026-06-22
 
 ### Changed
