@@ -96,6 +96,18 @@
 	border: 0;
 }
 
+/* === Chapter nav region (opt-in, author-provided) === */
+/* The author supplies the [data-lys-nav] region, its links, and all styling.
+   Lys only lifts it out of the scroll-snap flow (fixed → no grid row consumed)
+   so it floats above the slides instead of rendering as a blank snap page. */
+[data-lys] [data-lys-nav] {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	z-index: 1;
+}
+
 /* === Stacked layout (fade + direct modes) === */
 [data-lys][data-lys-mode] {
 	display: block;
@@ -169,5 +181,10 @@
 		transform: none;
 		opacity: 1;
 		pointer-events: auto;
+	}
+
+	/* Don't pin the nav region over printed slides. */
+	[data-lys] [data-lys-nav] {
+		position: static;
 	}
 }
