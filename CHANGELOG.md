@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Opt-in chapter navigation (#42): add `data-lys-nav` to a nav region inside the deck with `<a href="#id">` links to slide `id`s. Lys positions the region out of the scroll-snap flow and marks the current slide's link with `aria-current="true"` and `data-lys-nav-active`; you provide the links and all styling. The active link follows scroll position and slide changes; links work as anchors without JavaScript. No new tokens and no per-article attribute. See `examples/nav.html`.
+
 ## [1.0.2] — 2026-06-22
 
 ### Changed

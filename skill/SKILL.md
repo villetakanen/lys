@@ -109,6 +109,29 @@ Override on `:root`, `[data-lys]`, or per-slide `<article>`:
 </article>
 ```
 
+### Chapter Navigation (optional)
+
+For longer decks, add an opt-in nav region as the first child of `<div data-lys>`. Give each
+slide you want listed an `id`, and link to it. You style the region and the active state; Lys
+positions it and marks the current slide's link with `data-lys-nav-active`.
+
+```html
+<div data-lys>
+  <nav data-lys-nav aria-label="Slides">
+    <a href="#intro">Intro</a>
+    <a href="#results">Results</a>
+  </nav>
+  <article id="intro" data-notes="..."><h1>Intro</h1></article>
+  <article id="results" data-notes="..."><h2>Results</h2></article>
+</div>
+```
+
+```css
+/* Style the active link in your theme — e.g. */
+[data-lys-nav] { display: flex; gap: 1rem; padding: 0.5rem 1rem; }
+[data-lys-nav] [data-lys-nav-active] { font-weight: 700; color: var(--accent); }
+```
+
 ## Quality Checklist
 
 Before outputting, verify:

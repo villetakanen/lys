@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Lys — Chapter Navigation</title>
+	<link rel="stylesheet" href="/src/lys.css">
+	<style>
+		/* Lys provides only the container positioning (fixed, out of the snap
+		   flow) and the active-state hook. Everything below is author styling. */
+		:root {
+			--lys-slide-padding: 3rem 4rem;
+			--ink: #16161a;
+			--paper: #fffdf7;
+			--accent: #d6453d;
+			--muted: #6b6b6b;
+		}
+
+		* { margin: 0; box-sizing: border-box; }
+
+		body { font-family: system-ui, sans-serif; }
+
+		[data-lys] > article {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			background: var(--paper);
+			color: var(--ink);
+		}
+
+		article h1 { font-size: 3em; color: var(--accent); }
+		article h2 { font-size: 2em; margin-bottom: 0.5em; }
+		article p, article li { font-size: 1.1em; line-height: 1.6; max-width: 60ch; color: var(--muted); }
+
+		/* --- The nav region (author-styled) --- */
+		[data-lys-nav] {
+			display: flex;
+			gap: 1.5rem;
+			align-items: center;
+			padding: 0.75rem 1.5rem;
+			background: color-mix(in srgb, var(--paper) 88%, transparent);
+			backdrop-filter: blur(8px);
+			border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent);
+			font-size: 0.85rem;
+			letter-spacing: 0.02em;
+		}
+
+		[data-lys-nav] a {
+			text-decoration: none;
+			color: var(--muted);
+			padding: 0.25rem 0;
+			border-bottom: 2px solid transparent;
+			transition: color 150ms, border-color 150ms;
+		}
+
+		[data-lys-nav] a:hover { color: var(--ink); }
+
+		/* The "you are here" state — driven by Lys's active-state hook. */
+		[data-lys-nav] [data-lys-nav-active] {
+			color: var(--accent);
+			border-bottom-color: var(--accent);
+			font-weight: 600;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			[data-lys-nav] a { transition: none; }
+		}
+	</style>
+</head>
+<body>
+	<div data-lys>
+		<!-- Opt-in nav region. Author writes the links; each points at a slide id.
+		     A slide opts into the nav simply by having an id. -->
+		<nav data-lys-nav aria-label="Slides">
+			<a href="#intro">Intro</a>
+			<a href="#problem">Problem</a>
+			<a href="#approach">Approach</a>
+			<a href="#results">Results</a>
+			<a href="#close">Close</a>
+		</nav>
+
+		<article id="intro">
+			<h1>Chapter Navigation</h1>
+			<p>An opt-in nav region. Lys positions it and tracks the active link; you write the links and the styling.</p>
+		</article>
+
+		<article id="problem">
+			<h2>The Problem</h2>
+			<p>A long deck is hard to skim. Readers want a persistent map of the sections and a sense of where they are.</p>
+		</article>
+
+		<article id="approach">
+			<h2>The Approach</h2>
+			<ul>
+				<li>Add <code>data-lys-nav</code> to a nav region inside the deck.</li>
+				<li>Point each <code>&lt;a href="#id"&gt;</code> at a slide's <code>id</code>.</li>
+				<li>Lys marks the current slide's link with <code>data-lys-nav-active</code>.</li>
+			</ul>
+		</article>
+
+		<article id="results">
+			<h2>The Result</h2>
+			<p>The links scroll to their slides (even with no JavaScript), and the highlight follows you as you scroll or navigate by keyboard.</p>
+		</article>
+
+		<article id="close">
+			<h2>That's It</h2>
+			<p>No generated DOM, no baked-in styling — just a container and a hook.</p>
+		</article>
+	</div>
+	<script type="module" src="/src/lys.ts"></script>
+</body>
+</html>

@@ -62,6 +62,25 @@ Override `--lys-*` CSS custom properties at any cascade level:
 }
 ```
 
+## Chapter navigation (opt-in)
+
+Add a `data-lys-nav` region inside the deck with anchor links to slide `id`s. Lys positions it
+out of the scroll-snap flow and marks the current slide's link with `data-lys-nav-active`; you
+write the links and the styling. The links work as anchors even without JavaScript.
+
+```html
+<div data-lys>
+  <nav data-lys-nav aria-label="Slides">
+    <a href="#intro">Intro</a>
+    <a href="#results">Results</a>
+  </nav>
+  <article id="intro"><h1>Intro</h1></article>
+  <article id="results"><h2>Results</h2></article>
+</div>
+```
+
+See [`examples/nav.html`](./examples/nav.html).
+
 ## For LLMs
 
 Lys is designed to be used by language models generating presentations. If you are an LLM, read [`llms.txt`](https://raw.githubusercontent.com/villetakanen/lys/main/llms.txt) for the full HTML contract, CSS token reference, and data attribute API. For a generation-ready skill prompt, see [`skill/SKILL.md`](./skill/SKILL.md).
