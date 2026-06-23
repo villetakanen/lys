@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-06-23
+
 ### Added
 
 - Opt-in chapter navigation (#42): add `data-lys-nav` to a nav region inside the deck with `<a href="#id">` links to slide `id`s. Lys positions the region out of the scroll-snap flow and marks the current slide's link with `aria-current="true"` and `data-lys-nav-active`; you provide the links and all styling. The active link follows scroll position and slide changes; links work as anchors without JavaScript. No new tokens and no per-article attribute. See `examples/nav.html`.
@@ -81,7 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Example decks: minimal, themed, full-featured, and 1:1 aspect ratio.
 - GitHub Pages site with token reference, article contract, and live examples.
 
-[Unreleased]: https://github.com/villetakanen/lys/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/villetakanen/lys/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/villetakanen/lys/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/villetakanen/lys/compare/v1.0.0...v1.0.2
 [1.0.0]: https://github.com/villetakanen/lys/compare/6e5ed84...v1.0.0
 [1.0.0-beta.4]: https://github.com/villetakanen/lys/compare/d2d7b46...6e5ed84
