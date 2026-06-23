@@ -36,6 +36,9 @@
 	margin: 0;
 	color-scheme: light dark;
 	background: var(--_lys-backdrop);
+	/* Accessible default foreground — inverse of the backdrop so unstyled decks
+	   stay legible in both schemes (#47). Authors override with standard color. */
+	color: light-dark(#000, #fff);
 }
 
 /* === Slide layout === */
