@@ -1,5 +1,6 @@
 import { type A11yHandle, setupA11y } from "./a11y.js";
 import "./lys.css";
+import { type NavHandle, setupNav } from "./nav.js";
 import { type NavigationHandle, setupNavigation } from "./navigation.js";
 import type { LysInstance, LysReadyDetail, LysSlideChangeDetail } from "./types.js";
 
@@ -21,6 +22,7 @@ export class Lys implements LysInstance {
 	#readyFrame = 0;
 	#navigation: NavigationHandle | null = null;
 	#a11y: A11yHandle | null = null;
+	#nav: NavHandle | null = null;
 
 	/** Discover and initialize all `[data-lys]` containers in the document. */
 	static init(): Lys[] {
@@ -84,6 +86,7 @@ export class Lys implements LysInstance {
 		registry.set(container, this);
 		this.#navigation = setupNavigation(this, container);
 		this.#a11y = setupA11y(container, this.#slides, this.#current);
+		this.#nav = setupNav(container, this.#slides, this.#current);
 
 		// Dispatch lys:ready.
 		container.dispatchEvent(
@@ -175,6 +178,8 @@ export class Lys implements LysInstance {
 		this.#a11y = null;
 		this.#navigation?.destroy();
 		this.#navigation = null;
+		this.#nav?.destroy();
+		this.#nav = null;
 
 		// Remove state attributes.
 		for (const slide of this.#slides) {

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Lys — Nav Fixture</title>
+	<link rel="stylesheet" href="/dist/lys.css">
+	<style>
+		/* Author styling — Lys provides only the container positioning + active hook. */
+		[data-lys-nav] { display: flex; gap: 1rem; padding: 0.5rem 1rem; }
+		[data-lys-nav] a { text-decoration: none; }
+		[data-lys-nav] [data-lys-nav-active] { font-weight: bold; outline: 2px solid currentColor; }
+	</style>
+</head>
+<body>
+	<div data-lys>
+		<nav data-lys-nav aria-label="Slides">
+			<a href="#intro">Intro</a>
+			<a href="#approach">Approach</a>
+			<a href="#results">Results</a>
+			<a href="#summary">Summary</a>
+		</nav>
+		<article id="intro"><h1>Intro</h1></article>
+		<article id="approach"><h2>Approach</h2></article>
+		<article id="results"><h2>Results</h2></article>
+		<article id="summary"><h2>Summary</h2></article>
+	</div>
+	<script type="module" src="/dist/lys.js"></script>
+</body>
+</html>

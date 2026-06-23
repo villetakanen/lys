@@ -128,6 +128,39 @@ Lys handles navigation through:
 - **URL hash** — `#slide=3` or `#slide=intro` (by `id` attribute on article).
 - **API** — `lys.next()`, `lys.prev()`, `lys.goTo(n)`, `lys.goTo('intro')`.
 
+## Chapter Navigation (opt-in)
+
+An author-provided nav region, enabled by adding `data-lys-nav` to an element **inside** the
+`[data-lys]` container. It is a *slot*, not a generated widget: the author writes the links and
+all styling; Lys provides only the container behavior. This is the deliberate exception to
+Lys's "no built-in navigation UI" rule — the default deck still ships zero UI.
+
+```html
+<div data-lys>
+  <nav data-lys-nav aria-label="Slides">
+    <a href="#intro">Intro</a>
+    <a href="#results">Results</a>
+  </nav>
+  <article id="intro">…</article>
+  <article id="results">…</article>
+</div>
+```
+
+Lys does exactly two things:
+
+- **Container styling** — positions the region out of the scroll-snap flow (`position: fixed`,
+  so it consumes no viewport snap page) and pins it above the slides. Overridable; no colors,
+  fonts, or sizes are imposed.
+- **Active-state hook** — marks the link whose `href="#id"` matches the current slide with
+  `aria-current="true"` and a `data-lys-nav-active` attribute (style it however you like). The
+  active link follows scroll position (default mode) and `lys:slidechange` (keyboard,
+  programmatic, hash, and stacked modes).
+
+A slide opts into the nav simply by having an `id` (the same anchor `id` used by hash routing) —
+so there is **no new per-article attribute** and **no new token**. Slides without an `id` are
+not linked. Lys never generates or rewrites the links; the region's contents are author markup,
+and the links remain working `#id` anchors even with no JavaScript.
+
 ## Presenter Mode (Future — not in 1.0)
 
 > Deferred to post-1.0. See [ADR-001](./docs/adr/001-defer-presenter-mode.md) for rationale.

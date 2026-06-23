@@ -16,6 +16,21 @@ Slides are `<article>` elements inside a `<div data-lys>` container. Use standar
 | `data-background` | Background shorthand (color, gradient, URL) | `data-background="#1a1a2e"` |
 | `data-timing` | Suggested duration in seconds | `data-timing="30"` |
 
+### Chapter Nav (opt-in)
+
+Add a nav region with `data-lys-nav` *inside* the `<div data-lys>`, with `<a href="#id">` links pointing at slide `id`s. You write the links and all styling; Lys positions the region out of the scroll-snap flow and marks the current slide's link with `aria-current="true"` and `data-lys-nav-active` (style this for the "you are here" state). A slide is in the nav if it has an `id` — no new attribute. Links scroll to slides even without JS.
+
+```html
+<div data-lys>
+  <nav data-lys-nav aria-label="Slides">
+    <a href="#intro">Intro</a>
+    <a href="#results">Results</a>
+  </nav>
+  <article id="intro"><h1>Intro</h1></article>
+  <article id="results"><h2>Results</h2></article>
+</div>
+```
+
 ## CSS Tokens
 
 Set `--lys-*` properties on `:root`, `[data-lys]`, or individual `<article>` elements to customize.
@@ -102,6 +117,6 @@ IIFE build auto-initializes on DOMContentLoaded. ESM build exposes `Lys` for man
 <!-- LYS:SIZES -->
 | File | Raw | Gzip |
 |---|---|---|
-| `lys.css` | 2.8 KB | 0.9 KB |
-| `lys.iife.js` | 5.7 KB | 2.2 KB |
+| `lys.css` | 3.0 KB | 1.0 KB |
+| `lys.iife.js` | 6.8 KB | 2.5 KB |
 <!-- /LYS:SIZES -->

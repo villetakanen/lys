@@ -478,6 +478,44 @@ test.describe("backdrop color", () => {
 	});
 });
 
+test.describe("slide foreground (#47)", () => {
+	async function slideColor(page: import("@playwright/test").Page) {
+		return page
+			.locator("[data-lys] > article")
+			.first()
+			.evaluate((el) => getComputedStyle(el).color);
+	}
+
+	test("light mode shows black slide text", async ({ page }) => {
+		await page.emulateMedia({ colorScheme: "light" });
+		await setupMinimalDeck(page);
+		expect(await slideColor(page)).toBe("rgb(0, 0, 0)");
+	});
+
+	test("dark mode shows white slide text (legible on the black backdrop)", async ({ page }) => {
+		await page.emulateMedia({ colorScheme: "dark" });
+		await setupMinimalDeck(page);
+		// White text, not the black-on-black that #47 fixed.
+		expect(await slideColor(page)).toBe("rgb(255, 255, 255)");
+	});
+
+	test("author overrides the foreground with standard color CSS", async ({ page }) => {
+		await page.emulateMedia({ colorScheme: "dark" });
+		await setupMinimalDeck(page);
+		await page.addStyleTag({ content: "[data-lys] { color: #1a1a2e; }" });
+		await page.evaluate(() => new Promise((r) => requestAnimationFrame(r)));
+		// #1a1a2e → rgb(26, 26, 46)
+		expect(await slideColor(page)).toBe("rgb(26, 26, 46)");
+	});
+
+	test("legible default works without JS", async ({ page }) => {
+		await page.emulateMedia({ colorScheme: "dark" });
+		await page.route("**/lys.js", (route) => route.abort());
+		await page.goto("/tests/fixtures/minimal.html");
+		expect(await slideColor(page)).toBe("rgb(255, 255, 255)");
+	});
+});
+
 test.describe("reduced motion", () => {
 	test("reduced motion disables transitions", async ({ page }) => {
 		await page.emulateMedia({ reducedMotion: "reduce" });
