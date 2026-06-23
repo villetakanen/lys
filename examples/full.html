@@ -231,6 +231,38 @@
 			opacity: 0.4;
 		}
 
+		/* Chapter nav (1.1.0) — author-styled; Lys only positions it + tracks active */
+		[data-lys-nav] {
+			display: flex;
+			gap: 1.25rem;
+			align-items: center;
+			padding: 0.75rem 1.5rem;
+			background: rgba(15, 12, 41, 0.72);
+			backdrop-filter: blur(10px);
+			border-bottom: 1px solid rgba(196, 181, 253, 0.18);
+			font-size: 0.8rem;
+			letter-spacing: 0.02em;
+		}
+
+		[data-lys-nav] a {
+			color: rgba(240, 240, 240, 0.6);
+			text-decoration: none;
+			padding-bottom: 2px;
+			border-bottom: 2px solid transparent;
+			transition: color 150ms, border-color 150ms;
+		}
+
+		[data-lys-nav] a:hover { color: #f0f0f0; }
+
+		[data-lys-nav] [data-lys-nav-active] {
+			color: #c4b5fd;
+			border-bottom-color: #c4b5fd;
+		}
+
+		@media (prefers-reduced-motion: reduce) {
+			[data-lys-nav] a { transition: none; }
+		}
+
 		/* Slide counter */
 		.slide-counter {
 			position: fixed;
@@ -247,6 +279,20 @@
 <body>
 	<div data-lys id="deck">
 
+		<!-- Chapter nav (1.1.0): opt-in region, links to slide ids. Lys positions
+		     it and tracks the active link. Not every slide is listed — only the
+		     ones given an id. (This is a fade deck, so the script below wires
+		     clicks to goTo(); scroll-snap decks need no script — the #id anchors
+		     scroll natively.) -->
+		<nav data-lys-nav aria-label="Chapters">
+			<a href="#intro">Intro</a>
+			<a href="#contract">Contract</a>
+			<a href="#tokens">Tokens</a>
+			<a href="#features">Navigation</a>
+			<a href="#a11y">Accessibility</a>
+			<a href="#close">Close</a>
+		</nav>
+
 		<!-- Slide 1: Title -->
 		<article
 			id="intro"
@@ -257,7 +303,7 @@
 		>
 			<h1>⚜ Building with Lys</h1>
 			<p>A tour of every feature in the structural slide engine</p>
-			<span class="version">v1.0</span>
+			<span class="version">v1.1.0</span>
 		</article>
 
 		<!-- Slide 2: What is Lys -->
@@ -278,6 +324,7 @@
 
 		<!-- Slide 3: The HTML Contract -->
 		<article
+			id="contract"
 			data-class="code-slide"
 			data-background="linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)"
 		>
@@ -345,6 +392,7 @@
 
 		<!-- Slide 5: CSS Tokens -->
 		<article
+			id="tokens"
 			data-class="code-slide"
 			data-background="#0f0c29"
 		>
@@ -378,6 +426,7 @@
 
 		<!-- Slide 7: Accessibility -->
 		<article
+			id="a11y"
 			data-background="linear-gradient(160deg, #1a1a2e, #16213e)"
 			data-notes="Accessibility is non-negotiable. WCAG 2.1 AA compliance is a hard constraint. All ARIA attributes are managed automatically by the JS layer."
 			data-timing="30"
@@ -414,8 +463,23 @@
 			</div>
 		</article>
 
+		<!-- Slide: What's new in 1.1.0 -->
+		<article
+			id="whats-new"
+			data-background="#16213e"
+			data-notes="1.1.0 additions: the chapter nav bar above is the headline feature; accessible default colors keep unstyled decks legible in light and dark."
+		>
+			<h2>New in 1.1.0</h2>
+			<ul>
+				<li><strong>Chapter navigation</strong> — the opt-in <code>data-lys-nav</code> bar above; the active link tracks the current slide, and only slides with an <code>id</code> are listed</li>
+				<li><strong>Accessible default colors</strong> — unstyled slides stay legible in light <em>and</em> dark mode out of the box</li>
+				<li><strong>Aspect-ratio conformity</strong> — slides honor <code>--lys-aspect-ratio</code> on every viewport (shipped in 1.0.2)</li>
+			</ul>
+		</article>
+
 		<!-- Slide 9: Closing -->
 		<article
+			id="close"
 			data-class="closing"
 			data-background="linear-gradient(135deg, #0f0c29, #302b63, #24243e)"
 		>
@@ -441,6 +505,17 @@
 		updateCounter();
 
 		document.getElementById("deck").addEventListener("lys:slidechange", updateCounter);
+
+		// Chapter nav: this is a fade (stacked) deck, where native #id anchors
+		// can't move overlaid slides — so wire link clicks to goTo(). In a
+		// scroll-snap deck this isn't needed; the #id anchors scroll natively.
+		// Lys still tracks the active link in both modes.
+		for (const link of document.querySelectorAll("[data-lys-nav] a")) {
+			link.addEventListener("click", (e) => {
+				e.preventDefault();
+				deck.goTo(link.getAttribute("href").slice(1));
+			});
+		}
 	</script>
 </body>
 </html>
