@@ -5,6 +5,31 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Lys — Minimal</title>
 	<link rel="stylesheet" href="/src/lys.css">
+	<style>
+		/* Lys is a slide-shell: it owns structure + behavior, you style the slides.
+		   This is the minimum a consumer should bring — a slide surface, readable
+		   text, and basic type. System fonts only; adapts to light/dark. */
+		* { margin: 0; box-sizing: border-box; }
+		body { font-family: system-ui, sans-serif; }
+
+		[data-lys] {
+			--lys-slide-padding: 6cqi;
+			--lys-backdrop: light-dark(#e9e9ec, #15151a);
+		}
+
+		[data-lys] > article {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			gap: 0.5em;
+			background: light-dark(#ffffff, #1e1e24);
+			color: light-dark(#1a1a1a, #f2f2f2);
+		}
+
+		article h1 { font-size: 2.5em; }
+		article h2 { font-size: 1.8em; }
+		article p { font-size: 1.1em; color: light-dark(#5a5a5a, #b5b5b5); }
+	</style>
 </head>
 <body>
 	<div data-lys>
