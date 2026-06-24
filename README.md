@@ -65,8 +65,8 @@ Override `--lys-*` CSS custom properties at any cascade level:
 ## Chapter navigation (opt-in)
 
 Add a `data-lys-nav` region inside the deck with anchor links to slide `id`s. Lys positions it
-out of the scroll-snap flow and marks the current slide's link with `data-lys-nav-active`; you
-write the links and the styling. The links work as anchors even without JavaScript.
+out of the scroll-snap flow and marks the current slide's link with `aria-current="true"` and
+`data-lys-nav-active`; you write the links and the styling. The links work as anchors even without JavaScript.
 
 ```html
 <div data-lys>
