@@ -20,6 +20,13 @@
 
 		body { font-family: system-ui, sans-serif; }
 
+		/* Pin the backdrop (letterbox area) to the deck's light/paper theme so
+		   it doesn't adopt the viewer's system scheme — Lys's default backdrop
+		   is light-dark(), which would show black bands in a dark OS theme. */
+		[data-lys] {
+			--lys-backdrop: var(--paper);
+		}
+
 		[data-lys] > article {
 			display: flex;
 			flex-direction: column;
