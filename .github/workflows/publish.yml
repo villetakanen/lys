@@ -4,8 +4,11 @@ on:
   push:
     tags: ["v*"]
 
+# Trusted publishing: the job mints a short-lived OIDC token instead of using a
+# long-lived NPM_TOKEN. `id-token: write` is required to request it.
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   publish:
@@ -22,7 +25,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # Trusted publishing requires Node >= 22.14.0 (and npm >= 11.5.1).
+          node-version: 22
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
@@ -41,7 +45,10 @@ jobs:
       - name: Run e2e tests
         run: pnpm test:e2e
 
+      # No NODE_AUTH_TOKEN: pnpm fetches an OIDC token via the id-token
+      # permission above, which takes precedence over a static token.
+      # Requires a trusted publisher registered on npmjs.com for this repo +
+      # workflow (villetakanen/lys → publish.yml). --provenance attaches a
+      # supply-chain attestation to the published package.
       - name: Publish to npm
-        run: pnpm publish --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish --access public --no-git-checks --provenance
