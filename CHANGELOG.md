@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.1] — 2026-06-26
+
+### Fixed
+
+- Reduced motion now disables fade transitions. The `prefers-reduced-motion: reduce` override set `--_lys-transition-duration: 0ms` only on the `[data-lys]` container, but the slide re-declares that token (for per-slide overrides), so the container reset was shadowed and fade slides kept animating. The override now also applies to `[data-lys] > article`. Surfaced by pointing the e2e suite at the real demo decks (#54).
+- Bundled example decks now render correctly in a light OS theme (#51). The fixed-theme demos left `--lys-backdrop` at its adaptive default, so the letterbox area followed the viewer's system scheme — a dark deck (e.g. `examples/square.html`) showed white bands in light mode, and light decks would show black bands in dark mode. Each fixed-theme deck now pins `--lys-backdrop` to its palette; `examples/minimal.html` stays adaptive as the exemplar. Examples only — the published library output is unchanged.
+
+### Changed
+
+- E2E tests now load the shipped demo decks (`examples/*.html`) as fixtures instead of duplicate purpose-built fixtures, so a change that breaks a demo fails CI (#54). This dog-fooding is what surfaced the reduced-motion fix above. Purpose-built fixtures remain only for cases no demo demonstrates: library defaults, mixed transitions, direct mode, form inputs, and multiple decks on one page.
+
 ## [1.1.0] — 2026-06-23
 
 ### Added
@@ -83,7 +94,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Example decks: minimal, themed, full-featured, and 1:1 aspect ratio.
 - GitHub Pages site with token reference, article contract, and live examples.
 
-[Unreleased]: https://github.com/villetakanen/lys/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/villetakanen/lys/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/villetakanen/lys/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/villetakanen/lys/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/villetakanen/lys/compare/v1.0.0...v1.0.2
 [1.0.0]: https://github.com/villetakanen/lys/compare/6e5ed84...v1.0.0

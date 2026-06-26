@@ -9,6 +9,14 @@ async function setupNavDeck(page: Page) {
 	});
 }
 
+/** Wait for Lys to initialize on whichever deck just loaded. */
+async function waitForInit(page: Page) {
+	await page.waitForFunction(() => {
+		const container = document.querySelector("[data-lys]");
+		return container?.getAttribute("role") === "group";
+	});
+}
+
 /** Press ArrowRight N times to advance to a specific slide. */
 async function goToSlide(page: Page, n: number) {
 	for (let i = 0; i < n; i++) {
@@ -78,43 +86,36 @@ test.describe("keyboard navigation", () => {
 });
 
 test.describe("hash routing", () => {
+	// Demonstrated by the shipped chapter-nav demo, where every slide has an id.
+	// Assertions are index-/id-derived so they hold as the demo grows.
 	test("hash deep link on page load (numeric)", async ({ page }) => {
-		await page.goto("/tests/fixtures/navigation.html#slide=3");
-		await page.waitForFunction(() => {
-			const container = document.querySelector("[data-lys]");
-			return container?.getAttribute("role") === "group";
-		});
+		await page.goto("/examples/nav.html#slide=3");
+		await waitForInit(page);
 		const third = page.locator("[data-lys] > article").nth(2);
 		await expect(third).toHaveAttribute("data-lys-active", "");
 	});
 
 	test("hash deep link on page load (id)", async ({ page }) => {
-		await page.goto("/tests/fixtures/navigation.html#slide=overview");
-		await page.waitForFunction(() => {
-			const container = document.querySelector("[data-lys]");
-			return container?.getAttribute("role") === "group";
-		});
-		const second = page.locator("[data-lys] > article").nth(1);
-		await expect(second).toHaveAttribute("data-lys-active", "");
-	});
-
-	test("hash updates on navigation", async ({ page }) => {
-		await setupNavDeck(page);
-		// ArrowRight goes to slide 1 which has id="overview", so hash uses the id.
-		// Navigate past it to slide 2 (index 2, no id) to test numeric hash.
-		await page.keyboard.press("ArrowRight"); // → slide 1 (overview)
-		await page.keyboard.press("ArrowRight"); // → slide 2 (no id)
-		expect(page.url()).toContain("slide=3"); // 1-based: index 2 → slide=3
+		await page.goto("/examples/nav.html");
+		await waitForInit(page);
+		const secondId = await page.locator("[data-lys] > article").nth(1).getAttribute("id");
+		await page.goto(`/examples/nav.html#slide=${secondId}`);
+		await waitForInit(page);
+		await expect(page.locator(`#${secondId}`)).toHaveAttribute("data-lys-active", "");
 	});
 
 	test("hash updates use article id when available", async ({ page }) => {
-		await setupNavDeck(page);
-		await page.keyboard.press("ArrowRight"); // → slide 1 with id="overview"
-		expect(page.url()).toContain("slide=overview");
+		await page.goto("/examples/nav.html");
+		await waitForInit(page);
+		const secondId = await page.locator("[data-lys] > article").nth(1).getAttribute("id");
+		await page.locator("[data-lys]").focus();
+		await page.keyboard.press("ArrowRight"); // → slide 1, which has an id
+		expect(page.url()).toContain(`slide=${secondId}`);
 	});
 
 	test("external hashchange triggers navigation", async ({ page }) => {
-		await setupNavDeck(page);
+		await page.goto("/examples/nav.html");
+		await waitForInit(page);
 		await page.evaluate(() => {
 			location.hash = "#slide=4";
 		});
@@ -123,23 +124,29 @@ test.describe("hash routing", () => {
 	});
 
 	test("invalid hash is ignored", async ({ page }) => {
-		await page.goto("/tests/fixtures/navigation.html#something-else");
-		await page.waitForFunction(() => {
-			const container = document.querySelector("[data-lys]");
-			return container?.getAttribute("role") === "group";
-		});
+		await page.goto("/examples/nav.html#something-else");
+		await waitForInit(page);
 		const first = page.locator("[data-lys] > article").nth(0);
 		await expect(first).toHaveAttribute("data-lys-active", "");
 	});
 
 	test("hash with out-of-range number is clamped", async ({ page }) => {
-		await page.goto("/tests/fixtures/navigation.html#slide=99");
-		await page.waitForFunction(() => {
-			const container = document.querySelector("[data-lys]");
-			return container?.getAttribute("role") === "group";
-		});
-		const last = page.locator("[data-lys] > article").nth(4);
+		await page.goto("/examples/nav.html#slide=99");
+		await waitForInit(page);
+		const last = page.locator("[data-lys] > article").last();
 		await expect(last).toHaveAttribute("data-lys-active", "");
+	});
+});
+
+test.describe("hash routing — numeric emission (id-less slide)", () => {
+	// examples/nav.html gives every slide an id, so it always emits id-based
+	// hashes. This fixture keeps an id-less slide to exercise the numeric path —
+	// a case no demo demonstrates.
+	test("hash uses the 1-based number when a slide has no id", async ({ page }) => {
+		await setupNavDeck(page); // navigation.html
+		await page.keyboard.press("ArrowRight"); // → slide 1 (id="overview")
+		await page.keyboard.press("ArrowRight"); // → slide 2 (no id)
+		expect(page.url()).toContain("slide=3"); // 1-based: index 2 → slide=3
 	});
 });
 

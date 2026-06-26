@@ -150,8 +150,12 @@
 }
 
 /* === Reduced motion === */
+/* Override the token on the article too, not just the container: the article
+   re-declares --_lys-transition-duration (for per-slide overrides), which would
+   otherwise shadow a container-only reset and keep fade slides animating. */
 @media (prefers-reduced-motion: reduce) {
-	[data-lys] {
+	[data-lys],
+	[data-lys] > article {
 		--_lys-transition-duration: 0ms;
 	}
 }

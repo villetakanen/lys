@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-	await page.goto("/tests/fixtures/minimal.html");
+	await page.goto("/examples/minimal.html");
 	// Wait for Lys to initialize.
 	await page.waitForFunction(() => {
 		const container = document.querySelector("[data-lys]");
@@ -30,12 +30,13 @@ test.describe("focus outline suppressed (#23)", () => {
 	});
 
 	test("focus still moves to active slide", async ({ page }) => {
+		const count = await page.locator("[data-lys] > article").count();
 		await page.keyboard.press("ArrowRight");
 
 		const focused = await page.evaluate(() => {
 			return document.activeElement?.getAttribute("aria-label");
 		});
-		expect(focused).toBe("Slide 2 of 3");
+		expect(focused).toBe(`Slide 2 of ${count}`);
 	});
 });
 
@@ -56,19 +57,21 @@ test.describe("ARIA attributes in browser", () => {
 	});
 
 	test("live region updates on navigation", async ({ page }) => {
+		const count = await page.locator("[data-lys] > article").count();
 		await page.keyboard.press("ArrowRight");
 
 		const liveRegion = page.locator('[role="status"]');
-		await expect(liveRegion).toHaveText("Slide 2 of 3");
+		await expect(liveRegion).toHaveText(`Slide 2 of ${count}`);
 	});
 
 	test("focus moves to active slide on navigation", async ({ page }) => {
+		const count = await page.locator("[data-lys] > article").count();
 		await page.keyboard.press("ArrowRight");
 
 		const focused = await page.evaluate(() => {
 			return document.activeElement?.getAttribute("aria-label");
 		});
-		expect(focused).toBe("Slide 2 of 3");
+		expect(focused).toBe(`Slide 2 of ${count}`);
 	});
 });
 
@@ -76,12 +79,12 @@ test.describe("progressive enhancement", () => {
 	test("CSS-only deck has valid article semantics", async ({ browser }) => {
 		const context = await browser.newContext({ javaScriptEnabled: false });
 		const page = await context.newPage();
-		await page.goto("/tests/fixtures/minimal.html");
+		await page.goto("/examples/minimal.html");
 
 		// Articles should be valid HTML5 elements without ARIA violations.
 		const articles = page.locator("[data-lys] > article");
 		const count = await articles.count();
-		expect(count).toBe(3);
+		expect(count).toBeGreaterThan(0);
 
 		// Without JS, articles should NOT have role="group" (added by a11y module).
 		const role = await articles.first().getAttribute("role");
@@ -101,7 +104,7 @@ test.describe("axe-core accessibility scan", () => {
 	});
 
 	test("fade-mode deck has zero critical/serious axe-core violations", async ({ page }) => {
-		await page.goto("/tests/fixtures/fade.html");
+		await page.goto("/examples/full.html");
 		await page.waitForFunction(() => {
 			const container = document.querySelector("[data-lys]");
 			return container?.getAttribute("data-lys-mode") === "stacked";

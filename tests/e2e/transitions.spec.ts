@@ -25,9 +25,10 @@ async function waitForTransitions(page: import("@playwright/test").Page) {
 	);
 }
 
-/** Navigate to the fade fixture and wait for Lys to initialize. */
+/** Load the fade demo deck (examples/full.html fades its title slide) and wait
+ * for Lys to enter stacked mode. */
 async function setupFadeDeck(page: import("@playwright/test").Page) {
-	await page.goto("/tests/fixtures/fade.html");
+	await page.goto("/examples/full.html");
 	await page.waitForFunction(() => {
 		const container = document.querySelector("[data-lys]");
 		return container?.getAttribute("data-lys-mode") === "stacked";
@@ -35,9 +36,9 @@ async function setupFadeDeck(page: import("@playwright/test").Page) {
 	await waitForTransitions(page);
 }
 
-/** Navigate to the minimal (scroll-snap) fixture and wait for Lys to initialize. */
+/** Load the scroll-snap demo deck (examples/minimal.html) and wait for init. */
 async function setupScrollSnapDeck(page: import("@playwright/test").Page) {
-	await page.goto("/tests/fixtures/minimal.html");
+	await page.goto("/examples/minimal.html");
 	await page.waitForFunction(() => {
 		const container = document.querySelector("[data-lys]");
 		return container?.getAttribute("role") === "group";
@@ -98,19 +99,6 @@ test.describe("fade mode layout", () => {
 		expect(easing).toBe("linear");
 	});
 
-	test("mixed transitions — fade slide has transition, non-fade is instant", async ({ page }) => {
-		const fadeSlide = page.locator("[data-lys] > article").nth(0);
-		const plainSlide = page.locator("[data-lys] > article").nth(1);
-
-		const fadeProp = await fadeSlide.evaluate((el) => getComputedStyle(el).transitionProperty);
-		expect(fadeProp).toContain("opacity");
-
-		const plainDuration = await plainSlide.evaluate(
-			(el) => getComputedStyle(el).transitionDuration,
-		);
-		expect(plainDuration).toBe("0s");
-	});
-
 	test("navigation changes opacity", async ({ page }) => {
 		// Disable transitions so the opacity change is instant.
 		await page.evaluate(() => {
@@ -129,6 +117,32 @@ test.describe("fade mode layout", () => {
 
 		const secondOpacity = await second.evaluate((el) => getComputedStyle(el).opacity);
 		expect(secondOpacity).toBe("1");
+	});
+});
+
+test.describe("fade mode — mixed transitions (minimal probe)", () => {
+	// examples/full.html also fades only its title slide, but this minimal
+	// fixture keeps the fade-then-default contrast isolated and cheap to reason
+	// about: article 0 fades, the rest are instant.
+	test("fade slide has an opacity transition, non-fade slide is instant", async ({ page }) => {
+		await page.goto("/tests/fixtures/fade.html");
+		await page.waitForFunction(() => {
+			const container = document.querySelector("[data-lys]");
+			return container?.getAttribute("data-lys-mode") === "stacked";
+		});
+		await waitForTransitions(page);
+
+		const fadeProp = await page
+			.locator("[data-lys] > article")
+			.nth(0)
+			.evaluate((el) => getComputedStyle(el).transitionProperty);
+		expect(fadeProp).toContain("opacity");
+
+		const plainDuration = await page
+			.locator("[data-lys] > article")
+			.nth(1)
+			.evaluate((el) => getComputedStyle(el).transitionDuration);
+		expect(plainDuration).toBe("0s");
 	});
 });
 
@@ -160,13 +174,14 @@ test.describe("scroll-snap mode unchanged", () => {
 test.describe("fade mode reduced motion", () => {
 	test("fade transitions are instant with reduced motion", async ({ page }) => {
 		await page.emulateMedia({ reducedMotion: "reduce" });
-		await page.goto("/tests/fixtures/fade.html");
+		await page.goto("/examples/full.html");
 		await page.waitForFunction(() => {
 			const container = document.querySelector("[data-lys]");
 			return container?.getAttribute("data-lys-mode") === "stacked";
 		});
 
-		const slide = page.locator("[data-lys] > article").nth(1);
+		// The fade slide (title, article 0) must drop to an instant transition.
+		const slide = page.locator("[data-lys] > article").nth(0);
 		const duration = await slide.evaluate((el) => getComputedStyle(el).transitionDuration);
 		expect(duration).toBe("0s");
 	});

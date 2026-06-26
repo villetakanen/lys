@@ -68,6 +68,13 @@
 			letter-spacing: 0.0138em;
 		}
 
+		/* Pin the backdrop (letterbox area) to the deck's dark theme so it
+		   doesn't adopt the viewer's system scheme — Lys's default backdrop is
+		   light-dark(), which would show white bands in a light OS theme. */
+		[data-lys] {
+			--lys-backdrop: var(--ff-primary-950);
+		}
+
 		[data-lys] > article {
 			display: flex;
 			flex-direction: column;

@@ -36,6 +36,13 @@
 			background: #0a0a0a;
 		}
 
+		/* Pin the backdrop (letterbox area) to the deck's light theme so it
+		   doesn't adopt the viewer's system scheme — Lys's default backdrop is
+		   light-dark(), which would show black bands in a dark OS theme. */
+		[data-lys] {
+			--lys-backdrop: var(--asdlc-bg);
+		}
+
 		[data-lys] > article {
 			display: flex;
 			flex-direction: column;

@@ -1,7 +1,20 @@
 import { expect, test } from "@playwright/test";
 
-/** Navigate to the minimal fixture and wait for Lys to initialize. */
+/** Load the scroll-snap demo deck (examples/minimal.html) and wait for init. */
 async function setupMinimalDeck(page: import("@playwright/test").Page) {
+	await page.goto("/examples/minimal.html");
+	await page.waitForFunction(() => {
+		const container = document.querySelector("[data-lys]");
+		return container?.getAttribute("role") === "group";
+	});
+}
+
+/**
+ * Load the bare technical fixture. It's the only deck with no author CSS, so
+ * it's the primary test for Lys's *default* backdrop and foreground — every
+ * demo deck overrides those, so a demo can't exercise the unstyled baseline.
+ */
+async function setupDefaultsDeck(page: import("@playwright/test").Page) {
 	await page.goto("/tests/fixtures/minimal.html");
 	await page.waitForFunction(() => {
 		const container = document.querySelector("[data-lys]");
@@ -422,7 +435,7 @@ test.describe("aspect-ratio conformity (#45)", () => {
 test.describe("backdrop color", () => {
 	test("light mode shows white backdrop", async ({ page }) => {
 		await page.emulateMedia({ colorScheme: "light" });
-		await setupMinimalDeck(page);
+		await setupDefaultsDeck(page);
 
 		const bg = await page
 			.locator("[data-lys]")
@@ -432,7 +445,7 @@ test.describe("backdrop color", () => {
 
 	test("dark mode shows black backdrop", async ({ page }) => {
 		await page.emulateMedia({ colorScheme: "dark" });
-		await setupMinimalDeck(page);
+		await setupDefaultsDeck(page);
 
 		const bg = await page
 			.locator("[data-lys]")
@@ -442,7 +455,7 @@ test.describe("backdrop color", () => {
 
 	test("author override sets custom backdrop color", async ({ page }) => {
 		await page.emulateMedia({ colorScheme: "light" });
-		await setupMinimalDeck(page);
+		await setupDefaultsDeck(page);
 
 		await page.addStyleTag({ content: "[data-lys] { --lys-backdrop: #1a1a2e; }" });
 		await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(resolve)));
@@ -455,7 +468,7 @@ test.describe("backdrop color", () => {
 	});
 
 	test("author can set transparent backdrop", async ({ page }) => {
-		await setupMinimalDeck(page);
+		await setupDefaultsDeck(page);
 		await page.addStyleTag({ content: "[data-lys] { --lys-backdrop: transparent; }" });
 		await page.evaluate(() => new Promise((r) => requestAnimationFrame(r)));
 		const bg = await page
@@ -488,20 +501,20 @@ test.describe("slide foreground (#47)", () => {
 
 	test("light mode shows black slide text", async ({ page }) => {
 		await page.emulateMedia({ colorScheme: "light" });
-		await setupMinimalDeck(page);
+		await setupDefaultsDeck(page);
 		expect(await slideColor(page)).toBe("rgb(0, 0, 0)");
 	});
 
 	test("dark mode shows white slide text (legible on the black backdrop)", async ({ page }) => {
 		await page.emulateMedia({ colorScheme: "dark" });
-		await setupMinimalDeck(page);
+		await setupDefaultsDeck(page);
 		// White text, not the black-on-black that #47 fixed.
 		expect(await slideColor(page)).toBe("rgb(255, 255, 255)");
 	});
 
 	test("author overrides the foreground with standard color CSS", async ({ page }) => {
 		await page.emulateMedia({ colorScheme: "dark" });
-		await setupMinimalDeck(page);
+		await setupDefaultsDeck(page);
 		await page.addStyleTag({ content: "[data-lys] { color: #1a1a2e; }" });
 		await page.evaluate(() => new Promise((r) => requestAnimationFrame(r)));
 		// #1a1a2e → rgb(26, 26, 46)
