@@ -191,7 +191,7 @@ This is the correct progressive enhancement behavior: fade mode is a JS enhancem
 - `scrollIntoView()` must still be called in scroll-snap mode. The branching must not accidentally disable it for default decks.
 - The existing `--lys-transition-duration` and `--lys-transition-easing` tokens must not change default values. Fade mode reuses them, not overrides them.
 - The `data-lys-active` attribute semantics must not change. It still marks the current slide in both modes.
-- `prefers-reduced-motion` media query must continue to set `--_lys-transition-duration: 0ms` — this is the mechanism that makes fade transitions instant.
+- `prefers-reduced-motion` media query must set `--_lys-transition-duration: 0ms` on **both `[data-lys]` and `[data-lys] > article`** — this is the mechanism that makes fade transitions instant. The article selector is required: the article re-declares `--_lys-transition-duration` (to support per-slide token overrides), which shadows a container-only reset and would otherwise keep fade slides animating under reduced motion.
 - An empty deck (0 slides) with `data-transition` on the container (nonsensical but possible) must not throw.
 - A single-slide deck in fade mode must display the slide at `opacity: 1` without transitions.
 - The constructor must always set `data-lys-active` on the initial slide before setting `data-lys-mode`. This guarantees at least one slide is visible in stacked modes — if `data-lys-active` were absent from all slides, all would be `opacity: 0` and the deck would appear blank.

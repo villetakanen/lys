@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Reduced motion now disables fade transitions. The `prefers-reduced-motion: reduce` override set `--_lys-transition-duration: 0ms` only on the `[data-lys]` container, but the slide re-declares that token (for per-slide overrides), so the container reset was shadowed and fade slides kept animating. The override now also applies to `[data-lys] > article`. Surfaced by pointing the e2e suite at the real demo decks (#54).
+
 ## [1.1.0] — 2026-06-23
 
 ### Added

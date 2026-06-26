@@ -24,13 +24,40 @@ Note: The existing specs originally mapped navigation e2e scenarios to `slides.s
 
 #### Fixtures
 
-| Fixture | Purpose | Status |
+**Fixture philosophy.** The demo decks in `examples/*.html` dog-food Lys, so they
+are the **primary fixtures** for the behaviors they demonstrate — e2e tests load
+them directly. This guards the demos against regressions (a broken demo fails CI)
+and avoids maintaining a parallel set of duplicate fixtures. Purpose-built
+fixtures under `tests/fixtures/` remain only as the **primary test for cases the
+demos do not (or cannot) demonstrate**: library defaults that every demo
+overrides, and edge cases no demo expresses.
+
+To stay robust to demo edits, assertions against demo decks are
+**structure-relative** — derive slide counts and ids from the DOM rather than
+hard-coding them. A demo that grows a slide should not break a test; a demo that
+breaks should.
+
+**Demo decks as fixtures** (`examples/`):
+
+| Demo | Demonstrates | Used by |
 |---|---|---|
-| `tests/fixtures/minimal.html` | 3-slide scroll-snap deck | Exists |
-| `tests/fixtures/fade.html` | 3-slide fade-mode deck | Exists |
-| `tests/fixtures/navigation.html` | 5-slide deck with ids, input, textarea for nav testing | **New** |
-| `tests/fixtures/multi-deck.html` | 2 decks on one page for independent navigation | **New** |
-| `tests/fixtures/data-attrs.html` | Deck with data-background, data-class, data-notes | **New** |
+| `minimal.html` | scroll-snap usage, adaptive theming | slides, a11y, print, transitions (scroll-snap) |
+| `nav.html` | chapter nav (`data-lys-nav`) + slide ids | nav, navigation (hash routing) |
+| `full.html` | fade mode + chapter nav | transitions (fade), print (fade) |
+| `demo.html` / `square.html` / `themed.html` | data-attr + fixed-theme usage | examples-theme (backdrop) |
+
+**Technical fixtures** (`tests/fixtures/` — primary tests for non-demonstrated cases):
+
+| Fixture | Why it can't be a demo |
+|---|---|
+| `minimal.html` | Library **defaults** — a bare deck with no author CSS; tests the default backdrop (`light-dark(#fff,#000)`) and foreground that every demo overrides |
+| `fade.html` | **Mixed** transitions (fade on article 0, default on the rest); demos are homogeneous |
+| `direct.html` | `data-transition="direct"`; no demo uses direct mode |
+| `navigation.html` | `<input>`/`<textarea>` for Space-suppression; no demo has form elements |
+| `multi-deck.html` | Two `[data-lys]` decks on one page; no demo does this |
+| `data-attrs.html` | Minimal `data-background` / `data-class` / `data-notes` probe |
+
+`tests/fixtures/nav.html` was dropped — `examples/nav.html` covers chapter nav.
 
 #### Dependencies
 
@@ -50,7 +77,7 @@ E2e tests do not touch source code. They test against `dist/` output served by V
 - **Flaky transition timing assertions.** Never assert exact opacity mid-transition. Either disable transitions (set `--lys-transition-duration: 0ms`) or wait for transitions to settle before asserting. Use `toPass({ timeout })` for values that need to stabilize.
 - **Using `page.setJavaScriptEnabled()`.** This is not available on all browsers. Use `browser.newContext({ javaScriptEnabled: false })` instead to test CSS-only progressive enhancement.
 - **Asserting browser-specific values.** Computed style string formats vary across engines. Prefer semantic assertions (e.g., check that position is not "absolute") over exact string matching where possible.
-- **Large fixture files.** Fixtures should be minimal — just enough markup to test the scenario. Reuse `minimal.html` and `fade.html` where possible.
+- **Authoring a net-new technical fixture for a behavior a demo already demonstrates.** Load the demo deck instead — duplicating it as a stripped-down fixture is the drift this suite is built to avoid. Net-new technical fixtures are justified only for library defaults or edge cases no demo expresses, and should be minimal. (Demo decks used as fixtures are intentionally rich — that's not a "large fixture" smell.)
 - **Testing navigation module internals.** E2e navigation tests verify that pressing a key results in a slide change, not that a specific internal method was called. No spying in e2e.
 
 ## Contract (Quality)
@@ -72,6 +99,7 @@ E2e tests do not touch source code. They test against `dist/` output served by V
 - Existing unit tests (`pnpm test`) must continue to pass — e2e work must not modify source code.
 - Existing e2e tests in `transitions.spec.ts` must continue to pass.
 - `tests/fixtures/minimal.html` and `tests/fixtures/fade.html` must not be modified (other tests depend on them).
+- Demo decks in `examples/` are now load-bearing e2e fixtures. A behavioral change to a demo must keep `pnpm test:e2e` green, or update the affected test in the same change.
 - No runtime dependencies added. `@axe-core/playwright` is a dev dependency only.
 - Size budget unaffected — no source changes.
 
