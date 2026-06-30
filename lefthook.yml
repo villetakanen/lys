@@ -10,6 +10,14 @@ pre-commit:
     unit-test:
       run: pnpm vitest run
 
+pre-push:
+  commands:
+    e2e:
+      # Full cross-browser e2e runs here, not in GitHub Actions — keeps the
+      # release path lean (#57). Requires Playwright browsers installed locally
+      # (pnpm exec playwright install).
+      run: pnpm playwright test
+
 commit-msg:
   commands:
     conventional:
