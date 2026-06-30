@@ -13,6 +13,10 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Publish-only: main is already pristine (lefthook pre-commit + PR flow),
+    # so this path never re-tests — it builds and publishes. Timeout guards
+    # against a hung step (a stuck Playwright install once burned 6h here).
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,15 +44,6 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-      - name: Run unit tests
-        run: pnpm test
-
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
-
-      - name: Run e2e tests
-        run: pnpm test:e2e
 
       # No NODE_AUTH_TOKEN: pnpm fetches an OIDC token via the id-token
       # permission above, which takes precedence over a static token.
