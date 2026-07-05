@@ -17,6 +17,9 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # Build + deploy only — never tests (main is pristine via lefthook + PR
+    # flow, #57). Timeout guards against a hung step.
+    timeout-minutes: 15
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
