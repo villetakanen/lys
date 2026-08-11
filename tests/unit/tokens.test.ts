@@ -63,6 +63,42 @@ describe("CSS structural rules", () => {
 		expect(cssText).toContain("page-break-after");
 	});
 
+	it("declares a landscape, ratio-matched @page box with no margin (#60)", () => {
+		expect(cssText).toContain("@page");
+		expect(cssText).toContain("size: var(--lys-print-page-size, 10in 5.625in)");
+		expect(cssText).toMatch(/@page\s*\{[^}]*margin:\s*0/);
+	});
+
+	it("keeps the @page rule inside @media print", () => {
+		const printBlockStart = cssText.indexOf("@media print");
+		expect(printBlockStart).toBeGreaterThan(-1);
+		expect(cssText.indexOf("@page")).toBeGreaterThan(printBlockStart);
+	});
+
+	it("does not reset container-type in print (#60 reverses #28)", () => {
+		const printBlock = cssText.slice(cssText.indexOf("@media print"));
+		expect(printBlock).not.toContain("container-type: normal");
+	});
+
+	it("forces slide backgrounds to print", () => {
+		const printBlock = cssText.slice(cssText.indexOf("@media print"));
+		expect(printBlock).toContain("print-color-adjust: exact");
+		expect(printBlock).toContain("-webkit-print-color-adjust: exact");
+	});
+
+	it("avoids the trailing page break with :last-of-type, not :last-child (#60)", () => {
+		// a11y.ts appends the live region to the container, so the final article
+		// is not the container's last child once JS has initialized.
+		const printBlock = cssText.slice(cssText.indexOf("@media print"));
+		expect(printBlock).toContain("article:last-of-type");
+		expect(printBlock).not.toContain("article:last-child");
+	});
+
+	it("hides the nav region in print", () => {
+		const printBlock = cssText.slice(cssText.indexOf("@media print"));
+		expect(printBlock).toMatch(/\[data-lys-nav\]\s*\{\s*display:\s*none/);
+	});
+
 	it("uses scroll-snap-type: y mandatory on container", () => {
 		expect(cssText).toContain("scroll-snap-type: y mandatory");
 	});

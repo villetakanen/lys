@@ -162,6 +162,18 @@
 
 /* === Print layout === */
 @media print {
+	/* Page box matches the deck's shape, so the slide fills it exactly: the
+	   letterboxing contain-fit produces on screen collapses to zero, and there
+	   is no dead band to center a slide in. Without this the page stays
+	   portrait and a 16/9 slide covers ~43% of it (#60).
+	   The token is read directly rather than through a --_lys-* alias: the page
+	   context has no element to resolve one on. It inherits custom properties
+	   from the root element only, so --lys-print-page-size must be set at :root. */
+	@page {
+		size: var(--lys-print-page-size, 10in 5.625in);
+		margin: 0;
+	}
+
 	[data-lys] {
 		display: block;
 		overflow: visible;
@@ -170,15 +182,39 @@
 		background: transparent;
 	}
 
+	/* Slide geometry is inherited from the contain-fit rule above, not restated:
+	   with a landscape, ratio-matched page box, 100vw/100vh now resolve against
+	   the kind of box that formula was written for. A print-specific width or
+	   height would be a second layout to keep in sync, and that drift is what
+	   produced #60. max-height therefore stays at the page height, so a slide
+	   can never exceed its page, and container-type stays `size` — the box is
+	   definite on both axes here, so author cqi type resolves against the slide
+	   rather than silently against the page (reverses the #28 print reset).
+	   Margins are reset so --lys-slide-gap cannot push a slide off its page;
+	   `auto` inline keeps a slide centered when the page ratio does not match. */
 	[data-lys] > article {
 		scroll-snap-align: unset;
-		max-height: none;
+		margin: 0 auto;
 		page-break-after: always;
 		break-after: page;
-		container-type: normal;
+		/* A slide's background is the surface its foreground color was chosen
+		   against. Chrome prints with "Background graphics" off by default,
+		   which drops it and takes a dark deck to zero contrast. */
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
 	}
 
-	[data-lys] > article:last-child {
+	/* Same specificity as the screen gap rule, which would otherwise outrank the
+	   margin reset above and push every slide after the first down its page. */
+	[data-lys] > article + article {
+		margin-top: 0;
+	}
+
+	/* :last-of-type, not :last-child — a11y.ts appends the .lys-sr-only live
+	   region to the container, so once JS initializes the final article is no
+	   longer the last child and the break-avoid silently stopped matching,
+	   emitting a trailing blank page (#60). */
+	[data-lys] > article:last-of-type {
 		page-break-after: avoid;
 		break-after: avoid;
 	}
@@ -190,8 +226,11 @@
 		pointer-events: auto;
 	}
 
-	/* Don't pin the nav region over printed slides. */
+	/* A printed deck has no navigation. Leaving the region in flow (the former
+	   `position: static`) gives it block space at the top of the container,
+	   which pushes slide 1 down and spills it onto a second page. The links stay
+	   in the DOM and in the accessibility tree for screen media. */
 	[data-lys] [data-lys-nav] {
-		position: static;
+		display: none;
 	}
 }

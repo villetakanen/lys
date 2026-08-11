@@ -133,6 +133,17 @@ print block should therefore **stop fighting it**:
   bound we want. Removing the override restores the screen behavior verbatim, which is the goal.
 - Do not introduce print-specific width/height values. Any formula that differs from the screen
   formula is a second layout to keep in sync, and drift there is what produced this bug.
+- **Reset slide margins.** `--lys-slide-gap` is applied by `[data-lys] > article + article`,
+  whose specificity (0,1,2) outranks a plain `[data-lys] > article` (0,1,1) reset. Left alone,
+  a deck with a gap set pushes every slide after the first down inside its own page. The print
+  block needs `margin: 0 auto` on articles **and** a matching-specificity
+  `[data-lys] > article + article { margin-top: 0 }`. *(Found during implementation.)*
+- **Use `:last-of-type`, not `:last-child`, for the trailing break-avoid.** `a11y.ts` appends
+  the `.lys-sr-only` live region to the container, so once JS initializes the final article is
+  no longer the container's last child and `:last-child` stops matching — the last slide keeps
+  `break-after: page` and emits a trailing blank page. This was a **pre-existing defect**,
+  latent because the previous print tests never counted pages; it is fixed here.
+  *(Found during implementation.)*
 
 #### 3. Position within the page
 
@@ -272,7 +283,9 @@ CSS-only decks (no JS) print identically — nothing here depends on the JS laye
 12. `[data-lys]` background remains transparent in print (no ink for the out-of-slide area).
 13. A `[data-lys-nav]` region is not rendered in print and consumes no block space, so slide 1
     starts at the top of page 1.
-14. A deck of N slides produces exactly N pages, in document order, with no trailing blank page.
+14. A deck of N slides produces exactly N pages, in document order, with no trailing blank page —
+    including after JS has appended the live region to the container.
+14b. A deck with `--lys-slide-gap` set prints with no slide displaced inside its page.
 15. Stacked/fade decks print all slides, not only the active one.
 16. Print behavior is identical with JS disabled.
 17. `lys.css` stays under 2 KB gzip and contains no `@import` or `url()`.
@@ -315,6 +328,19 @@ Scenario: Every slide gets its own page
   Then the output has exactly 5 pages
   And the slides appear in document order
   And there is no trailing blank page
+
+Scenario: No trailing blank page once the live region exists
+  Given a [data-lys] deck that has initialized its ARIA live region
+  And the live region is the container's last child
+  When the deck is printed
+  Then the last slide still avoids a page break after it
+  And the output has exactly one page per slide
+
+Scenario: A slide gap does not displace slides in print
+  Given a [data-lys] deck with --lys-slide-gap set to 4rem
+  When the deck is printed
+  Then every slide has no top margin
+  And each slide starts at the top of its own page
 ```
 
 #### Page box geometry — regression floor
@@ -469,7 +495,7 @@ one case for the token default only.
 | Aspect-ratio mismatch | `tests/e2e/print.spec.ts` | **New** |
 | Container query context | `tests/e2e/print.spec.ts` | **Rewrite** — existing test asserts `normal`; now asserts `size` |
 | Slide backgrounds and contrast | `tests/e2e/print.spec.ts` | **New** |
-| Nav region | `tests/e2e/print.spec.ts` + `tests/e2e/nav.spec.ts` | **Rewrite** — `nav.spec.ts` asserts `position: static`; now asserts not rendered |
+| Nav region | `tests/e2e/print.spec.ts` | **New** — `spa-nav.spec.md` mapped a print scenario to `nav.spec.ts`, but no such test was ever written (a pre-existing spec/test gap). The print-nav scenarios live here instead. |
 | Layout modes | `tests/e2e/print.spec.ts` | **Exists** — keep as guardrail |
 | Progressive enhancement | `tests/e2e/print.spec.ts` | **New** |
 | Accessibility | `tests/e2e/print.spec.ts` | **New** |
