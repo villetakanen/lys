@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.1] — 2026-08-11
+
+### Fixed
+
+- Printed slides no longer clip their content (#63). The `--lys-print-page-size` default introduced in 1.2.0 was `10in 5.625in`, a 960 px slide — narrower than the ~1280 px decks are usually authored at. Content sized in absolute units does not shrink with the slide, so it overflowed and was cut off; three slides of the bundled `full.html` lost text, one of them half a heading. The default is now `13.333in 7.5in` (1280×720 px, the PowerPoint/Keynote widescreen size). Authors who preferred the smaller page can set the token.
+- Example decks are legible in a light color scheme (#62). `full.html` and `square.html` pinned their dark backdrop but left the text color adaptive, so it flipped to black over their dark slides — 1.06:1 — in a light OS theme and in every print, since Chrome always prints in the light scheme. Both decks now pin the foreground alongside the backdrop.
+- The published `demo.html` and `full.html` examples load JavaScript again (#64). The site build rewrote their `import { Lys } from "/src/lys.ts"` to a bare `"lys.iife.js"` specifier that browsers cannot resolve, pointing at a build with no exports — so those two decks had no keyboard navigation, no ARIA, no hash routing and no `data-class` on the live site. They now load the ESM build.
+
+### Changed
+
+- `square.html` prints at its own 24:10 ratio via `--lys-print-page-size`, demonstrating the token on a non-16:9 deck.
+
 ## [1.2.0] — 2026-08-11
 
 ### Added
@@ -112,7 +124,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Example decks: minimal, themed, full-featured, and 1:1 aspect ratio.
 - GitHub Pages site with token reference, article contract, and live examples.
 
-[Unreleased]: https://github.com/villetakanen/lys/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/villetakanen/lys/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/villetakanen/lys/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/villetakanen/lys/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/villetakanen/lys/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/villetakanen/lys/compare/v1.0.2...v1.1.0
