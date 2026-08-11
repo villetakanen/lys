@@ -15,8 +15,11 @@ import { expect, test } from "@playwright/test";
  *     bytes. The only proof that `@page` took effect. Chromium-only.
  */
 
-/** Default page box: 10in x 5.625in at 96dpi. */
-const PAGE_BOX = { width: 960, height: 540 };
+/** Default page box: 13.333in x 7.5in at 96dpi. */
+const PAGE_BOX = { width: 1280, height: 720 };
+
+/** Every bundled deck, for the sweeps that must hold across all of them. */
+const EXAMPLE_DECKS = ["minimal", "themed", "full", "demo", "nav", "square"];
 
 /** PDF points -> CSS px. */
 const PT_TO_PX = 96 / 72;
@@ -47,6 +50,33 @@ async function gotoDeck(
 		return container?.getAttribute("role") === "group";
 	});
 	if (css) await page.addStyleTag({ content: css });
+}
+
+/**
+ * The page box this deck actually prints to: its own --lys-print-page-size if it
+ * sets one (square.html prints at 24:10), otherwise the default. Measuring every
+ * deck against the default box would test the wrong geometry for any deck that
+ * opts out.
+ */
+async function resolvePageBox(
+	page: import("@playwright/test").Page,
+): Promise<{ width: number; height: number }> {
+	const token = (
+		await page.evaluate(() =>
+			getComputedStyle(document.documentElement).getPropertyValue("--lys-print-page-size"),
+		)
+	).trim();
+	if (!token) return PAGE_BOX;
+
+	const lengths = token.match(/[\d.]+(in|mm|cm|px|pt)/g);
+	if (lengths?.length !== 2) return PAGE_BOX; // e.g. "A4 landscape" — not a length pair
+	const toPx = (l: string) => {
+		const value = Number.parseFloat(l);
+		const unit = l.replace(/[\d.]/g, "");
+		const perInch = { in: 96, mm: 96 / 25.4, cm: 96 / 2.54, pt: 96 / 72, px: 1 }[unit] ?? 1;
+		return Math.round(value * perInch);
+	};
+	return { width: toPx(lengths[0]), height: toPx(lengths[1]) };
 }
 
 /** Measure the first slide against the page box, in emulated print media. */
@@ -102,12 +132,32 @@ test.describe("print — page box geometry", () => {
 	});
 });
 
+test.describe("print — content is not clipped", () => {
+	// #63: the page box determines the slide box, and absolute-unit content does
+	// not scale with it. A page box narrower than the width a deck was authored
+	// at overflows and is silently clipped by the slide's overflow: hidden.
+	for (const deck of EXAMPLE_DECKS) {
+		test(`${deck}.html keeps every slide's content inside its box`, async ({ page }) => {
+			await gotoDeck(page, `/examples/${deck}.html`);
+			await page.setViewportSize(await resolvePageBox(page));
+			await page.emulateMedia({ media: "print" });
+
+			const overflowing = await page.evaluate(() =>
+				[...document.querySelectorAll("[data-lys] > article")]
+					.map((a, i) => ({ slide: i, overflowBy: a.scrollHeight - a.clientHeight }))
+					.filter((x) => x.overflowBy > 0),
+			);
+			expect(overflowing).toEqual([]);
+		});
+	}
+});
+
 test.describe("print — geometry regression floor", () => {
 	// The pre-#60 defect: 43% (16:9) and 32% (24:10) of the block axis.
 	for (const deck of ["minimal", "full", "square", "nav"]) {
 		test(`${deck}.html covers at least 60% of the page block axis`, async ({ page }) => {
 			await gotoDeck(page, `/examples/${deck}.html`);
-			const m = await measureInPrint(page);
+			const m = await measureInPrint(page, await resolvePageBox(page));
 
 			expect(m.height / m.pageHeight).toBeGreaterThanOrEqual(0.6);
 		});
@@ -142,8 +192,12 @@ test.describe("print — author page-box override", () => {
 
 		const pdf = readPdf(await page.pdf({ preferCSSPageSize: true }));
 		expect(pdf.widthPt).toBeGreaterThan(pdf.heightPt);
-		// A4 landscape is 297mm x 210mm => 842pt x 595pt.
-		expect(Math.round(pdf.widthPt)).toBeGreaterThan(800);
+		// A4 landscape is 297mm x 210mm => 842pt x 595pt. Assert the actual size,
+		// not a lower bound: the default page is 960pt wide, so a loose bound
+		// would pass even if the override were ignored.
+		expect(Math.round(pdf.widthPt)).toBeCloseTo(842, -1);
+		expect(Math.round(pdf.heightPt)).toBeCloseTo(595, -1);
+		expect(Math.round(pdf.widthPt * PT_TO_PX)).not.toBe(PAGE_BOX.width);
 
 		// The 16:9 slide letterboxes inside it without cropping.
 		const box = {
@@ -189,12 +243,15 @@ test.describe("print — aspect-ratio mismatch", () => {
 		expect(pdf.pages).toBe(slides);
 	});
 
-	test("a 24:10 deck fits within the page box", async ({ page }) => {
-		await gotoDeck(page, "/examples/square.html");
+	test("a 24:10 deck fits within a mismatched page box", async ({ page }) => {
+		// square.html opts into a 24:10 page of its own, so force the 16:9 default
+		// back on to exercise the mismatch path this test exists for.
+		await gotoDeck(page, "/examples/square.html", ":root{--lys-print-page-size:13.333in 7.5in}");
 		const m = await measureInPrint(page);
 
 		expect(m.width).toBeLessThanOrEqual(m.pageWidth);
 		expect(m.height).toBeLessThanOrEqual(m.pageHeight);
+		expect(m.height).toBeLessThan(m.pageHeight); // letterboxed, not filling
 	});
 });
 

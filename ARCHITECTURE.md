@@ -85,7 +85,7 @@ One token stands outside the two-tier convention:
 
 | Token | Default | Notes |
 |---|---|---|
-| `--lys-print-page-size` | `10in 5.625in` | Page box for printed output. Any valid `@page size` value (`landscape`, `A4 landscape`, `<length> <length>`). |
+| `--lys-print-page-size` | `13.333in 7.5in` | Page box for printed output. Any valid `@page size` value (`landscape`, `A4 landscape`, `<length> <length>`). |
 
 It is consumed directly by `@page` inside `@media print`, with no `--_lys-` alias: the page
 context has no element to resolve one on. **It must be set at `:root`** — the page context

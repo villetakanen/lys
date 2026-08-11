@@ -54,6 +54,12 @@
 
 			/* --- Lys overrides --- */
 			--lys-aspect-ratio: 24 / 10;
+			/* Print at this deck's own 24:10 ratio. On the default 16:9 page the
+			   slide letterboxes to 1280x533, and this deck's line-heights are
+			   absolute (--ff-space-1 is in rem) while its font sizes ride the
+			   container clamp — so the shorter box clips the densest slides.
+			   A ratio-matched page is both exact and roomy: 1536x640 (#63). */
+			--lys-print-page-size: 16in 6.667in;
 			--lys-slide-padding: 3rem 4rem;
 			--lys-transition-duration: 500ms;
 			--lys-focus-ring: 2px solid var(--ff-accent-400);
@@ -68,11 +74,16 @@
 			letter-spacing: 0.0138em;
 		}
 
-		/* Pin the backdrop (letterbox area) to the deck's dark theme so it
-		   doesn't adopt the viewer's system scheme — Lys's default backdrop is
-		   light-dark(), which would show white bands in a light OS theme. */
+		/* Pin BOTH halves of the contrast pair to the deck's dark theme so neither
+		   adopts the viewer's system scheme. Lys's defaults are light-dark(): the
+		   backdrop would show white bands in a light OS theme, and the foreground
+		   would flip to black over these dark slides — 1.08:1, unreadable (#62).
+		   The body color is not enough; Lys declares color on [data-lys], which
+		   beats inheritance. Chrome always prints in the light scheme, so an
+		   unpinned foreground fails on paper even for a dark-mode viewer. */
 		[data-lys] {
 			--lys-backdrop: var(--ff-primary-950);
+			color: var(--ff-text-body);
 		}
 
 		[data-lys] > article {

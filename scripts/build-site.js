@@ -20,6 +20,8 @@ cpSync(resolve(root, "llms.txt"), resolve(site, "llms.txt"));
 mkdirSync(examplesOut, { recursive: true });
 cpSync(resolve(root, "dist/lys.css"), resolve(examplesOut, "lys.css"));
 cpSync(resolve(root, "dist/lys.iife.js"), resolve(examplesOut, "lys.iife.js"));
+// The ESM build too: decks that `import { Lys }` need real exports (see below).
+cpSync(resolve(root, "dist/lys.js"), resolve(examplesOut, "lys.js"));
 
 // 3. Copy and rewrite example HTML files
 const examplesSrc = resolve(root, "examples");
@@ -28,8 +30,15 @@ for (const file of readdirSync(examplesSrc)) {
 
 	let html = readFileSync(resolve(examplesSrc, file), "utf8");
 	html = html.replaceAll("/src/lys.css", "lys.css");
-	html = html.replaceAll("/src/lys.ts", "lys.iife.js");
-	html = html.replaceAll('type="module" src="lys.iife.js"', 'src="lys.iife.js"');
+	// Decks load Lys one of two ways, and they need different builds.
+	// 1. <script type="module" src="/src/lys.ts"> — swap in the auto-initializing
+	//    IIFE and drop type="module" (it is not a module).
+	html = html.replaceAll('type="module" src="/src/lys.ts"', 'src="lys.iife.js"');
+	// 2. `import { Lys } from "/src/lys.ts"` — needs the ESM build. Pointing this
+	//    at the IIFE produced a bare specifier the browser cannot resolve, and the
+	//    IIFE exports nothing anyway, so demo.html and full.html shipped to the
+	//    site with no JS at all: no keyboard nav, no ARIA, no data-class.
+	html = html.replaceAll("/src/lys.ts", "./lys.js");
 	writeFileSync(resolve(examplesOut, file), html);
 }
 
