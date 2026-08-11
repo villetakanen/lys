@@ -21,11 +21,16 @@
 			background: #0a0a0a;
 		}
 
-		/* Pin the backdrop (letterbox area) to the deck's dark theme so it
-		   doesn't adopt the viewer's system scheme — Lys's default backdrop is
-		   light-dark(), which would show white bands in a light OS theme. */
+		/* Pin BOTH halves of the contrast pair to the deck's dark theme so neither
+		   adopts the viewer's system scheme. Lys's defaults are light-dark(): the
+		   backdrop would show white bands in a light OS theme, and the foreground
+		   would flip to black over these dark slides — 1.06:1, unreadable (#62).
+		   The body color is not enough; Lys declares color on [data-lys], which
+		   beats inheritance. Chrome always prints in the light scheme, so an
+		   unpinned foreground fails on paper even for a dark-mode viewer. */
 		[data-lys] {
 			--lys-backdrop: #0a0a0a;
+			color: #f0f0f0;
 		}
 
 		[data-lys] > article {

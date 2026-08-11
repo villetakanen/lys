@@ -65,7 +65,7 @@ describe("CSS structural rules", () => {
 
 	it("declares a landscape, ratio-matched @page box with no margin (#60)", () => {
 		expect(cssText).toContain("@page");
-		expect(cssText).toContain("size: var(--lys-print-page-size, 10in 5.625in)");
+		expect(cssText).toContain("size: var(--lys-print-page-size, 13.333in 7.5in)");
 		expect(cssText).toMatch(/@page\s*\{[^}]*margin:\s*0/);
 	});
 

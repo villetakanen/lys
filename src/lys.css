@@ -166,11 +166,15 @@
 	   letterboxing contain-fit produces on screen collapses to zero, and there
 	   is no dead band to center a slide in. Without this the page stays
 	   portrait and a 16/9 slide covers ~43% of it (#60).
+	   13.333in x 7.5in is 1280x720 CSS px — the PowerPoint/Keynote widescreen
+	   size, and the size decks are typically authored at. A smaller page shrinks
+	   the slide below that, and any content sized in absolute units does not
+	   shrink with it, so it overflows and is clipped (#63).
 	   The token is read directly rather than through a --_lys-* alias: the page
 	   context has no element to resolve one on. It inherits custom properties
 	   from the root element only, so --lys-print-page-size must be set at :root. */
 	@page {
-		size: var(--lys-print-page-size, 10in 5.625in);
+		size: var(--lys-print-page-size, 13.333in 7.5in);
 		margin: 0;
 	}
 

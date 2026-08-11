@@ -79,13 +79,14 @@ inspected), using `examples/minimal.html`:
 | `size: landscape; margin: 0` | 792 × 612 | 1056 × 816 | 1056 × 594 | 73 % |
 | `size: 10in 5.625in; margin: 0` | 720 × 405 | 960 × 540 | 960 × 540 | **100 %** |
 | `size: var(--pg); margin: 0` | 720 × 405 | 960 × 540 | 960 × 540 | **100 %** |
+| `size: 13.333in 7.5in; margin: 0` *(chosen — #63)* | 960 × 540 | 1280 × 720 | 1280 × 720 | **100 %** |
 
 **Decision: a ratio-matched page box, expressed through a token.**
 
 ```css
 @media print {
   @page {
-    size: var(--lys-print-page-size, 10in 5.625in);
+    size: var(--lys-print-page-size, 13.333in 7.5in);
     margin: 0;
   }
 }
@@ -96,8 +97,14 @@ Rationale:
 - A ratio-matched page makes the slide box **exactly** the page box. The letterboxing that
   contain-fit produces on screen collapses to zero, so there is no wasted ink, no dead band,
   and — crucially — **no centering problem to solve** (see §3).
-- `10in × 5.625in` is 16:9 at the same physical scale as PowerPoint/Keynote widescreen exports,
-  so the PDF reads as a deck export rather than a document.
+- `13.333in × 7.5in` is 16:9 at exactly the PowerPoint/Keynote widescreen scale, so the PDF reads
+  as a deck export rather than a document. It is also **1280 × 720 CSS px**, which matters more
+  than the physical size: the page box determines the slide box, and the slide box is the
+  container that author `cqi` units resolve against. Content sized in absolute units (`rem`,
+  `px`) does **not** scale with it, so a page box narrower than the width the deck was authored
+  at will overflow and be clipped. The first default shipped in #60 was `10in 5.625in`
+  (960 × 540 px) and clipped three slides of `examples/full.html`; 1280 px clips none (#63).
+  **Any future change to this default must not shrink the page box below 1280 px.**
 - `margin: 0` is what allows full-bleed slides. Chrome applies the CSS page margin when the
   user leaves the print dialog's Margins control at *Default*.
 - `size: landscape` alone was rejected: it improves fill to 73 % but leaves a 27 % band whose
@@ -107,7 +114,7 @@ Rationale:
 
 | Token | Default | Purpose |
 |---|---|---|
-| `--lys-print-page-size` | `10in 5.625in` | Page box for printed output; any valid `@page size` value (`landscape`, `A4 landscape`, `<length> <length>`) |
+| `--lys-print-page-size` | `13.333in 7.5in` | Page box for printed output; any valid `@page size` value (`landscape`, `A4 landscape`, `<length> <length>`) |
 
 Notes for implementation:
 
@@ -217,8 +224,11 @@ media. `spa-nav.spec.md` DoD item 11 and its print scenario are superseded and m
 - Stacked mode (`[data-lys][data-lys-mode] > article`) → `position: static; transform: none;
   opacity: 1; pointer-events: auto`, so all slides print, not just the active one
   (`per-slide-transitions.spec.md`, `stacked-mode-nav-bug.spec.md`).
-- `overflow: hidden` on articles is retained: with matching ratios, content that fits on screen
-  fits on paper, and the clip prevents overflow bleeding across a page boundary.
+- `overflow: hidden` on articles is retained: the clip prevents overflow bleeding across a page
+  boundary. Note the qualifier this originally omitted — content that fits on screen fits on
+  paper **only when the page box is at least as wide as the width the deck was authored at**.
+  Absolute-unit content does not scale with the slide, so a smaller page box clips it silently.
+  That is why the default page box is 1280 px wide and why the guard below exists (#63).
 
 #### Progressive enhancement and cross-browser behavior
 
@@ -264,7 +274,7 @@ CSS-only decks (no JS) print identically — nothing here depends on the JS laye
 ### Definition of Done
 
 1. `src/lys.css` contains an `@page` rule inside `@media print` with `margin: 0` and
-   `size: var(--lys-print-page-size, 10in 5.625in)`.
+   `size: var(--lys-print-page-size, 13.333in 7.5in)`.
 2. With default tokens, the printed page box is landscape (width > height).
 3. With default tokens on a 16:9 deck, the slide box fills **≥ 99 %** of the page box on both
    axes (measured, not inferred from properties).
@@ -286,6 +296,8 @@ CSS-only decks (no JS) print identically — nothing here depends on the JS laye
 14. A deck of N slides produces exactly N pages, in document order, with no trailing blank page —
     including after JS has appended the live region to the container.
 14b. A deck with `--lys-slide-gap` set prints with no slide displaced inside its page.
+14c. No slide of any bundled example deck overflows its box at the default page size — content
+     is never silently clipped by the print layout (#63).
 15. Stacked/fade decks print all slides, not only the active one.
 16. Print behavior is identical with JS disabled.
 17. `lys.css` stays under 2 KB gzip and contains no `@import` or `url()`.
@@ -341,6 +353,12 @@ Scenario: A slide gap does not displace slides in print
   When the deck is printed
   Then every slide has no top margin
   And each slide starts at the top of its own page
+
+Scenario: Printed content is never silently clipped
+  Given any bundled example deck
+  When the deck is printed at the default page box
+  Then no slide's content height exceeds its box height
+  And no heading or body text is cut off by the slide's overflow clip
 ```
 
 #### Page box geometry — regression floor
