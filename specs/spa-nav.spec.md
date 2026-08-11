@@ -59,8 +59,10 @@ the viewport, above the slides). This is required because the default container 
 full viewport snap row and render as a blank "slide." Out-of-flow positioning consumes no row
 and keeps the nav visible while the deck scrolls, in both default and stacked modes. The rule
 is structural and visually unopinionated (no colors/fonts/sizes that assume a look); authors
-override positioning and supply all appearance. In `@media print`, the region is not pinned
-(static or hidden) so it does not overlap printed slides.
+override positioning and supply all appearance. In `@media print`, the region is **hidden** —
+see [`print-layout.spec.md`](./print-layout.spec.md) (#60), which supersedes the original
+`position: static` rule here: unpinning alone left the region in block flow, where it pushed
+slide 1 down its page and spilled it onto a second sheet.
 
 #### Lys responsibility 2 — active-state hook (`src/nav.ts`)
 
@@ -132,7 +134,7 @@ This is the entire JS surface: observe → resolve current slide `id` → set th
 9. `destroy()` removes the active-state attributes and every nav listener/observer; no leaks.
 10. Multiple decks each track their own region independently.
 11. The nav does not break scroll-snap one-slide-per-swipe, contain-fit aspect ratio, or print
-    (region not pinned in `@media print`).
+    (region hidden in `@media print` — `print-layout.spec.md`, #60).
 12. Bundle sizes within budget after the feature (record actuals).
 
 ### Regression Guardrails
@@ -199,12 +201,16 @@ Scenario: Two decks track independently
   When deck A's current slide changes
   Then only deck A's active link updates
 
-Scenario: Print does not pin the nav
+Scenario: Print hides the nav
   Given a [data-lys-nav] deck
   When the page is printed
-  Then the region is not fixed over slide content
+  Then the region is not rendered and consumes no block space
+  And the first slide starts at the top of the first page
   And each slide still prints one per page
 ```
+
+> Print scenarios for the nav live in `tests/e2e/print.spec.ts` and are owned by
+> [`print-layout.spec.md`](./print-layout.spec.md) (#60).
 
 ## Test / Spec Alignment
 

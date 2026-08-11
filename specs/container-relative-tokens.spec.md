@@ -48,7 +48,7 @@ At a 1920x1080 viewport with 16:9 slides, the article content-box width is appro
 #### Integration points
 
 - **Container type** (`container-type.spec.md`): Depends on #28. `cqi` units only work because articles are now size containers.
-- **Print layout**: `@media print` resets `container-type: normal` (#28). With `cqi` in a non-contained context, the browser falls back to viewport-relative resolution (confirmed across Chromium, Firefox, and WebKit). For font-size, the `clamp()` ceiling (`1.5rem`) typically applies at print-sized viewports. For padding, `4cqi` falls back to a viewport-relative value — not zero.
+- **Print layout**: **Superseded by [`print-layout.spec.md`](./print-layout.spec.md) (#60).** This spec originally documented `@media print` resetting `container-type: normal` (#28), with `cqi` falling back to viewport-relative resolution. That reset is gone: with the ratio-matched `@page` box, the printed slide is definite on both axes, so articles stay `container-type: size` and `cqi` resolves against the **slide** — print typography now matches screen typography proportionally. See `print-layout.spec.md` §"`container-type` in print".
 - **Reduced motion**: Unaffected. These tokens control sizing, not animation.
 - **Transitions**: Unaffected. `--lys-transition-duration` and `--lys-transition-easing` are unchanged.
 
@@ -72,7 +72,7 @@ At a 1920x1080 viewport with 16:9 slides, the article content-box width is appro
 5. At extreme aspect ratios (1:1 on a widescreen viewport), text scales with the slide and does not overflow.
 6. `clamp()` floor prevents font-size from dropping below `0.75rem` on very small containers.
 7. Authors can override both tokens with absolute values (`rem`, `px`) and the overrides take effect.
-8. Print layout: text is readable (cqi falls back to viewport; clamp ceiling applies).
+8. ~~Print layout: text is readable (cqi falls back to viewport; clamp ceiling applies).~~ **Superseded by `print-layout.spec.md` (#60):** slides stay size containers in print, so `cqi` resolves against the slide. Text must be readable *and* proportional to the on-screen result.
 9. `prefers-reduced-motion` still works (transition tokens unchanged).
 10. ARCHITECTURE.md token table reflects new defaults.
 11. `specs/lys-core.spec.md` token table reflects new defaults.
@@ -147,18 +147,22 @@ Scenario: author override at container level
 
 #### Print layout
 
+**Superseded by [`print-layout.spec.md`](./print-layout.spec.md) (#60).** The scenarios below
+described `cqi` falling back to the viewport after the `container-type` reset. Slides are size
+containers in print now, so `cqi` resolves against the slide box:
+
 ```gherkin
 Scenario: print layout has readable text
   Given a [data-lys] container with articles
-  When @media print applies (container-type reset to normal)
-  Then cqi falls back to viewport-relative resolution
-  And font-size is clamped by the clamp ceiling (1.5rem = 24px)
-  And text is visible and readable
+  When @media print applies
+  Then articles are still size containers (container-type: size)
+  And cqi resolves against the slide box
+  And font-size stays within the clamp range and is readable
 
 Scenario: print layout padding behavior
   Given a [data-lys] container with articles
-  When @media print applies (container-type reset to normal)
-  Then padding falls back to a viewport-relative value (cqi resolves against viewport when no container exists)
+  When @media print applies
+  Then 4cqi padding resolves against the slide box (not the page, and not zero)
   Or padding is overridden by author CSS
 ```
 

@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.0] — 2026-08-11
+
+### Added
+
+- `--lys-print-page-size` token (default `10in 5.625in`) sets the page box for printed output (#60). Accepts any valid `@page` size — `landscape`, `A4 landscape`, or an explicit `<length> <length>` pair. Unlike every other token, it must be set at `:root`: the page context inherits custom properties from the root element only, so a value set on the deck or a single slide has no effect.
+
+### Fixed
+
+- Printing produced unusable pages (#60). Slides printed as a letterbox strip pinned to the top of a portrait sheet — a 16:9 deck covered 43% of the page and a 24:10 deck 32%, wasting the rest. Slides are sized to fit the viewport, and in print the "viewport" is the page box, which stayed portrait because no page size was declared. Decks now print to a landscape, ratio-matched page, so a 16:9 deck fills the page edge to edge. A deck whose ratio differs from the page is letterboxed or pillarboxed and centered, never cropped.
+- Every deck printed a trailing blank page once JavaScript had initialized. The rule that suppresses the final page break matched only when the last slide was the deck's last element, and the ARIA live region added at startup took that position. Present since the print stylesheet shipped in 1.0.0.
+- Slide backgrounds are no longer dropped when printing. Chrome prints with its **Background graphics** option off by default, which removed each slide's background while keeping its text color — taking dark decks to unreadable light-grey-on-white. Backgrounds are now forced to print; the out-of-slide backdrop still prints transparent, so no ink is spent on it.
+- `--lys-slide-gap` no longer displaces printed slides. The gap between slides was applied in print too, pushing every slide after the first down inside its own page.
+
+### Changed
+
+- Slides stay container-query containers when printing, so `cqi`-based type and spacing resolve against the slide rather than the page. Print typography is now proportional to the on-screen result instead of diverging from it. Decks that relied on the previous fallback may see different printed text sizes — closer to what the deck looks like on screen.
+- A `data-lys-nav` chapter navigation region is hidden when printing rather than moved into the flow. In the flow it consumed space at the top of the first page and pushed the opening slide onto a second sheet. The region and its links are unchanged on screen and remain in the accessibility tree.
+
 ## [1.1.1] — 2026-06-26
 
 ### Fixed
@@ -94,7 +112,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Example decks: minimal, themed, full-featured, and 1:1 aspect ratio.
 - GitHub Pages site with token reference, article contract, and live examples.
 
-[Unreleased]: https://github.com/villetakanen/lys/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/villetakanen/lys/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/villetakanen/lys/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/villetakanen/lys/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/villetakanen/lys/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/villetakanen/lys/compare/v1.0.0...v1.0.2

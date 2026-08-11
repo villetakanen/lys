@@ -113,6 +113,7 @@ specs/navigation.spec.md    →  tests/unit/navigation.test.ts + tests/e2e/navig
 specs/a11y.spec.md          →  tests/unit/a11y.test.ts + tests/e2e/a11y.spec.ts
 specs/transitions.spec.md   →  tests/unit/transitions.test.ts + tests/e2e/transitions.spec.ts
 specs/spa-nav.spec.md       →  tests/unit/nav.test.ts + tests/e2e/nav.spec.ts
+specs/print-layout.spec.md  →  tests/e2e/print.spec.ts + tests/unit/tokens.test.ts
 ```
 
 A spec scenario without a test is a gap. A test without a spec scenario means the spec needs updating.

@@ -81,6 +81,17 @@ Lys uses a two-tier custom property convention to give authors full control whil
 --_lys-backdrop: var(--lys-backdrop, light-dark(#fff, #000));
 ```
 
+One token stands outside the two-tier convention:
+
+| Token | Default | Notes |
+|---|---|---|
+| `--lys-print-page-size` | `10in 5.625in` | Page box for printed output. Any valid `@page size` value (`landscape`, `A4 landscape`, `<length> <length>`). |
+
+It is consumed directly by `@page` inside `@media print`, with no `--_lys-` alias: the page
+context has no element to resolve one on. **It must be set at `:root`** — the page context
+inherits custom properties from the root element only, so a value scoped to `[data-lys]` or an
+`<article>` silently does nothing. See [`specs/print-layout.spec.md`](./specs/print-layout.spec.md).
+
 Authors override by setting the public token at any level — `:root`, the `[data-lys]` container, or a single `<article>`:
 
 ```css
