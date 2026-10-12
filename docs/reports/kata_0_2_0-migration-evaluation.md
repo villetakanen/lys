@@ -1,36 +1,20 @@
 ---
 type: Report
 title: Kata 0.2.0 migration evaluation
-description: Clean-context Sonnet evaluators judged all 42 slides in the Lys example decks against the vendored Kata 0.2.0 skill; records verdicts, a reviewer cross-check, catalogue gaps, and implications for Kata and Lys.
-tags: [kata, evaluation, slides, examples, harness, skills]
-status: draft
+tags: [kata, evaluation, examples, skills]
 generated:
   by: claude/fable-5.1
   at: 2026-10-12T15:30:00+03:00
-sources:
-  - id: kata-skill
-    resource: .agents/skills/kata/SKILL.md
-    title: Kata skill, version 0.2.0 (vendored from villetakanen/kata)
-  - id: kata-repo
-    resource: https://github.com/villetakanen/kata
-    title: Kata repository
-  - id: examples
-    resource: examples/
-    title: Lys example decks, six decks, 42 slides, Lys 1.2.2
-subject:
-  kata_version: 0.2.0
-  lys_version: 1.2.2
-  decks: [demo.html, full.html, minimal.html, nav.html, square.html, themed.html]
-  slides: 42
-  evaluators: 6 Claude Sonnet subagents, one per deck, clean context
-  reviewer: Claude Fable 5.1, main session, independent read of all slides
+verified:
+  - by: human:ville.takanen
+    at: 2026-10-12T16:00:00+03:00
 ---
 
 # Kata 0.2.0 migration evaluation
 
 ## Purpose
 
-Three questions were asked of each slide in the Lys example decks:
+Kata 0.2.0 is vendored at `.agents/skills/kata/` in Lys 1.2.2. Six Claude Sonnet subagents, one per deck in `examples/`, evaluated all 42 slides against it. Three questions were asked of each slide:
 
 1. Can a pattern from the Kata catalogue be discerned that the slide should have used, or is the needed form missing from Kata?
 2. Does a clean-context subagent, given only `SKILL.md` and the seven references, reach a sensible "best result" verdict?
