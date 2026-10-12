@@ -1,10 +1,32 @@
-# Kata 0.2.0 migration evaluation
+---
+type: Report
+title: Kata 0.2.0 migration evaluation
+description: Clean-context Sonnet evaluators judged all 42 slides in the Lys example decks against the vendored Kata 0.2.0 skill; records verdicts, a reviewer cross-check, catalogue gaps, and implications for Kata and Lys.
+tags: [kata, evaluation, slides, examples, harness, skills]
+status: draft
+generated:
+  by: claude/fable-5.1
+  at: 2026-10-12T15:30:00+03:00
+sources:
+  - id: kata-skill
+    resource: .agents/skills/kata/SKILL.md
+    title: Kata skill, version 0.2.0 (vendored from villetakanen/kata)
+  - id: kata-repo
+    resource: https://github.com/villetakanen/kata
+    title: Kata repository
+  - id: examples
+    resource: examples/
+    title: Lys example decks, six decks, 42 slides, Lys 1.2.2
+subject:
+  kata_version: 0.2.0
+  lys_version: 1.2.2
+  decks: [demo.html, full.html, minimal.html, nav.html, square.html, themed.html]
+  slides: 42
+  evaluators: 6 Claude Sonnet subagents, one per deck, clean context
+  reviewer: Claude Fable 5.1, main session, independent read of all slides
+---
 
-Date: 2026-10-12
-Kata version: 0.2.0, vendored at `.agents/skills/kata/` in Lys 1.2.2
-Decks evaluated: the six decks in `examples/` (42 slides)
-Evaluators: six Claude Sonnet subagents, one per deck, each with a clean context
-Reviewer: Claude Fable 5.1 in the main session, with an independent read of all 42 slides
+# Kata 0.2.0 migration evaluation
 
 ## Purpose
 
