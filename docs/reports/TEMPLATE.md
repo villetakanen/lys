@@ -9,7 +9,7 @@ verified:
 
 # Report template
 
-Reports in this directory carry [Open Knowledge Format](https://okf.md/spec/) trust fields in YAML frontmatter. Only the two fields below are used. Do not add others.
+Reports in this directory carry [Open Knowledge Format](https://okf.md/spec/) trust fields in YAML frontmatter. Only the two fields below are required.
 
 ## `generated`
 
