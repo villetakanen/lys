@@ -212,6 +212,15 @@
 			line-height: 1;
 		}
 
+		.workflow-return {
+			flex-basis: 100%;
+			margin-top: 0.25em;
+			color: var(--asdlc-brand);
+			font-family: "B612 Mono", monospace;
+			font-size: 0.8em;
+			letter-spacing: 0.04em;
+		}
+
 		.workflow p {
 			margin-top: 1.5em;
 			color: var(--asdlc-text-secondary);
@@ -280,8 +289,9 @@
 				<span class="workflow-step">Verify</span>
 				<span class="workflow-arrow">&rarr;</span>
 				<span class="workflow-step">Ship</span>
+				<span class="workflow-return">&#8634; Ship feeds back into Spec</span>
 			</div>
-			<p>Each phase has a clear input and output. The spec is both the starting point and the acceptance gate.</p>
+			<p>Each arrow reads "is followed by": a phase's output is the next phase's input. Shipping updates the spec, so the cycle repeats. The spec is both the starting point and the acceptance gate.</p>
 		</article>
 
 		<article data-class="surface-slide" data-background="#ebebe6" data-notes="Show the anatomy of a spec. The blueprint section captures architecture and constraints. The contract section captures testable acceptance criteria in Gherkin.">

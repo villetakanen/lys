@@ -196,28 +196,26 @@
 			margin-top: 0.8em;
 		}
 
-		/* Three-tier grid */
-		.tiers {
-			display: grid;
-			grid-template-columns: repeat(3, 1fr);
-			gap: 1.5rem;
-			margin-top: 1em;
+		/* Progressive-enhancement matrix: tiers as columns, capabilities as rows */
+		.matrix td:not(:first-child),
+		.matrix th:not(:first-child) {
+			text-align: center;
 		}
 
-		.tier {
-			background: rgba(255, 255, 255, 0.05);
-			border-radius: 0.75rem;
-			padding: 1.5em;
-			border: 1px solid rgba(255, 255, 255, 0.08);
+		.matrix td {
+			color: #f0f0f0;
 		}
 
-		.tier h3 {
-			margin-bottom: 0.3em;
+		.matrix td.no {
+			opacity: 0.6;
 		}
 
-		.tier p {
-			font-size: 0.9em;
-			opacity: 0.8;
+		.matrix tbody th {
+			color: #e0def4;
+			font-size: 1em;
+			font-weight: 500;
+			text-transform: none;
+			letter-spacing: 0;
 		}
 
 		/* Closing slide */
@@ -476,23 +474,28 @@
 		<!-- Slide 8: Progressive Enhancement -->
 		<article data-background="#1a1a2e">
 			<h2>Progressive Enhancement</h2>
-			<div class="tiers">
-				<div class="tier">
-					<h3>No JS, No CSS</h3>
-					<p>Articles flow as a readable document. Content is always accessible regardless of what loads.</p>
-				</div>
-				<div class="tier">
-					<h3>CSS Only</h3>
-					<p>Scroll-snap slides appear. Users navigate by scrolling. Layout and aspect ratio are enforced.</p>
-				</div>
-				<div class="tier">
-					<h3>CSS + JS</h3>
-					<p>Full experience: keyboard navigation, ARIA announcements, hash routing, programmatic API, fade transitions.</p>
-				</div>
-			</div>
+			<table class="matrix">
+				<thead>
+					<tr>
+						<th scope="col">Capability</th>
+						<th scope="col">No JS, No CSS</th>
+						<th scope="col">CSS only</th>
+						<th scope="col">CSS + JS</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr><th scope="row">Readable document</th><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+					<tr><th scope="row">Slide layout and aspect ratio</th><td class="no">No</td><td>Yes</td><td>Yes</td></tr>
+					<tr><th scope="row">Scroll-snap navigation</th><td class="no">No</td><td>Yes</td><td>Yes</td></tr>
+					<tr><th scope="row">Keyboard and touch navigation</th><td class="no">No</td><td class="no">No</td><td>Yes</td></tr>
+					<tr><th scope="row">ARIA announcements and focus</th><td class="no">No</td><td class="no">No</td><td>Yes</td></tr>
+					<tr><th scope="row">Hash routing and programmatic API</th><td class="no">No</td><td class="no">No</td><td>Yes</td></tr>
+					<tr><th scope="row">Transitions</th><td class="no">No</td><td class="no">No</td><td>Yes</td></tr>
+				</tbody>
+			</table>
 		</article>
 
-		<!-- Slide: What's new in 1.1.0 -->
+		<!-- Slide 9: What's new in 1.1.0 -->
 		<article
 			id="whats-new"
 			data-background="#16213e"
@@ -506,7 +509,7 @@
 			</ul>
 		</article>
 
-		<!-- Slide 9: Closing -->
+		<!-- Slide 10: Closing -->
 		<article
 			id="close"
 			data-class="closing"
