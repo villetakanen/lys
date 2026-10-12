@@ -1,4 +1,5 @@
 ---
+name: ship
 description: "Lint, build, test, verify specs, commit, and push — one micro-commit to remote"
 argument-hint: "[commit message or leave blank for auto-generated]"
 ---

@@ -217,7 +217,7 @@ const deck: LysInstance = new Lys(document.getElementById('my-deck'));
   VISION.md              ← product vision & principles
   ARCHITECTURE.md        ← you are here — technical contract
   PROJECT.md             ← toolchain, scaffolding, workflow
-  CLAUDE.md              ← agent constitution
+  AGENTS.md              ← agent constitution (CLAUDE.md is a symlink)
   src/
     lys.css              ← structural styles + design tokens
     lys.ts               ← entry point, auto-init, public API

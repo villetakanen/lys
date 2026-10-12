@@ -1,3 +1,9 @@
+---
+name: dev
+description: "Implement a GitHub issue against the relevant spec, in micro-commits"
+argument-hint: "[GitHub issue number or task description]"
+---
+
 Implement the following GitHub issue:
 
 $ARGUMENTS

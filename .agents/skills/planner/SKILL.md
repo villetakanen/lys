@@ -1,3 +1,9 @@
+---
+name: planner
+description: "Plan atomically deliverable tasks for a feature or request"
+argument-hint: "[feature or request description]"
+---
+
 Plan atomically deliverable tasks for the following feature or request:
 
 $ARGUMENTS

@@ -115,6 +115,6 @@ The primary output format is a **single, self-contained HTML file** with both CS
 
 - [ARCHITECTURE.md](./ARCHITECTURE.md) — Technical contract, API surface, tokens, events, file structure.
 - [PROJECT.md](./PROJECT.md) — Toolchain, scaffolding, testing strategy, agentic workflow.
-- [CLAUDE.md](./CLAUDE.md) — Agent constitution for working on this codebase.
+- [AGENTS.md](./AGENTS.md) — Agent constitution for working on this codebase (`CLAUDE.md` symlinks to it).
 
 ---
