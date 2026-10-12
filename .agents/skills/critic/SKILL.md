@@ -1,3 +1,8 @@
+---
+name: critic
+description: "Perform an ASDLC adversary review of the current changes in the git worktree"
+---
+
 Perform an ASDLC adversary review of the current changes in the git worktree.
 
 ## Instructions

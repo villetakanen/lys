@@ -227,7 +227,7 @@ commit-msg:
 /Projects/Lys/
   VISION.md              ← product vision & API contract
   PROJECT.md             ← you are here
-  CLAUDE.md              ← agent constitution
+  AGENTS.md              ← agent constitution (CLAUDE.md is a symlink)
   package.json
   tsconfig.json
   vite.config.ts
@@ -390,7 +390,7 @@ chore(build): update Vite to 6.x
 
 ### Agent Constitution
 
-See [CLAUDE.md](./CLAUDE.md) for the full agent constitution — hard constraints, judgment boundaries, commit conventions, and spec-driven workflow instructions.
+See [AGENTS.md](./AGENTS.md) (symlinked as `CLAUDE.md`) for the full agent constitution — hard constraints, judgment boundaries, commit conventions, and spec-driven workflow instructions.
 
 ### Working with Specs as an Agent
 

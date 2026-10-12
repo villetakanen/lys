@@ -1,3 +1,8 @@
+---
+name: next-task
+description: "Pick the next task from the backlog using the fast/value principle"
+---
+
 Pick the next task from the backlog using the fast/value principle.
 
 ## Instructions

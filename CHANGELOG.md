@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.2] — 2026-10-12
+
+### Changed
+
+- Agent harness moved to the cross-tool standard layout. `AGENTS.md` is now the canonical instruction file with `CLAUDE.md` symlinked to it, and the former `.claude/commands/*.md` slash commands are now skills under `.agents/skills/<name>/SKILL.md`, with `.claude/skills` symlinked to that directory. Every skill carries `name`/`description` frontmatter so it is discoverable by any agent that reads the standard directories.
+
+### Added
+
+- The [Kata](https://github.com/villetakanen/kata) 0.2.0 slide-pattern skill is vendored at `.agents/skills/kata/` for use when designing or reviewing example decks. No runtime or package contents changed.
+
 ## [1.2.1] — 2026-08-11
 
 ### Fixed
@@ -124,7 +134,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Example decks: minimal, themed, full-featured, and 1:1 aspect ratio.
 - GitHub Pages site with token reference, article contract, and live examples.
 
-[Unreleased]: https://github.com/villetakanen/lys/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/villetakanen/lys/compare/v1.2.2...HEAD
+[1.2.2]: https://github.com/villetakanen/lys/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/villetakanen/lys/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/villetakanen/lys/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/villetakanen/lys/compare/v1.1.0...v1.1.1

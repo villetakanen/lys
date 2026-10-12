@@ -1,4 +1,5 @@
 ---
+name: assemble
 description: "Dev-Critic loop: implement, review, fix — repeat until clean"
 argument-hint: "[PBI number, Linear issue ID, or task description]"
 ---
@@ -33,7 +34,7 @@ Compile this into a **Task Brief** — a self-contained description that each su
 Spawn a **sub-agent** (model: sonnet) with the full @Dev persona prompt and the Task Brief.
 
 The dev agent prompt must include:
-- The complete @Dev persona instructions (from `.claude/commands/dev.md`)
+- The complete @Dev persona instructions (from `.agents/skills/dev/SKILL.md`)
 - The Task Brief from Step 0
 - If this is cycle N>1: the **Critic Findings** from the previous cycle, with explicit instructions to fix each violation
 
@@ -44,7 +45,7 @@ Wait for the dev agent to complete. Capture its summary of changes made.
 Spawn a **sub-agent** (model: sonnet) with the full @Critic persona prompt.
 
 The critic agent prompt must include:
-- The complete @Critic persona instructions (from `.claude/commands/critic.md`)
+- The complete @Critic persona instructions (from `.agents/skills/critic/SKILL.md`)
 - The Task Brief (so the critic knows what was intended)
 - The dev agent's summary of what was changed
 

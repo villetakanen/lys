@@ -1,3 +1,9 @@
+---
+name: spec
+description: "Write an ASDLC spec for a feature request"
+argument-hint: "[feature request description]"
+---
+
 Write an ASDLC spec for the following feature request:
 
 $ARGUMENTS
