@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.3] — 2026-10-12
+
+### Changed
+
+- The progressive-enhancement slides in `full.html` and `demo.html` are now an aligned matrix of capabilities against the three tiers (no JS and no CSS, CSS only, CSS + JS) instead of three prose cards. This follows the one finding in the Kata 0.2.0 evaluation (`docs/reports/`) where a pattern was judged to clearly improve a slide. The size budget on the demo slide is separated from the tiers.
+- The workflow slide in `themed.html` now shows the Ship → Spec feedback loop that its speaker notes described but the diagram omitted, and states what the arrows mean.
+
+### Fixed
+
+- Slide-number comments in `full.html` were off by one from the "What's new" slide onward.
+
 ## [1.2.2] — 2026-10-12
 
 ### Changed
@@ -134,7 +145,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Example decks: minimal, themed, full-featured, and 1:1 aspect ratio.
 - GitHub Pages site with token reference, article contract, and live examples.
 
-[Unreleased]: https://github.com/villetakanen/lys/compare/v1.2.2...HEAD
+[Unreleased]: https://github.com/villetakanen/lys/compare/v1.2.3...HEAD
+[1.2.3]: https://github.com/villetakanen/lys/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/villetakanen/lys/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/villetakanen/lys/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/villetakanen/lys/compare/v1.1.1...v1.2.0
