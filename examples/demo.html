@@ -103,6 +103,30 @@
 			margin-top: 1em;
 		}
 
+		/* Progressive-enhancement matrix */
+		article table {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 0.85em;
+			margin-top: 0.75em;
+		}
+		article th, article td {
+			padding: 0.45em 0.8em;
+			text-align: left;
+			border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+		}
+		article td:not(:first-child), article thead th:not(:first-child) {
+			text-align: center;
+		}
+		article td.no {
+			opacity: 0.65;
+		}
+		.budget {
+			margin-top: 1em;
+			font-size: 0.85em;
+			opacity: 0.75;
+		}
+
 		/* Dark text on light backgrounds */
 		.light { color: #1a1a2e; }
 		.light h2 { color: #0f0c29; }
@@ -171,22 +195,24 @@
 
 		<article data-class="light" data-background="#f0f0ff" data-notes="Explain progressive enhancement tiers.">
 			<h2>Progressive Enhancement</h2>
-			<div class="two-col">
-				<div>
-					<p><strong>No JS, no CSS</strong></p>
-					<p>Articles flow as a readable document.</p>
-					<br>
-					<p><strong>CSS only</strong></p>
-					<p>Scroll-snap slides, navigable by scrolling.</p>
-				</div>
-				<div>
-					<p><strong>CSS + JS</strong></p>
-					<p>Full experience: keyboard navigation, state tracking, programmatic API, presenter mode.</p>
-					<br>
-					<p><strong>Size budget</strong></p>
-					<p>JS &lt; 5 KB gzip. CSS &lt; 2 KB gzip. Currently ~1.2 KB total.</p>
-				</div>
-			</div>
+			<table>
+				<thead>
+					<tr>
+						<th scope="col">Capability</th>
+						<th scope="col">No JS, no CSS</th>
+						<th scope="col">CSS only</th>
+						<th scope="col">CSS + JS</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr><th scope="row">Readable document</th><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+					<tr><th scope="row">Scroll-snap slides</th><td class="no">No</td><td>Yes</td><td>Yes</td></tr>
+					<tr><th scope="row">Keyboard and touch navigation</th><td class="no">No</td><td class="no">No</td><td>Yes</td></tr>
+					<tr><th scope="row">ARIA announcements</th><td class="no">No</td><td class="no">No</td><td>Yes</td></tr>
+					<tr><th scope="row">Hash routing and programmatic API</th><td class="no">No</td><td class="no">No</td><td>Yes</td></tr>
+				</tbody>
+			</table>
+			<p class="budget"><strong>Size budget:</strong> JS &lt; 5 KB gzip, CSS &lt; 2 KB gzip.</p>
 		</article>
 
 		<article data-class="dark code-slide" data-background="#1e1e2e" data-notes="Show the data attribute API.">
