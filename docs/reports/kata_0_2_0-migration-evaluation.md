@@ -1,7 +1,4 @@
 ---
-type: Report
-title: Kata 0.2.0 migration evaluation
-tags: [kata, evaluation, examples, skills]
 generated:
   by: claude/fable-5.1
   at: 2026-10-12T15:30:00+03:00
