@@ -1,14 +1,21 @@
 # Directed dependencies
 
+**Scope:** This reference preserves the existing form and worked specimen.
+Use it to arrange supplied dependencies only when the entities and edge
+meaning are already provided. Structure notes describe the specimen's
+constraints; they do not authorize deriving edges, changing their meaning, or
+splitting content without the content author's direction. For shared checks,
+see [layout assessment](layout-assessment.md).
+
 **Form:** Named entities connected by a defined relation. **Audience question:** What must happen before what?
 
-Use a small directed diagram when prerequisite structure matters. Use a timeline when dates or durations are the question. Use a matrix or several focused views for a dense network. Keep direction and edge meaning explicit; data flow, ownership, influence, and prerequisite are different relations.
+The retained examples use a small directed diagram for supplied prerequisite relations. Dates, durations, or a dense network may constrain how legibly the supplied content fits. Keep the supplied edge meaning explicit: data flow, ownership, influence, and prerequisite are different relations. Do not convert between them or split the network without the content author's direction.
 
 ## Structure
 
-For prerequisite edges, put prerequisites on the left and dependent work on the right. State that an arrow means “must finish before.” Route connectors so endpoints are unambiguous. Preserve forks and joins. Do not imply that horizontal distance means duration. Label different edge types individually if they must coexist.
+In the prerequisite specimen, prerequisites sit left of dependent work, the arrow meaning is stated, and connector endpoints, forks, and joins remain clear. Horizontal distance does not imply duration. Preserve supplied edge types and meanings.
 
-## Worked example
+## Retained worked example (historical)
 
 Fictional service launch. The launch lead needs to explain readiness prerequisites.
 
@@ -19,9 +26,9 @@ Fictional service launch. The launch lead needs to explain readiness prerequisit
 
 **Before:** A list of these four rules.
 
-**After headline:** “Launch requires both Build and Compliance”
+**After headline (historical):** “Launch requires both Build and Compliance”
 
-**After layout:** Research, Design, Build, and Launch run left to right. Compliance sits on a separate lower branch with its own arrow into Launch. State the edge meaning and “Spacing does not represent duration.” The final join retains two independent prerequisites.
+**After layout:** The historical specimen arranges the supplied prerequisites left to right, with Compliance on a separate branch. The annotation clarifies edge meaning and that spacing does not represent duration. These are retained example choices, not instructions to infer relations.
 
 ## Rationale and limits
 

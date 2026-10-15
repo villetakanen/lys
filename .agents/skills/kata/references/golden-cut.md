@@ -1,5 +1,10 @@
 # Golden cut
 
+**Scope:** This reference preserves the existing form and worked specimen.
+Use unequal space only when the supplied brief supports that priority; do not
+author a primary claim. For checks shared across forms, see
+[layout assessment](layout-assessment.md).
+
 ## Message
 
 Give one already-supported message or visual field more room, with a smaller
@@ -35,13 +40,13 @@ overstate certainty.
   for the secondary field to remain legible.
 
 Adapt by changing the split, stacking fields in reading order for a narrow
-screen, simplifying secondary material without dropping consequential
-caveats, or choosing another pattern. Do not preserve a side-by-side desktop
-canvas by shrinking its text until the context is unreadable. Inspect the
-rendered phone output and keep the qualification visible and clearly associated
-with the primary message. If the primary message or the relative priority is
-unknown, ask what the audience needs to decide and which claim has priority. If
-that cannot be established, do not imply it with area.
+screen, or choosing another arrangement for the supplied material. Do not
+preserve a side-by-side desktop canvas by shrinking its text until the context
+is unreadable. Inspect the rendered phone output and keep the qualification
+visible and clearly associated with the primary message. Use a primary message
+and relative priority only when the supplied brief supports them. If their
+absence makes the layout decision consequential, ask; otherwise retain the
+supplied treatment or give the material equal emphasis.
 
 ## Keep quantitative meaning separate
 
@@ -50,6 +55,9 @@ whole. Do not use it to allocate data, compare unequal categories, encode a
 winner, or imply aesthetic or cognitive superiority. Encode actual values with
 their supported scales and attach labels to the evidence they describe. State
 the source, scope, and uncertainty where they affect interpretation.
+
+For shared checks on supported emphasis, readable context, and whether the
+current arrangement should stay, see [layout assessment](layout-assessment.md).
 
 ## Worked Lys example
 

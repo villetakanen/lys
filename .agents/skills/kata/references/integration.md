@@ -4,7 +4,7 @@ The first iteration uses three separate responsibilities:
 
 | Layer | Owns | Example |
 | --- | --- | --- |
-| Kata | Message, relationships, encoding, reading order | A comparison matrix with common rows |
+| Kata | Arrangement of supplied content: placement, available space, grouping, reading order | Positioning a supplied comparison matrix while retaining its rows |
 | Lys or another renderer | Output, navigation, sizing, notes, print behavior | Semantic HTML articles in a Lys deck |
 | Optional brand skill | Visual identity | Approved typography and palette |
 
@@ -16,7 +16,7 @@ Read the available Lys instructions when producing a deck. The locally inspected
 
 A dependency chart can be inline SVG with a title and text description. A comparison should remain a semantic table. Charts should retain their values in text or an accessible data table. A no-JavaScript view must still expose the slide content. Check both navigation and print output after integration.
 
-The repository's `examples/kata-lys.html` is a working single-file specimen with ten slides: a before and after for each form. It bundles the locally available Lys build; it does not fetch a CDN resource at runtime. `examples/index.html` offers a scrollable comparison gallery. These are repository review artifacts and are not required when installing just this skill folder.
+The repository's `examples/kata-lys.html` is a working single-file specimen with 14 slides: a before and after for each of the seven worked pairs. It bundles the locally available Lys build; it does not fetch a CDN resource at runtime. `examples/index.html` offers a scrollable comparison gallery. These are repository review artifacts and are not required when installing just this skill folder. The specimens retain examples of broader information-structuring work; they do not expand Kata's current responsibility for arranging supplied content.
 
 The specimen uses Lys's direct transition mode. A small chapter-navigation listener routes local anchor clicks through the public `Lys.Lys.from(element).goTo(id)` API so the active slide, accessibility state, and subsequent arrow-key navigation agree. Plain anchors remain usable without JavaScript. The vendored runtime itself is unchanged.
 
@@ -26,8 +26,8 @@ If a Futurice brand skill is supplied, read and apply it. This repository does n
 
 ## Example requests
 
-“Use Kata to compare these three suppliers for the procurement team. Cost and delivery time matter, but don't choose a winner.”
+“Arrange this supplied supplier comparison for the procurement team. Keep cost and delivery time easy to compare, and don't imply a winner.”
 
-“Use Kata with Lys to show how this budget is allocated. Apply the attached brand skill.”
+“Arrange this supplied budget breakdown in a Lys slide. Keep the labels and amounts together, and apply the attached brand skill.”
 
-“Improve this slide's structure using Kata. Preserve the supplied figures and explain the choice of pattern.”
+“Review this slide's layout using Kata. Preserve the supplied content and tell me whether a layout change is needed.”

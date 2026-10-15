@@ -1,14 +1,21 @@
 # Aligned comparison
 
+**Scope:** This reference preserves the existing form and worked specimen.
+Use it to arrange supplied comparisons only when common criteria are already
+provided. Structure notes describe the specimen's constraints; they do not
+authorize deriving criteria, rewriting material, or splitting or hiding content
+without the content author's direction. For shared checks, see
+[layout assessment](layout-assessment.md).
+
 **Form:** Several alternatives share the same attributes. **Audience question:** Which trade-offs matter for this decision?
 
-Use a matrix when exact values or mixed units matter. Use aligned bars or dots when the question is primarily about one numeric measure. Avoid a matrix for long narrative descriptions or options evaluated on unrelated criteria. Split a large comparison around the actual decision instead of shrinking everything.
+An existing matrix accommodates exact values or mixed units; aligned bars or dots can accommodate content centered on one numeric measure. A matrix may be hard to read with long descriptions or unrelated criteria. If supplied material does not fit legibly, state the constraint; split or filter it only when the content author directs that change.
 
 ## Structure
 
-Put alternatives in columns and criteria in rows, with units in row labels. Keep identical attributes in the same position. Use consistent precision. Put the decisive criterion near the top when the audience has supplied one. Highlight a recommendation only when the data and decision criteria support it. Missing data remains “Unknown,” not a dash that could mean zero.
+In the supplied specimen, alternatives occupy columns and criteria rows, with units in row labels. Identical attributes share positions and precision is consistent. A supplied priority may appear earlier in reading order. Recommendation styling belongs only when it is already supported by the supplied content and brief. Preserve source representations of missing data; do not reinterpret them.
 
-## Worked example
+## Retained worked example (historical)
 
 Fictional service launch. An operations lead needs a launch route within six weeks and an initial budget of €80k. Costs are one-time estimates; lead times are estimates too.
 
@@ -18,11 +25,11 @@ Fictional service launch. An operations lead needs a launch route within six wee
 | Initial cost, €k | 120 | 60 | 80 |
 | Control | Full | Limited | Shared |
 
-**Before:** Three paragraphs, each listing its option's time, cost, and control. The audience must remember values across paragraphs.
+**Before:** The historical example contrasts three paragraphs, each listing its option's time, cost, and control.
 
-**After headline:** “Buy and Partner meet both launch limits”
+**After headline (historical):** “Buy and Partner meet both launch limits”
 
-**After layout:** One matrix with the constraints stated above it. Emphasize the time and cost cells for Buy and Partner, retaining their text. State below: “The remaining trade-off is control.” This does not establish a winner or address lifetime cost.
+**After layout:** The historical specimen shows one matrix with constraints above it. It emphasizes two options and adds a trade-off sentence. These are retained example choices, not instructions to rewrite supplied material or assert a priority absent from a user's brief.
 
 ## Rationale and limits
 

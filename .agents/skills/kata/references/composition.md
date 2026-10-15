@@ -1,14 +1,21 @@
 # Whole and parts
 
+**Scope:** This reference preserves the existing form and worked specimen.
+Use it to arrange supplied parts only when the whole and membership are already
+provided. Structure notes describe the specimen's constraints; they do not
+authorize deriving categories, redesigning a supplied chart, or hiding content
+without the content author's direction. For shared checks, see
+[layout assessment](layout-assessment.md).
+
 **Form:** Mutually exclusive parts exhaust a known total. **Audience question:** Where does the whole go?
 
-Use a single stacked bar for a broad allocation and direct labels for exact amounts. If precise ranking of similar parts is the main question, use aligned bars instead. If categories overlap or the total is unknown, establish the denominator or use a different pattern.
+An existing stacked bar can accommodate a broad allocation, while direct labels can keep exact amounts visible. Aligned bars can accommodate supplied content where precise ranking of similar parts is central. Overlap or an unknown total constrains what the supplied chart can claim; do not establish a denominator or recategorize content yourself.
 
 ## Structure
 
-State the whole and its unit. Draw segment lengths from actual proportions. Preserve small parts even if labels must sit outside. Label categories directly, avoiding a legend that depends on color alone. Keep the order meaningful and stable across repeated slides. Negative values and flows need another representation.
+The specimen states the whole and unit, uses segment lengths proportional to the supplied values, and labels categories directly. Small parts remain visible, and category order is stable. Negative values or flows are constraints on this form; report the mismatch rather than redesigning the supplied content.
 
-## Worked example
+## Retained worked example (historical)
 
 Fictional service launch. The sponsor wants to understand the planned allocation of a €200k launch budget. Categories are exclusive and cover the entire budget.
 
@@ -21,9 +28,9 @@ Fictional service launch. The sponsor wants to understand the planned allocation
 
 **Before:** A bulleted list of the four amounts and the total.
 
-**After headline:** “Product accounts for half of the launch budget”
+**After headline (historical):** “Product accounts for half of the launch budget”
 
-**After layout:** Total above a 100% stacked bar. Four aligned labels below show names, amounts, and percentages. Use proportionate widths of 50, 25, 15, and 10 percent. Make clear that this is an allocation, not actual spending.
+**After layout:** The historical specimen places a total above a proportional stacked bar and labels names, amounts, and shares below. It distinguishes an allocation from actual spending. These are retained example choices, not instructions to rewrite or reinterpret supplied content.
 
 ## Rationale and limits
 

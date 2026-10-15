@@ -1,14 +1,20 @@
 # Nested groups
 
+**Scope:** This reference preserves the existing form and worked specimen.
+Use it to arrange supplied groups only when membership is already provided.
+Structure notes describe the specimen's constraints; they do not authorize
+deriving membership, splitting content, or hiding detail without the supplied
+author's direction. For shared checks, see [layout assessment](layout-assessment.md).
+
 **Form:** A rooted structure in which each child has one parent. **Audience question:** What belongs where?
 
-Use nested regions for membership, a tree for reporting lines or deeper parent-child structure, and an indented list when space is tight. Multiple parents or cross-group dependencies call for a relationship diagram. Do not infer reporting authority from mere grouping.
+The retained examples show nested regions for membership, trees for reporting lines, and indented lists when space is tight. Multiple parents or cross-group dependencies may constrain this form. Do not infer reporting authority from grouping or restructure supplied content to resolve a mismatch.
 
 ## Structure
 
-Name the root and the relation being shown. Give siblings the same visual treatment and place children within their parent region. Keep spacing between groups greater than spacing within them. Use equal areas when size has no meaning. Limit visible depth to what the audience needs, with a separate detail slide if required.
+In the specimen, the root and relation are named, siblings have consistent treatment, and children sit within their parent. Spacing distinguishes groups; equal areas avoid implying size. Deeper supplied content may need more space: report the constraint instead of truncating it or moving it to another slide without the content author's direction.
 
-## Worked example
+## Retained worked example (historical)
 
 Fictional service launch. A new team member needs the workstream map, not a reporting chart.
 
@@ -18,9 +24,9 @@ Fictional service launch. A new team member needs the workstream map, not a repo
 
 **Before:** One sentence listing the programme, workstreams, and four disciplines.
 
-**After headline:** “Launch work belongs to two workstreams”
+**After headline (historical):** “Launch work belongs to two workstreams”
 
-**After layout:** A single enclosing region named Launch programme. Inside, two equal regions named Experience and Delivery, each containing its two disciplines. Add “Workstream membership; area does not indicate team size.”
+**After layout:** The historical specimen shows an enclosing programme region, with two equal workstream regions and their supplied disciplines. Its annotation clarifies that area does not indicate team size. These are retained example choices, not instructions to derive a hierarchy.
 
 ## Rationale and limits
 
