@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.4] — 2026-10-15
+
+### Fixed
+
+- Added discovery metadata to the Lys authoring skill so agent tools can identify it and know when to use it (#70). Rebuilding preserves the metadata.
+
 ## [1.2.3] — 2026-10-12
 
 ### Changed
@@ -145,7 +151,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Example decks: minimal, themed, full-featured, and 1:1 aspect ratio.
 - GitHub Pages site with token reference, article contract, and live examples.
 
-[Unreleased]: https://github.com/villetakanen/lys/compare/v1.2.3...HEAD
+[Unreleased]: https://github.com/villetakanen/lys/compare/v1.2.4...HEAD
+[1.2.4]: https://github.com/villetakanen/lys/compare/v1.2.3...v1.2.4
 [1.2.3]: https://github.com/villetakanen/lys/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/villetakanen/lys/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/villetakanen/lys/compare/v1.2.0...v1.2.1

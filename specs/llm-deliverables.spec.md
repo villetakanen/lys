@@ -30,7 +30,9 @@ A single file at the project root. Content sections:
 
 #### `skill/SKILL.md` — Authoring Skill
 
-A Claude Code slash command at `skill/SKILL.md`. Content sections:
+An authoring skill at `skill/SKILL.md`. It starts with YAML frontmatter containing `name: lys` and a non-empty, single-line `description` explaining what it creates and when to use it. Build injection must preserve this metadata unchanged so agent tools can discover the delivered skill.
+
+Content sections:
 
 1. **Trigger** — When to use: user asks to create a presentation, slide deck, or talk.
 2. **HTML contract** — Condensed from `llms.txt`. Container, articles, data attributes.
@@ -121,7 +123,7 @@ This makes the skill **fully self-contained** — an LLM with only SKILL.md can 
 6. `llms.txt` includes a complete, valid inline HTML example that works when saved and opened in a browser.
 7. `llms.txt` is under 2000 tokens (measurable via `wc -w`, target ~1200 words).
 8. `llms.txt` file sizes match current `dist/` output.
-9. `skill/SKILL.md` exists at `skill/SKILL.md`.
+9. `skill/SKILL.md` exists at `skill/SKILL.md` and begins with valid YAML frontmatter containing `name: lys` and a useful, non-empty discovery `description`.
 10. `skill/SKILL.md` includes at least 6 slide pattern recipes.
 11. `skill/SKILL.md` includes a quality checklist with at least 5 validation rules.
 12. `skill/SKILL.md` includes an output template skeleton.
@@ -203,6 +205,12 @@ Scenario: llms.txt contains no post-1.0 references
 #### skill/SKILL.md — Structure
 
 ```gherkin
+Scenario: SKILL.md has discovery metadata
+  Given the distributed skill/SKILL.md file
+  When its opening YAML frontmatter is read
+  Then its name is lys
+  And its non-empty description identifies presentation authoring and when to use it
+
 Scenario: SKILL.md contains all required sections
   Given the skill/SKILL.md file
   Then it contains a trigger section
@@ -228,6 +236,12 @@ Scenario: SKILL.md does not contradict llms.txt
 #### Build freshness — inject script
 
 ```gherkin
+Scenario: Build injection preserves discovery metadata
+  Given skill/SKILL.md with discovery metadata
+  When scripts/inject-skill.js injects freshly built CSS and JS
+  Then the YAML frontmatter is unchanged
+  And the CSS and JS markers contain the fresh assets
+
 Scenario: SKILL.md contains actual CSS after build
   Given a fresh pnpm build
   When skill/SKILL.md is read
@@ -273,14 +287,15 @@ Scenario: LLM produces a themed deck from SKILL.md
 
 ## Test / Spec Alignment
 
-These scenarios are **not automated in the test suite** — they are validation checks for documentation artifacts. Verification approach:
+Discovery metadata and its preservation during build injection are automated in `tests/unit/skill.test.ts`. The remaining scenarios are documentation-artifact validation checks. Verification approach:
 
 | Scenario group | Verification method |
 |---|---|
 | llms.txt completeness | Grep-based script comparing llms.txt against source files |
 | llms.txt accuracy | Manual comparison + `wc -w` for word count |
 | llms.txt sizes | `wc -c dist/*` comparison |
-| skill/SKILL.md structure | Manual section checklist |
+| skill/SKILL.md discovery metadata and build preservation | `tests/unit/skill.test.ts` (actual injection script, isolated build fixture) |
+| skill/SKILL.md remaining structure | Manual section checklist |
 | LLM integration | Manual: paste llms.txt as context, generate a deck, open in browser |
 
 A future CI step could automate the grep-based checks (tokens, attributes, events match source), but this is not required for 1.0.

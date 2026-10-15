@@ -1,3 +1,8 @@
+---
+name: lys
+description: Create self-contained HTML presentations and slide decks using the Lys structural slide engine. Use when asked to create a presentation, slide deck, pitch, or talk.
+---
+
 # Create a Lys Presentation
 
 Generate a single-file HTML slide deck using the Lys structural slide engine.

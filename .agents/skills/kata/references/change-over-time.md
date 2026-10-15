@@ -1,14 +1,21 @@
 # Time series
 
+**Scope:** This reference preserves the existing form and worked specimen.
+Use it to arrange supplied observations only when the measure and time points
+are already provided. Structure notes describe the specimen's constraints;
+they do not authorize deriving a measure, rewriting a headline, or hiding
+observations without the content author's direction. For shared checks, see
+[layout assessment](layout-assessment.md).
+
 **Form:** A consistently defined measure observed at ordered times. **Audience question:** What changed, by how much, and when?
 
-Use a line for a measure tracked across time, columns for discrete period totals, and a slope for a comparison of just two times. A process sequence without measurements belongs elsewhere. Do not join missing observations as though measured or space irregular dates equally.
+The retained examples use a line for a measure tracked across time, columns for discrete period totals, and a slope for a two-time comparison. A process sequence without measurements does not match this form. Missing observations and irregular dates constrain the display; do not fill, join, or respace them as if values or intervals were supplied.
 
 ## Structure
 
-Put time on the horizontal axis and state the measure and unit on the vertical axis. Keep the definition and denominator consistent. Choose a visible scale that preserves the magnitude; bar charts need a zero baseline. A cropped line-chart axis can be useful, but label the bounds clearly. Mark forecasts and uncertainty distinctly from observations.
+In the specimen, time is on the horizontal axis and the measure and unit are on the vertical axis. The definition and denominator stay consistent; the scale preserves magnitude. Any supplied cropped axis, forecast, or uncertainty needs clear bounds and labels.
 
-## Worked example
+## Retained worked example (historical)
 
 Fictional service pilot. The lead wants to understand average onboarding time for completed onboardings in January–June 2026. Each monthly cohort contains 20 completions, measured by the same rule. These are illustrative monthly means, not individual observations.
 
@@ -18,9 +25,9 @@ Fictional service pilot. The lead wants to understand average onboarding time fo
 
 **Before:** Six monthly numbers in a sentence.
 
-**After headline:** “Average onboarding time fell from 10 to 5 days”
+**After headline (historical):** “Average onboarding time fell from 10 to 5 days”
 
-**After layout:** A line chart with a zero-to-12-day scale, equally spaced monthly points, direct values, and the April increase visible. Include cohort size and measurement scope. The headline describes endpoints without claiming a smooth decline.
+**After layout:** The historical specimen uses a line chart with a zero-to-12-day scale, equally spaced monthly points, direct values, and the April increase visible. Its annotation includes cohort size and measurement scope. This retained headline and layout are not instructions to author content or infer a trend.
 
 ## Rationale and limits
 
