@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Added discovery metadata to the Lys authoring skill so agent tools can identify it and know when to use it (#70). Rebuilding preserves the metadata.
+
 ## [1.2.3] — 2026-10-12
 
 ### Changed
