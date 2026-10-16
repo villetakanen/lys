@@ -252,3 +252,57 @@ A future CI step could automate README link checking and HTML validation, but th
 - **og:image.** A branded screenshot or generated image for social cards. Nice to have, not blocking.
 - **README localization.** Not planned.
 - **Changelog.** Could be auto-generated from conventional commits. Separate concern from this spec.
+
+## Primary demo composition and delivery (Kata 0.5.0)
+
+`examples/demo.html` is the primary authored demo, linked from the Pages examples
+list. Its eight slides retain their supplied wording, order, code and capability
+table. Kata guides emphasis and grouping; this example's theme owns identity.
+Lys's engine and public API remain unchanged.
+
+The demo opts into direct presentation mode only above 900px wide and 560px high.
+In narrower or shorter screen windows it destroys its Lys instance and becomes a
+natural-height reading document. Without JavaScript, reading is the default at
+all sizes. The adapter uses the public lifecycle and navigation API, preserves
+the current slide when switching modes, and keeps controls outside the slides.
+Print restores every slide on its own 16:9 page and excludes controls.
+
+Unlike the other site examples, the built `site/examples/demo.html` inlines the
+built CSS and IIFE plus its scoped adapter. It must work when copied elsewhere
+and opened offline, with no asset requests. Development continues using the
+source imports. No new runtime dependency or public token is introduced.
+
+```gherkin
+Scenario: Primary demo navigates with matching visual and accessibility state
+  Given the built demo at a presentation viewport
+  When the reader uses arrow keys, Home, End or the previous/next buttons
+  Then the active slide, counter, focus and aria-hidden state agree
+  And controls are keyboard reachable
+
+Scenario: Reading mode exposes the whole deck
+  Given the built demo in a narrow or short viewport
+  Then all eight articles have natural height and readable text
+  And no article is aria-hidden or clipped by a slide canvas
+  When the viewport returns to presentation size
+  Then the current reading position remains reachable in presentation mode
+
+Scenario: Demo works without JavaScript
+  Given the built demo with JavaScript disabled at desktop or phone size
+  Then all eight articles flow in order as a readable document
+  And the supplied capability table and code remain available
+
+Scenario: Demo is a portable offline artifact
+  Given a copy of the built demo outside the site directory
+  When it is opened with network access disabled
+  Then it initializes, navigates and renders with no asset requests or errors
+
+Scenario: Demo print restores all slides
+  Given the built demo after navigating away from the first slide
+  When printed
+  Then every slide is visible on its own 16:9 page
+  And presentation controls are absent
+  And returning from print restores the current slide
+```
+
+Regression coverage: `tests/e2e/site.spec.ts`; PDF page inspection and content
+fidelity evidence are recorded in `docs/reports/kata-lys-migration-0.5.0-demo.md`.

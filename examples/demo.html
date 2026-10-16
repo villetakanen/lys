@@ -6,180 +6,142 @@
 	<title>⚜ Lys — Demo</title>
 	<link rel="stylesheet" href="/src/lys.css">
 	<style>
-		/* Author theme — Lys has zero visual opinions, so we bring our own */
+		/* Kata chooses composition; this author theme supplies Lys's identity. */
 		:root {
-			--lys-slide-padding: 3rem 4rem;
-			--lys-aspect-ratio: 16/9;
+			--lys-aspect-ratio: 16 / 9;
+			--lys-print-page-size: 13.333in 7.5in;
+			--lys-backdrop: #102822;
+			--paper: #f3f0e7;
+			--ink: #173b32;
+			--accent: #dce7ae;
 		}
 
 		* { margin: 0; box-sizing: border-box; }
+		body { font-family: "Avenir Next", Avenir, system-ui, sans-serif; background: #102822; color: var(--ink); }
+		button { font: inherit; }
+		:focus-visible { outline: 3px solid #9b6422; outline-offset: 5px; }
 
-		body {
-			font-family: "Inter", system-ui, -apple-system, sans-serif;
-			color: #1a1a2e;
-			background: #0a0a0a;
+		/* A readable document is the default, including without JavaScript. */
+		#deck { display: block; height: auto; overflow: visible; color: var(--ink); scroll-snap-type: none; }
+		#deck > article {
+			display: flex; flex-direction: column; justify-content: center;
+			width: min(100%, 70rem); height: auto; max-height: none; min-height: 28rem;
+			aspect-ratio: auto; container-type: inline-size;
+			padding: 3rem; margin: 0 auto; overflow: visible;
+			font-size: 1.25rem; background: var(--paper); color: var(--ink);
 		}
+		#deck > article + article { border-top: 1px solid #b4beb1; }
+		article h1, article h2 { font-weight: 600; line-height: 1.06; letter-spacing: -0.045em; }
+		article h2 { font-size: 2.15em; margin-bottom: 0.85em; max-width: 22ch; }
+		article p, article li { line-height: 1.45; }
+		article ul { list-style: none; padding: 0; }
+		article li { min-width: 0; }
+		article strong { font-weight: 650; }
+		article code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; font-size: 0.9em; }
+		article pre { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; font-size: 0.9em; }
+		article pre code { font-size: 1em; }
 
-		/* Pin the backdrop (letterbox area) to the deck's dark theme so it
-		   doesn't adopt the viewer's system scheme — Lys's default backdrop is
-		   light-dark(), which would show white bands in a light OS theme. */
-		[data-lys] {
-			--lys-backdrop: #0a0a0a;
-		}
+		#deck > #intro, #deck > #contract, #deck > #attributes, #deck > #closing { background: #173b32; color: var(--paper); }
+		#intro h1 { font-size: 6.8em; margin-bottom: 0.24em; }
+		#intro h1 span { color: var(--accent); font-size: 0.8em; }
+		#intro p { font-size: 1.3em; max-width: 29ch; }
+		#deck > #intro { gap: 1em; }
 
-		[data-lys] > article {
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-		}
+		/* Equal fields: none of the four supplied properties is a recommendation. */
+		.properties { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6em 2.6em; }
+		.properties li { padding-top: 0.65em; border-top: 1px solid #9baa9e; }
+		.properties strong { display: block; margin-bottom: 0.3em; }
 
-		/* Content slides — base styles */
-		article p, article li {
-			font-size: 1em;
-			line-height: 1.6;
-		}
+		/* The authored code is the subject. Its heading stays quiet alongside it. */
+		.code-layout { display: grid; grid-template-columns: minmax(0, 0.75fr) minmax(0, 2fr); gap: 2.5em; align-items: start; }
+		.code-layout h2 { font-size: 1.65em; max-width: 10ch; color: var(--accent); }
+		.code-layout pre { padding-left: 1.5em; border-left: 1px solid #8b9d84; }
 
-		article h2 {
-			font-size: 1.75em;
-			font-weight: 700;
-			margin-bottom: 1em;
-			letter-spacing: -0.01em;
-		}
+		#attributes .code-layout { grid-template-columns: minmax(0, 1fr); gap: 0.5em; }
+		#attributes .code-layout h2 { max-width: none; margin-bottom: 0.4em; }
+		#attributes .code-layout pre { border: 0; padding: 0; }
 
-		article ul {
-			list-style: none;
-			padding: 0;
-		}
+		.table-region { width: 100%; overflow-x: auto; }
+		article table { width: 100%; min-width: 34rem; border-collapse: collapse; font-size: 0.86em; line-height: 1.4; }
+		article th, article td { padding: 0.7em 0.65em; border-bottom: 1px solid #b4beb1; text-align: left; }
+		article thead { background: #dfe5d6; }
+		article thead th { font-weight: 650; }
+		article th:first-child { width: 46%; padding-left: 0.5em; }
+		article td:not(:first-child), article thead th:not(:first-child) { text-align: center; }
+		article tbody th { font-weight: 500; }
+		article td.no { color: #56645b; }
+		.budget { margin-top: 1.1em; font-size: 0.82em; }
 
-		article ul li {
-			padding: 0.4em 0;
-			padding-left: 1.5em;
-			position: relative;
-		}
+		#deck > #tokens { background: var(--accent); }
+		.detail-list li { padding: 0.6em 0; border-top: 1px solid #9baa9e; }
+		#principles .detail-list { max-width: 44em; }
+		#deck > #closing { text-align: center; align-items: center; }
+		#closing h2 { font-size: 7em; color: var(--accent); margin-bottom: 0.3em; }
+		#closing p { max-width: 35ch; font-size: 1.1em; }
 
-		article ul li::before {
-			content: "⚜";
-			position: absolute;
-			left: 0;
-			opacity: 0.5;
-			font-size: 0.8em;
+		.deck-controls { display: none; }
+		@media screen and (min-width: 901px) and (min-height: 561px) {
+			#deck.presenting { height: 100vh; overflow: hidden; }
+			#deck.presenting > article {
+				width: min(calc(100vw - 64px), calc((100vh - 104px) * 16 / 9));
+				aspect-ratio: 16 / 9; min-height: 0; max-height: calc(100vh - 104px);
+				container-type: size; padding: 4.4%; border: 0; overflow: hidden;
+				font-size: clamp(18px, 1.8vw, 28px);
+			}
+			#deck.presenting + .deck-controls { display: flex; }
+			.deck-controls { position: fixed; inset: auto 32px 12px; align-items: center; justify-content: space-between; color: var(--paper); font-size: 0.85rem; }
+			.deck-controls button { color: var(--paper); background: transparent; border: 1px solid #789184; padding: 0.5em 1em; border-radius: 3px; cursor: pointer; }
+			.deck-controls button:disabled { opacity: 0.4; cursor: default; }
+			.deck-controls :focus-visible { outline-color: var(--accent); }
 		}
-
-		/* Title slide */
-		.title-slide {
-			text-align: center;
-			background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-			color: #f0f0f0;
+		@media screen and (max-width: 900px), screen and (max-height: 560px) {
+			#deck > article { padding: 2.25rem 1.5rem; font-size: 1.1rem; min-height: 0; }
+			#deck > #intro, #deck > #closing { min-height: 65vh; }
+			#intro h1 { font-size: 5em; }
+			article h2 { font-size: 2em; }
+			.properties, .code-layout { grid-template-columns: minmax(0, 1fr); gap: 1.4em; }
+			.code-layout h2 { max-width: none; margin-bottom: 0; }
+			.code-layout pre { padding: 1.2em 0 0; border-left: 0; border-top: 1px solid #8b9d84; }
+			article pre { font-size: 0.88em; }
+			article table { min-width: 0; font-size: 1rem; }
+			article th, article td { padding: 0.65em 0.3em; }
+			article th:first-child { width: 42%; padding-left: 0.3em; }
+			#closing h2 { font-size: 5em; }
 		}
-		.title-slide h1 {
-			font-size: 2.5em;
-			font-weight: 800;
-			letter-spacing: -0.02em;
-			margin-bottom: 0.5em;
-		}
-		.title-slide p {
-			font-size: 1.1em;
-			opacity: 0.7;
-		}
-
-		/* Code slide */
-		.code-slide pre {
-			background: #1a1a2e;
-			color: #e0def4;
-			padding: 1.5em 2em;
-			border-radius: 0.75rem;
-			font-size: 0.85em;
-			overflow-x: auto;
-			line-height: 1.7;
-			margin-top: 0.5em;
-		}
-
-		/* Two-column layout */
-		.two-col {
-			display: grid;
-			grid-template-columns: 1fr 1fr;
-			gap: 2rem;
-			align-items: start;
-			margin-top: 1em;
-		}
-
-		/* Progressive-enhancement matrix */
-		article table {
-			width: 100%;
-			border-collapse: collapse;
-			font-size: 0.85em;
-			margin-top: 0.75em;
-		}
-		article th, article td {
-			padding: 0.45em 0.8em;
-			text-align: left;
-			border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-		}
-		article td:not(:first-child), article thead th:not(:first-child) {
-			text-align: center;
-		}
-		article td.no {
-			opacity: 0.65;
-		}
-		.budget {
-			margin-top: 1em;
-			font-size: 0.85em;
-			opacity: 0.75;
-		}
-
-		/* Dark text on light backgrounds */
-		.light { color: #1a1a2e; }
-		.light h2 { color: #0f0c29; }
-
-		/* Light text on dark backgrounds */
-		.dark { color: #f0f0f0; }
-		.dark h2 { color: #ffffff; }
-
-		/* Closing slide */
-		.closing {
-			text-align: center;
-		}
-		.closing h2 {
-			font-size: 2em;
-		}
-		.closing p {
-			font-size: 1.1em;
-			opacity: 0.6;
-			margin-top: 0.5em;
-		}
-
-		/* Slide counter (supplementary element — Lys ignores non-articles) */
-		.slide-counter {
-			position: fixed;
-			bottom: 1.5rem;
-			right: 2rem;
-			font-size: 0.75rem;
-			color: rgba(255, 255, 255, 0.3);
-			font-family: "SF Mono", "Fira Code", monospace;
-			z-index: 10;
-			pointer-events: none;
+		@media print {
+			#deck { display: block; height: auto; overflow: visible; background: transparent; }
+			#deck > article, #deck.presenting > article {
+				width: 100vw; height: 100vh; max-height: 100vh; min-height: 0;
+				aspect-ratio: 16 / 9; container-type: size; padding: 4.4%; margin: 0;
+				font-size: 24px; border: 0; overflow: hidden;
+				position: static; transform: none; opacity: 1; pointer-events: auto;
+				break-after: page; break-inside: avoid; print-color-adjust: exact;
+			}
+			#deck > article:last-of-type { break-after: avoid; }
+			.deck-controls { display: none; }
 		}
 	</style>
 </head>
 <body>
 	<div data-lys id="deck">
 
-		<article data-class="title-slide" data-notes="Welcome to the demo. This shows what Lys can do today.">
-			<h1>⚜ Lys</h1>
+		<article id="intro" data-transition="direct" data-class="title-slide" data-notes="Welcome to the demo. This shows what Lys can do today.">
+			<h1><span>⚜</span> Lys</h1>
 			<p>A structural slide engine for LLM-generated presentations</p>
 		</article>
 
-		<article data-class="light" data-background="#f8f8f0" data-notes="Cover the three progressive enhancement tiers.">
+		<article id="overview" data-transition="direct" data-class="light" data-notes="Lys turns semantic HTML into presentations; distinguish authored visual choices from engine behavior.">
 			<h2>What is Lys?</h2>
-			<ul>
-				<li>Zero-dependency CSS + TypeScript library</li>
-				<li>Turns <code>&lt;article&gt;</code> elements into slide presentations</li>
-				<li>Visually unopinionated — bring your own theme</li>
-				<li>Behaviorally opinionated — navigation, a11y, presenter sync</li>
+			<ul class="properties">
+				<li><strong>Zero-dependency</strong> CSS + TypeScript library</li>
+				<li><strong>Turns <code>&lt;article&gt;</code> elements</strong> into slide presentations</li>
+				<li><strong>Visually unopinionated</strong> — bring your own theme</li>
+				<li><strong>Behaviorally opinionated</strong> — navigation, a11y, presenter sync</li>
 			</ul>
 		</article>
 
-		<article data-class="dark" data-background="linear-gradient(160deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)">
+		<article id="contract" data-transition="direct" data-class="dark" data-notes="The div groups the deck; each direct article is a slide. The supplied example uses ordinary headings and paragraphs.">
+			<div class="code-layout">
 			<h2>The HTML Contract</h2>
 			<pre><code>&lt;div data-lys&gt;
   &lt;article&gt;
@@ -191,10 +153,12 @@
     &lt;p&gt;That's it. That's the API.&lt;/p&gt;
   &lt;/article&gt;
 &lt;/div&gt;</code></pre>
+			</div>
 		</article>
 
-		<article data-class="light" data-background="#f0f0ff" data-notes="Explain progressive enhancement tiers.">
+		<article id="enhancement" data-transition="direct" data-class="light" data-notes="Explain progressive enhancement tiers.">
 			<h2>Progressive Enhancement</h2>
+			<div class="table-region" role="region" aria-label="Progressive enhancement capabilities">
 			<table>
 				<thead>
 					<tr>
@@ -212,10 +176,12 @@
 					<tr><th scope="row">Hash routing and programmatic API</th><td class="no">No</td><td class="no">No</td><td>Yes</td></tr>
 				</tbody>
 			</table>
+			</div>
 			<p class="budget"><strong>Size budget:</strong> JS &lt; 5 KB gzip, CSS &lt; 2 KB gzip.</p>
 		</article>
 
-		<article data-class="dark code-slide" data-background="#1e1e2e" data-notes="Show the data attribute API.">
+		<article id="attributes" data-transition="direct" data-class="dark code-slide" data-notes="Show the data attribute API.">
+			<div class="code-layout">
 			<h2>Data Attributes</h2>
 			<pre><code>&lt;article
   data-class="title-slide dark"
@@ -226,11 +192,12 @@
 &gt;
   &lt;h1&gt;Your Content&lt;/h1&gt;
 &lt;/article&gt;</code></pre>
+			</div>
 		</article>
 
-		<article data-class="light" data-background="linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)" data-notes="Emphasize the two-tier system.">
+		<article id="tokens" data-transition="direct" data-class="light" data-notes="Emphasize the two-tier system.">
 			<h2>Design Tokens</h2>
-			<ul>
+			<ul class="detail-list">
 				<li>Two-tier system: <code>--lys-*</code> (public) / <code>--_lys-*</code> (internal)</li>
 				<li>Override at <code>:root</code>, container, or individual slide level</li>
 				<li>9 tokens: aspect ratio, padding, transitions, font size, gap, dimensions, focus ring</li>
@@ -238,9 +205,9 @@
 			</ul>
 		</article>
 
-		<article data-class="light" data-background="#f8f8f0">
+		<article id="principles" data-transition="direct" data-class="light" data-notes="The five listed properties describe the intended authoring surface.">
 			<h2>LLM-First Design</h2>
-			<ul>
+			<ul class="detail-list">
 				<li>Flat structure — slides are siblings, not nested</li>
 				<li>Standard HTML elements only — nothing proprietary</li>
 				<li>Single self-contained HTML file as output format</li>
@@ -249,28 +216,80 @@
 			</ul>
 		</article>
 
-		<article data-class="closing dark" data-background="linear-gradient(135deg, #0f0c29, #302b63, #24243e)">
+		<article id="closing" data-transition="direct" data-class="closing dark" data-notes="Invite the audience to navigate the deck and inspect the HTML.">
 			<h2>⚜</h2>
 			<p>Arrow keys or swipe to navigate · Open the HTML to see how it works</p>
 		</article>
 
 	</div>
 
-	<div class="slide-counter" id="counter"></div>
+	<nav class="deck-controls" aria-label="Presentation controls">
+		<button type="button" tabindex="0" id="previous" aria-label="Previous slide">← Previous</button>
+		<span id="counter"></span>
+		<button type="button" tabindex="0" id="next" aria-label="Next slide">Next →</button>
+	</nav>
 
 	<script type="module">
 		import { Lys } from "/src/lys.ts";
 
-		const deck = Lys.from(document.getElementById("deck"));
+		// This demo's reading adapter uses the public lifecycle; Lys owns navigation.
+		const surface = document.getElementById("deck");
 		const counter = document.getElementById("counter");
+		const previous = document.getElementById("previous");
+		const next = document.getElementById("next");
+		const reading = matchMedia("(max-width: 900px), (max-height: 560px)");
+		const slides = [...surface.querySelectorAll(":scope > article")];
+		let deck = Lys.from(surface);
+		let current = deck.current;
+		let printing = false;
 
-		function updateCounter() {
-			counter.textContent = `${deck.current + 1} / ${deck.total}`;
+		function updateControls() {
+			if (!deck) return;
+			current = deck.current;
+			counter.textContent = `${current + 1} / ${deck.total}`;
+			previous.disabled = current === 0;
+			next.disabled = current === deck.total - 1;
 		}
 
-		updateCounter();
+		function adapt({ restore = false } = {}) {
+			if (printing) return;
+			if (reading.matches) {
+				if (deck) {
+					current = deck.current;
+					deck.destroy();
+					deck = null;
+				}
+				surface.classList.remove("presenting");
+				requestAnimationFrame(() => slides[current].scrollIntoView({ block: "start" }));
+			} else {
+				if (!deck && !restore) {
+					current = slides.reduce((best, slide, index) =>
+						Math.abs(slide.getBoundingClientRect().top) < Math.abs(slides[best].getBoundingClientRect().top) ? index : best, current);
+				}
+				const target = current;
+				surface.classList.add("presenting");
+				deck = Lys.from(surface);
+				deck.goTo(target);
+				window.scrollTo(0, 0);
+				updateControls();
+			}
+		}
 
-		document.getElementById("deck").addEventListener("lys:slidechange", updateCounter);
+		previous.addEventListener("click", () => deck?.prev());
+		next.addEventListener("click", () => deck?.next());
+		surface.addEventListener("lys:slidechange", updateControls);
+		reading.addEventListener("change", adapt);
+		window.addEventListener("beforeprint", () => {
+			printing = true;
+			if (deck) { current = deck.current; deck.destroy(); deck = null; }
+		});
+		window.addEventListener("afterprint", () => {
+			printing = false;
+			adapt({ restore: true });
+		});
+		if (document.readyState === "loading") {
+			document.addEventListener("DOMContentLoaded", adapt, { once: true });
+		} else adapt();
 	</script>
 </body>
 </html>

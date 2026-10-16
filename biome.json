@@ -1,7 +1,14 @@
 {
 	"$schema": "https://biomejs.dev/schemas/2.0.x/schema.json",
 	"files": {
-		"includes": ["**", "!dist", "!site/examples", "!site/llms.txt"]
+		"includes": [
+			"**",
+			"!dist",
+			"!site/examples",
+			"!site/llms.txt",
+			"!test-results",
+			"!playwright-report"
+		]
 	},
 	"assist": {
 		"actions": {
