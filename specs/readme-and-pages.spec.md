@@ -253,24 +253,24 @@ A future CI step could automate README link checking and HTML validation, but th
 - **README localization.** Not planned.
 - **Changelog.** Could be auto-generated from conventional commits. Separate concern from this spec.
 
-## Primary demo composition and delivery (Kata 0.5.0)
+## Primary demo composition and delivery (Kata 0.5.1 / Lys 1.2.5)
 
 `examples/demo.html` is the primary authored demo, linked from the Pages examples
 list. Its eight slides retain their supplied wording, order, code and capability
 table. Kata guides emphasis and grouping; this example's theme owns identity.
-Lys's engine and public API remain unchanged.
 
-The demo opts into direct presentation mode only above 900px wide and 560px high.
-In narrower or shorter screen windows it destroys its Lys instance and becomes a
-natural-height reading document. Without JavaScript, reading is the default at
-all sizes. The adapter uses the public lifecycle and navigation API, preserves
-the current slide when switching modes, and keeps controls outside the slides.
-Print restores every slide on its own 16:9 page and excludes controls.
+The demo uses Lys's fixed-aspect 16:9 canvas at every viewport size. Text, spacing,
+columns, code and table geometry scale proportionally with the article. No phone
+or short-window breakpoint replaces the composition or destroys the Lys instance.
+Navigation, active-slide state and ARIA behavior remain Lys's responsibility.
+Presentation controls stay outside the canvas at a usable screen size. Without
+JavaScript the same fixed-aspect slides use Lys's CSS-only scroll-snap behavior.
+Print shows each complete canvas on one page and hides presentation controls.
 
-Unlike the other site examples, the built `site/examples/demo.html` inlines the
-built CSS and IIFE plus its scoped adapter. It must work when copied elsewhere
-and opened offline, with no asset requests. Development continues using the
-source imports. No new runtime dependency or public token is introduced.
+The built `site/examples/demo.html` inlines the current CSS, IIFE and scoped
+control script. It must work when copied elsewhere and opened offline, with no
+asset requests. Development continues using the source imports. No engine API,
+runtime dependency or public token changes are introduced.
 
 ```gherkin
 Scenario: Primary demo navigates with matching visual and accessibility state
@@ -279,30 +279,37 @@ Scenario: Primary demo navigates with matching visual and accessibility state
   Then the active slide, counter, focus and aria-hidden state agree
   And controls are keyboard reachable
 
-Scenario: Reading mode exposes the whole deck
-  Given the built demo in a narrow or short viewport
-  Then all eight articles have natural height and readable text
-  And no article is aria-hidden or clipped by a slide canvas
-  When the viewport returns to presentation size
-  Then the current reading position remains reachable in presentation mode
+Scenario: Small viewports preserve the authored composition
+  Given the built demo at 1440×900 on slide 5
+  When resized to 390×844 or 1440×500
+  Then each slide remains 16:9 with the same relative placement and type scale
+  And the current slide remains active with the same accessibility state
+  And navigation still works
+  When resized back
+  Then the current slide remains selected
+
+Scenario: Touch navigation remains available on a phone
+  Given the built demo at 390×844
+  When a horizontal swipe is dispatched
+  Then Lys selects the next slide and updates the counter
 
 Scenario: Demo works without JavaScript
   Given the built demo with JavaScript disabled at desktop or phone size
-  Then all eight articles flow in order as a readable document
-  And the supplied capability table and code remain available
+  Then all eight fixed-aspect slides remain available through CSS-only scrolling
+  And the supplied table and code fit inside the authored canvas
 
 Scenario: Demo is a portable offline artifact
   Given a copy of the built demo outside the site directory
-  When it is opened with network access disabled
-  Then it initializes, navigates and renders with no asset requests or errors
+  When opened with network access disabled
+  Then it initializes, navigates and renders without asset requests or errors
 
 Scenario: Demo print restores all slides
   Given the built demo after navigating away from the first slide
   When printed
-  Then every slide is visible on its own 16:9 page
-  And presentation controls are absent
-  And returning from print restores the current slide
+  Then every slide is visible on its own 16:9 page and controls are absent
+  And returning from print retains the current slide without lifecycle changes
 ```
 
-Regression coverage: `tests/e2e/site.spec.ts`; PDF page inspection and content
-fidelity evidence are recorded in `docs/reports/kata-lys-migration-0.5.0-demo.md`.
+Regression coverage: `tests/e2e/site.spec.ts`; print and visual evidence is recorded
+in `docs/reports/kata-lys-migration-0.5.1-demo.md`. The 0.5.0 report is retained as a
+superseded record of the responsive scope error.

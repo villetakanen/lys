@@ -53,6 +53,6 @@ The current implementation is [examples/demo.html](examples/demo.html):
 `--lys-backdrop` token sets the frame. These theme-local names are not additions
 to the engine's token API.
 
-See the [migration report](docs/reports/kata-lys-migration-0.5.0-demo.md) for
-before/after evidence and the composition and rendering checks performed during
-the redesign.
+See the [original palette and composition record](docs/reports/kata-lys-migration-0.5.0-demo.md)
+and the [0.5.1 scope correction](docs/reports/kata-lys-migration-0.5.1-demo.md).
+The latter records the current fixed-canvas rendering checks.

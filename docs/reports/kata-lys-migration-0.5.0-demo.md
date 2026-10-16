@@ -6,6 +6,12 @@ generated:
 
 # Kata 0.5.0 migration: primary Lys demo
 
+**Superseded by the [0.5.1 correction](kata-lys-migration-0.5.1-demo.md).**
+The responsive reading mode described below was an error inherited from Kata's
+out-of-scope guidance, not intended Lys behavior. Finding 3's recommendation to
+improve that adapter is withdrawn. Retain the screenshots and original test
+results as evidence of that attempt, not acceptance evidence for current Lys.
+
 On 16 October 2026, Lys 1.2.4's primary eight-slide demo was recomposed using
 Kata 0.5.0. All visible wording, slide order, table cells and both code samples
 were preserved. The result has a more deliberate hierarchy, a consistent author
@@ -119,12 +125,12 @@ Chromium; print CSS is exercised in all three engines.
    intact, and code remained code. The most useful decision on slide 5 was to
    remove an attractive side-heading treatment because it took width from the
    authored sample. The form was adapted to the material.
-3. **Reading mode needs lifecycle integration, not just CSS.** Destroying Lys
-   removes inactive-slide ARIA state. The initial adapter also reacted to print's
-   temporary media-query changes and reset the active slide. Pausing adaptation
-   during print and explicitly restoring it fixed the defect; a native PDF
-   regression test now covers it. This is a concrete integration refinement
-   candidate for Kata, logged here without editing Kata.
+3. **Withdrawn: responsive reading was outside scope.** The original review
+   treated adapter repairs as an integration improvement. Owner clarification
+   established that Kata composes a static surface and Lys scales that surface.
+   Version 0.5.1 removes the adapter rather than improving or moving it into Lys.
+   Tests that rewarded responsive reflow were replaced with fixed-canvas scaling,
+   navigation and print checks.
 4. **Keyboard inspection found what geometry checks missed.** An unnecessary
    tab stop on the table could receive focus while its slide was inactive.
    Removing it, and explicitly making the visible control buttons tabbable in

@@ -120,13 +120,12 @@ test.describe("built site — slide contrast", () => {
 	}
 });
 
-// The primary demo is also the portable artifact and a reading-mode example.
-test.describe("primary demo — presentation and reading", () => {
+// The primary demo retains its authored canvas at every viewport size.
+test.describe("primary demo — fixed composition", () => {
 	test("keyboard, controls and accessibility state agree", async ({ page }) => {
 		await page.setViewportSize({ width: 1440, height: 900 });
 		await page.goto(`${BASE}/examples/demo.html`);
-		const deck = page.locator("#deck");
-		await expect(deck).toHaveClass("presenting");
+		await expect(page.locator("#deck")).toHaveAttribute("data-lys-mode", "stacked");
 		await page.keyboard.press("ArrowRight");
 		await expect(page.locator("#overview")).toHaveAttribute("data-lys-active", "");
 		await expect(page.locator("#overview")).toBeFocused();
@@ -148,86 +147,131 @@ test.describe("primary demo — presentation and reading", () => {
 		{ width: 390, height: 844 },
 		{ width: 1440, height: 500 },
 	]) {
-		test(`reading mode exposes all content at ${viewport.width}×${viewport.height}`, async ({
+		test(`same composition and navigation at ${viewport.width}×${viewport.height}`, async ({
 			page,
 		}) => {
-			await page.setViewportSize(viewport);
-			await page.goto(`${BASE}/examples/demo.html`);
-			await expect(page.locator("#deck")).not.toHaveAttribute("data-lys-mode");
-			await expect(page.locator("article[aria-hidden]")).toHaveCount(0);
-			await expect(page.locator("article")).toHaveCount(8);
-			const clipped = await page
-				.locator("article")
-				.evaluateAll((slides) =>
-					slides
-						.filter((s) => s.scrollWidth > s.clientWidth + 1 || s.scrollHeight > s.clientHeight + 1)
-						.map((s) => s.id),
+			await page.setViewportSize({ width: 1440, height: 900 });
+			await page.goto(`${BASE}/examples/demo.html#slide=attributes`);
+			const measure = () =>
+				page.locator("article").evaluateAll((slides) =>
+					slides.map((slide) => {
+						const box = slide.getBoundingClientRect();
+						const content = slide.querySelector(".slide-content");
+						return {
+							ratio: box.width / box.height,
+							typeScale: Number.parseFloat(getComputedStyle(content).fontSize) / box.width,
+							codeLines: [...slide.querySelectorAll("pre code")].map((code) => {
+								const range = document.createRange();
+								range.selectNodeContents(code);
+								return range.getClientRects().length;
+							}),
+							fields: [...slide.querySelectorAll(".properties li, .code-layout, table")].map(
+								(field) => {
+									const rect = field.getBoundingClientRect();
+									return [
+										(rect.x - box.x) / box.width,
+										(rect.y - box.y) / box.height,
+										rect.width / box.width,
+									];
+								},
+							),
+						};
+					}),
 				);
-			expect(clipped).toEqual([]);
-			await expect(page.locator(".deck-controls")).toBeHidden();
+			const baseline = await measure();
+			await page.setViewportSize(viewport);
+			await expect(page.locator("#attributes")).toHaveAttribute("data-lys-active", "");
+			await expect(page.locator("article[aria-hidden='true']")).toHaveCount(7);
+			await expect(page.locator(".deck-controls")).toBeVisible();
+			const scaled = await measure();
+			for (let i = 0; i < scaled.length; i++) {
+				expect(scaled[i].ratio).toBeCloseTo(16 / 9, 2);
+				expect(scaled[i].typeScale).toBeCloseTo(baseline[i].typeScale, 4);
+				expect(scaled[i].codeLines).toEqual(baseline[i].codeLines);
+				for (let j = 0; j < scaled[i].fields.length; j++) {
+					for (let k = 0; k < 3; k++)
+						// At a 390px canvas, native line-box and border rounding can
+						// shift vertical centering by a few pixels. Columns and widths
+						// stay proportional; code keeps exactly the same line count.
+						expect(Math.abs(scaled[i].fields[j][k] - baseline[i].fields[j][k])).toBeLessThan(
+							k === 1 ? 0.025 : 0.005,
+						);
+				}
+			}
+			await page.keyboard.press("ArrowRight");
+			await expect(page.locator("#counter")).toHaveText("6 / 8");
+			await page.setViewportSize({ width: 1440, height: 900 });
+			await expect(page.locator("#tokens")).toHaveAttribute("data-lys-active", "");
 		});
 	}
 
-	test("resize preserves the current slide and reading position", async ({ page }) => {
-		await page.setViewportSize({ width: 1440, height: 900 });
-		await page.goto(`${BASE}/examples/demo.html#slide=attributes`);
-		await expect(page.locator("#attributes")).toHaveAttribute("data-lys-active", "");
+	test("phone touch gestures navigate the same slide deck", async ({ page }) => {
 		await page.setViewportSize({ width: 390, height: 844 });
-		await expect(page.locator("article[aria-hidden]")).toHaveCount(0);
-		await expect(page.locator("#deck")).not.toHaveClass("presenting");
-		await expect
-			.poll(() =>
-				page.locator("#attributes").evaluate((s) => Math.abs(s.getBoundingClientRect().top)),
-			)
-			.toBeLessThan(2);
-		await page.locator("#principles").evaluate((s) => s.scrollIntoView());
-		await page.setViewportSize({ width: 1440, height: 900 });
-		await expect(page.locator("#principles")).toHaveAttribute("data-lys-active", "");
+		await page.goto(`${BASE}/examples/demo.html`);
+		await page.locator("#deck").evaluate((surface) => {
+			surface.dispatchEvent(
+				Object.assign(new Event("touchstart"), { touches: [{ clientX: 300, clientY: 400 }] }),
+			);
+			surface.dispatchEvent(
+				Object.assign(new Event("touchend"), { changedTouches: [{ clientX: 100, clientY: 400 }] }),
+			);
+		});
+		await expect(page.locator("#overview")).toHaveAttribute("data-lys-active", "");
+		await expect(page.locator("#counter")).toHaveText("2 / 8");
 	});
 
 	for (const viewport of [
 		{ width: 1440, height: 900 },
 		{ width: 390, height: 844 },
 	]) {
-		test(`no-JavaScript reading at ${viewport.width}×${viewport.height}`, async ({ browser }) => {
+		test(`CSS-only fixed slides at ${viewport.width}×${viewport.height}`, async ({ browser }) => {
 			const context = await browser.newContext({ javaScriptEnabled: false, viewport });
 			const page = await context.newPage();
 			await page.goto(`${BASE}/examples/demo.html`);
 			const layout = await page.locator("article").evaluateAll((slides) =>
-				slides.map((s) => {
-					const box = s.getBoundingClientRect();
+				slides.map((slide) => {
+					const box = slide.getBoundingClientRect();
 					return {
-						top: box.top,
-						bottom: box.bottom,
-						clipped: s.scrollHeight > s.clientHeight + 1 || s.scrollWidth > s.clientWidth + 1,
+						ratio: box.width / box.height,
+						clipped:
+							slide.scrollWidth > slide.clientWidth + 1 ||
+							slide.scrollHeight > slide.clientHeight + 1,
 					};
 				}),
 			);
 			expect(layout).toHaveLength(8);
-			for (let i = 0; i < layout.length; i++) {
-				expect(layout[i].clipped).toBe(false);
-				if (i) expect(layout[i].top).toBeGreaterThanOrEqual(layout[i - 1].bottom - 1);
+			for (const slide of layout) {
+				expect(slide.ratio).toBeCloseTo(16 / 9, 2);
+				expect(slide.clipped).toBe(false);
 			}
+			await expect(page.locator("article[aria-hidden]")).toHaveCount(0);
+			await page.locator("#closing").scrollIntoViewIfNeeded();
+			await expect(page.locator("#closing")).toBeInViewport();
 			await expect(page.locator(".deck-controls")).toBeHidden();
 			await context.close();
 		});
 	}
 
-	test("print exposes every slide and restores the current slide", async ({ page }) => {
+	test("print shows every canvas while preserving presentation state", async ({ page }) => {
 		await page.goto(`${BASE}/examples/demo.html#slide=attributes`);
-		await page.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
 		await page.emulateMedia({ media: "print" });
-		await expect(page.locator("article[aria-hidden]")).toHaveCount(0);
 		await expect(page.locator(".deck-controls")).toBeHidden();
 		const slides = await page.locator("article").evaluateAll((elements) =>
-			elements.map((s) => {
-				const style = getComputedStyle(s);
+			elements.map((slide) => {
+				const style = getComputedStyle(slide);
 				return { position: style.position, opacity: style.opacity };
 			}),
 		);
-		expect(slides).toEqual(Array(8).fill({ position: "static", opacity: "1" }));
+		expect(slides).toEqual(Array(8).fill({ position: "relative", opacity: "1" }));
+		const anchors = await page
+			.locator(".slide-content")
+			.evaluateAll((frames) => frames.map((frame) => frame.offsetParent === frame.parentElement));
+		expect(anchors).toEqual(Array(8).fill(true));
+		const edges = await page
+			.locator("article")
+			.evaluateAll((slides) => slides.map((slide) => slide.getBoundingClientRect().left));
+		for (const edge of edges) expect(Math.abs(edge)).toBeLessThan(1);
 		await page.emulateMedia({ media: "screen" });
-		await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
 		await expect(page.locator("#attributes")).toHaveAttribute("data-lys-active", "");
 	});
 });
@@ -251,7 +295,7 @@ test("primary demo — copied standalone file works offline", async ({ browser }
 		if (request.url().startsWith("http")) requests.push(request.url());
 	});
 	await page.goto(pathToFileURL(file).href);
-	await expect(page.locator("#deck")).toHaveClass("presenting");
+	await expect(page.locator("#deck")).toHaveAttribute("data-lys-mode", "stacked");
 	await page.keyboard.press("End");
 	await expect(page.locator("#counter")).toHaveText("8 / 8");
 	expect(errors).toEqual([]);
@@ -263,13 +307,15 @@ test("primary demo — copied standalone file works offline", async ({ browser }
 for (const viewport of [
 	{ width: 1440, height: 900 },
 	{ width: 1024, height: 768 },
+	{ width: 390, height: 844 },
+	{ width: 1440, height: 500 },
 ]) {
 	test(`primary demo — every text block fits at ${viewport.width}×${viewport.height}`, async ({
 		page,
 	}) => {
 		await page.setViewportSize(viewport);
 		await page.goto(`${BASE}/examples/demo.html`);
-		await expect(page.locator("#deck")).toHaveClass("presenting");
+		await expect(page.locator("#deck")).toHaveAttribute("data-lys-mode", "stacked");
 		const clipped = await page.locator("article").evaluateAll((slides) =>
 			slides.flatMap((slide) => {
 				const box = slide.getBoundingClientRect();

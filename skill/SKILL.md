@@ -41,6 +41,15 @@ Override on `:root`, `[data-lys]`, or per-slide `<article>`:
 | `--lys-slide-max-height` | `100vh` |
 | `--lys-focus-ring` | `2px solid currentColor` |
 
+## Fixed slide composition
+
+Compose for the authored aspect ratio. Lys fits that same slide into every
+viewport, including phones. Keep spatial relationships and line wrapping stable
+as the slide scales; use proportional sizing within the slide. Do not replace the
+presentation with a scrolling/reflowed document at viewport breakpoints or destroy
+the Lys instance to introduce a reading mode. Without JavaScript, retain Lys's
+CSS-only fixed-aspect slides. Verify the renderer's scaling and navigation.
+
 ## Slide Patterns
 
 ### Title Slide

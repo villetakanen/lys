@@ -17,6 +17,8 @@ arrangements, examples, alternatives and limits:
 | Subjects deserve comparable consideration | [Equal peers](references/composition.md#equal-peers) |
 | A supplied priority leads its context | [A lead with support](references/composition.md#a-lead-with-support) |
 
+Compose one static surface at its specified dimensions or aspect ratio.
+Use the shared practices for its scope and the renderer for viewing behavior.
 Choose for what the item should communicate and how it should feel. Adapt the
 form to the actual material; consider a meaningful alternative. A form can also
 explain why an existing arrangement should be retained. Combine forms where

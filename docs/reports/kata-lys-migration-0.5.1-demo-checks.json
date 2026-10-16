@@ -1,0 +1,295 @@
+{
+	"date": "2026-10-16",
+	"scope": "Static composition; renderer scaling and navigation at all viewports",
+	"artifacts": {
+		"site/examples/demo.html": "7af0532b7063be9772394d481904f59061417a0043580d845fc289226755cdf9"
+	},
+	"checks": [
+		{
+			"name": "lys-demo",
+			"mode": "desktop",
+			"js": true,
+			"metrics": [
+				{
+					"id": "intro",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "overview",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "contract",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "enhancement",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "attributes",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "tokens",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "principles",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "closing",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				}
+			],
+			"contentPreserved": true,
+			"errors": [],
+			"externalRequests": [],
+			"axe": [[], [], [], [], [], [], [], []]
+		},
+		{
+			"name": "lys-demo",
+			"mode": "phone",
+			"js": true,
+			"metrics": [
+				{
+					"id": "intro",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "overview",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "contract",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "enhancement",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "attributes",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "tokens",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "principles",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "closing",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				}
+			],
+			"contentPreserved": true,
+			"errors": [],
+			"externalRequests": [],
+			"axe": []
+		},
+		{
+			"name": "lys-demo",
+			"mode": "nojs-desktop",
+			"js": false,
+			"metrics": [
+				{
+					"id": "intro",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "overview",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "contract",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "enhancement",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "attributes",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "tokens",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "principles",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "closing",
+					"width": 1440,
+					"height": 810,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				}
+			],
+			"contentPreserved": true,
+			"errors": [],
+			"externalRequests": [],
+			"axe": []
+		},
+		{
+			"name": "lys-demo",
+			"mode": "nojs-phone",
+			"js": false,
+			"metrics": [
+				{
+					"id": "intro",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "overview",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "contract",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "enhancement",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "attributes",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "tokens",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "principles",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				},
+				{
+					"id": "closing",
+					"width": 390,
+					"height": 219.375,
+					"ratio": 1.7777777777777777,
+					"clipped": []
+				}
+			],
+			"contentPreserved": true,
+			"errors": [],
+			"externalRequests": [],
+			"axe": []
+		}
+	],
+	"printCorrection": "Each absolute content frame is anchored to its own positioned article in print; native PDF retains selection.",
+	"originalLysContentPreserved": true,
+	"versions": {
+		"kata": "0.5.1",
+		"lys": "1.2.5",
+		"kata_source": "ed08e83655ac04bb1f3069b15369ac32e662a037"
+	},
+	"browser_regressions": {
+		"passed": 205,
+		"skipped": 20,
+		"engines": ["Chromium", "Firefox", "WebKit"]
+	},
+	"print": {
+		"pages": 8,
+		"size_pt": [960, 540],
+		"all_pages_visually_inspected": true,
+		"expected_page_text_verified": true
+	}
+}

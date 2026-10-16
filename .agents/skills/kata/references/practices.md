@@ -5,6 +5,13 @@ These practices help people and agents choose, adapt and inspect the
 should feel. The arrangement expresses relationships already present in the brief
 or supplied material.
 
+## Compose a static surface
+
+Choose placement, scale and space for one specified surface. A different authored
+surface can call for a separate composition. Viewport changes do not instruct
+Kata to switch arrangements, stack fields or create a reading mode. The renderer
+owns scaling and viewing behavior.
+
 ## Choose with a reason
 
 Identify the subject, any authored priority, the subjects that deserve comparable
@@ -21,8 +28,8 @@ names need not cover every possible composition.
 
 ## Preserve authored material
 
-Preserve supplied wording, quantities, uncertainty and associations. Reflow,
-line breaks and typography can change. Do not add a headline, shorten a sentence,
+Preserve supplied wording, quantities, uncertainty and associations. Within the
+authored composition, line breaks and typography can change. Do not add a headline, shorten a sentence,
 select a winner, or convert prose into a process to obtain a stronger composition.
 
 Treat charts, tables, diagrams and code as authored content. Compose them with
@@ -52,9 +59,10 @@ in a left-to-right horizontal reading context, to the left in the reverse contex
 Choose for the actual reading order and available space. Keep both close enough
 that the association remains apparent.
 
-For example, a supplied photograph and “Entrance after renovation” stay together
-when two image fields become rows on a phone. Read image, caption, next image,
-next caption; do not collect all captions beneath all images.
+For example, keep a supplied photograph and “Entrance after renovation” together
+in either a column arrangement or a separately authored row arrangement. Read
+image, caption, next image, next caption; do not collect captions beneath unrelated
+images.
 
 An informative image or table may need identifying context. If required context
 is absent, identify what is missing rather than writing it. An already sufficient
@@ -122,7 +130,7 @@ inspect the actual result:
 - **Whitespace and restraint:** does space give presence or clarify relationships?
   Reduce it when essential material loses room to remain readable.
 - **Fit and continuity:** check the longest text and smallest necessary labels.
-  Reflow must preserve associations, reading order and qualifications.
+  The arrangement must preserve associations, reading order and qualifications.
 
 If content is too dense, first reduce excess spacing or use a more economical
 arrangement. Keep support readable. If it still cannot fit, explain the constraint
@@ -130,8 +138,8 @@ and recommend separation. Preserve supplied slide boundaries and order unless th
 author authorizes a change. Kata composes individual surfaces; it does not script
 deck sequence, timing or narrative.
 
-Use [rendering integration](integration.md) for implementation and viewing-mode
-checks. Kata owns composition; a renderer owns output behavior and a supplied
+Use [rendering integration](integration.md) for the handoff to the renderer and
+checks of the delivered artifact. Kata owns composition; a renderer owns output behavior and a supplied
 brand owns identity. Expressive choices remain possible within brand constraints.
 Slides are the tested medium; other surfaces require fresh visual verification.
 

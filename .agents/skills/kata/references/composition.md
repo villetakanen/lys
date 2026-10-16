@@ -69,10 +69,6 @@ needs enough area for its existing labels. Two independently important subjects
 call for [equal peers](#equal-peers). Do not enlarge a heading until its necessary
 qualification or attribution becomes unreadable.
 
-**Narrow view.** Reduce outer space, allow natural wrapping and keep a comfortable
-text size. A centred composition may become aligned to the reading start if that
-helps a long title. Preserve the subject's presence and caption relationship;
-do not shrink the entire desktop canvas.
 
 ## Equal peers
 
@@ -135,10 +131,6 @@ both fields consistently. Three brief peers may fit columns; longer descriptions
 may need rows. Keep an authored comparison table intact and compose its surroundings.
 When an explicit recommendation should lead, use [lead with support](#a-lead-with-support).
 
-**Narrow view.** Stack in supplied order, keeping equivalent headings and spacing.
-Keep each subject's own caption or qualification inside its group. A shared note
-must still clearly apply to both. Side-by-side comparison is reduced; do not hide
-that cost by making the text tiny.
 
 ## A lead with support
 
@@ -196,7 +188,3 @@ one possible choice, with no privileged status. If the support becomes cramped,
 reduce the lead's allocation or move support below it. When no priority is
 supplied, consider [equal peers](#equal-peers); never invent a recommendation to
 justify an asymmetric layout.
-
-**Narrow view.** Keep the lead, its qualification and support in a readable group.
-Preserve explicit author-supplied order. Natural height lets support remain usable;
-a remote footer is a poor substitute for a condition that belongs with the lead.
