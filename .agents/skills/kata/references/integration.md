@@ -1,33 +1,76 @@
-# Combining Kata with a renderer and a brand
+# Render the composition
 
-The first iteration uses three separate responsibilities:
+Kata chooses composition. Use the renderer's authoring guidance for document
+structure, packaging and behavior. A supplied brand owns identity; Kata can
+choose restraint, balance and emphasis within it. Without a brand, choose a
+cohesive readable theme. Kata's own example styling is not required.
 
-| Layer | Owns | Example |
-| --- | --- | --- |
-| Kata | Arrangement of supplied content: placement, available space, grouping, reading order | Positioning a supplied comparison matrix while retaining its rows |
-| Lys or another renderer | Output, navigation, sizing, notes, print behavior | Semantic HTML articles in a Lys deck |
-| Optional brand skill | Visual identity | Approved typography and palette |
+## Using Lys
 
-These are composition guidelines, not an adapter API. There is no separate `kata-lys` package yet.
+Read the available Lys authoring skill. The tested Lys 1.2.1 structure is a `div`
+with `data-lys` containing direct `article` children. Use semantic headings,
+paragraphs, lists, figures and tables. Give slides IDs, headings and useful
+`data-notes` about the supplied content. Keep layout rationale and implementation
+instructions outside speaker notes. Preserve supplied wording and slide order.
 
-## Lys
+For standalone HTML, inline the supplied Lys stylesheet and runtime and any
+used images/fonts, retaining required notices. Never depend on a relative font
+path, CDN or repository stylesheet in the delivered file. Use public `--lys-*`
+tokens and put theme overrides after renderer CSS. Leave internal state
+attributes and `--_lys-*` tokens to Lys.
 
-Read the available Lys instructions when producing a deck. The locally inspected Lys 1.2.1 contract uses a `div` with `data-lys` containing direct `article` children. Give each slide a heading and useful `data-notes`. Keep Kata's layout inside the article. Include the renderer CSS and JavaScript according to its packaging instructions, followed by the theme's CSS overrides. Use public `--lys-*` tokens; leave internal state attributes to Lys.
+Use flexible grids: `minmax(0, 1fr)` avoids long text forcing a column wider than
+its share. Give grid children `min-width: 0`. Prefer a few purposeful compositions
+over identical cards on every slide.
 
-A dependency chart can be inline SVG with a title and text description. A comparison should remain a semantic table. Charts should retain their values in text or an accessible data table. A no-JavaScript view must still expose the slide content. Check both navigation and print output after integration.
+## Presentation and reading modes
 
-The repository's `examples/kata-lys.html` is a working single-file specimen with 14 slides: a before and after for each of the seven worked pairs. It bundles the locally available Lys build; it does not fetch a CDN resource at runtime. `examples/index.html` offers a scrollable comparison gallery. These are repository review artifacts and are not required when installing just this skill folder. The specimens retain examples of broader information-structuring work; they do not expand Kata's current responsibility for arranging supplied content.
+Choose a readable 16:9 composition unless the brief says otherwise. Account for
+navigation and margins in the usable height. In short or narrow windows, switch
+to a scrolling document with natural content height. Make that the default
+without JavaScript too. Keep useful text sizes instead of scaling the canvas down.
 
-The specimen uses Lys's direct transition mode. A small chapter-navigation listener routes local anchor clicks through the public `Lys.Lys.from(element).goTo(id)` API so the active slide, accessibility state, and subsequent arrow-key navigation agree. Plain anchors remain usable without JavaScript. The vendored runtime itself is unchanged.
+With stacked Lys slides (`data-transition="direct"`), changing CSS alone leaves
+inactive slides hidden from accessibility tools. Destroy the Lys instance in
+reading mode and recreate it on return to presentation mode. After the supplied
+runtime initializes, for example:
 
-## Brand skills
+```js
+const surface = document.querySelector('[data-lys]');
+const reading = matchMedia('(max-width: 900px), (max-height: 560px)');
+function adapt() {
+  if (reading.matches) Lys.Lys.from(surface).destroy();
+  else Lys.Lys.from(surface);
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', adapt, { once: true });
+} else adapt();
+reading.addEventListener('change', adapt);
+```
 
-If a Futurice brand skill is supplied, read and apply it. This repository does not contain or verify Futurice assets, tokens, or rules. Do not label a neutral example as on-brand. Keep the data's grouping and scales intact while changing the visual identity. If a brand palette cannot distinguish adjacent segments, retain explicit labels and boundaries instead of relying on hue.
+This behavior example needs matching natural-height CSS for that media query.
+A presentation-only class set by the adapter can make reading the default without
+JavaScript. Use a **screen** condition for reading CSS; print needs a separate
+page-sized layout. Restore every slide in print, hide navigation, use one page per
+slide, and inspect the PDF. Do not let a narrow print viewport trigger phone styles.
 
-## Example requests
+Put optional navigation outside the composition. In presentation mode, route
+slide links through `Lys.Lys.from(surface).goTo(id)` so visual and accessibility
+state agree. In reading mode use ordinary anchors. Keep controls keyboard reachable
+with visible focus. On resize, preserve the current slide where practical.
 
-“Arrange this supplied supplier comparison for the procurement team. Keep cost and delivery time easy to compare, and don't imply a winner.”
+## Check the delivered file
 
-“Arrange this supplied budget breakdown in a Lys slide. Keep the labels and amounts together, and apply the attached brand skill.”
+Open the copied standalone file with no network access. Inspect **every** slide
+at a presentation viewport such as 1440×900 and a phone viewport such as 390×844.
+Check content and intended emphasis. Look for clipping, overlap, excessive wrapping,
+broken images and text too small to read.
 
-“Review this slide's layout using Kata. Preserve the supplied content and tell me whether a layout change is needed.”
+Use ArrowLeft/ArrowRight, Home/End and Tab where supported. Disable JavaScript and
+confirm all content is readable. Print to PDF and inspect each page, including
+long qualifications. Resize between reading and presentation modes and verify
+all content stays reachable. Structural checks support visual review, not replace it.
+
+Report the sizes and modes actually checked. If a renderer cannot meet a required
+mode, state the limitation and deliver a usable fallback rather than claiming
+unperformed verification.
