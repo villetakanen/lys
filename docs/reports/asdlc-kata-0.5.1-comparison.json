@@ -1,0 +1,118 @@
+{
+	"before_commit": "f28a9c173a4fa0e6a3b28161f1193e01f4c9738d",
+	"after_commit": "56e3d489b7e61e2a1d495723a4e84ab4f25cfdfd",
+	"method": "English lexical tokens including titles, content, labels, captions and code; excluding header/footer chrome and speaker notes. Regex [A-Za-z0-9]+ with internal apostrophes/hyphens. Counts describe copy, not comprehension or visual density.",
+	"before": {
+		"source_sha256": "917c57fc8f5c20f70f8f45d8d0f692be0510a15d73c417ac941c466f90f20732",
+		"total_words": 197,
+		"slides": [
+			{
+				"slide": 1,
+				"title": "ASDLC",
+				"words": 3,
+				"text": "ASDLC Agent-Spec-Driven Lifecycle"
+			},
+			{
+				"slide": 2,
+				"title": "What is ASDLC?",
+				"words": 46,
+				"text": "What is ASDLC? A development methodology where specs drive every decision Designed for human-agent collaboration, not just human teams Specs are living documents — blueprint + contract in one artifact Agents read specs before writing code, just like engineers should Eliminates ambiguity that causes LLM drift and hallucination"
+			},
+			{
+				"slide": 3,
+				"title": "The Workflow",
+				"words": 45,
+				"text": "The Workflow Spec → Plan → Implement → Verify → Ship ↺ Ship feeds back into Spec Each arrow reads \"is followed by\": a phase's output is the next phase's input. Shipping updates the spec, so the cycle repeats. The spec is both the starting point and the acceptance gate."
+			},
+			{
+				"slide": 4,
+				"title": "Spec as Contract",
+				"words": 50,
+				"text": "Spec as Contract # feature-name.spec.md ## Blueprint - Architecture decisions and constraints - API surface and data flow - Anti-patterns to avoid ## Contract - Definition of Done checklist - Regression guardrails ### Scenarios Given a valid slide container When the user presses ArrowRight Then the next slide becomes active And the live region announces the change"
+			},
+			{
+				"slide": 5,
+				"title": "Benefits",
+				"words": 44,
+				"text": "Benefits Deterministic agent output — specs constrain what gets built Auditable decisions — every choice traces to a spec section Testable by default — Gherkin scenarios map directly to tests Human-agent handoff — either party can pick up from the spec Drift protection — verify phase catches spec-code divergence"
+			},
+			{
+				"slide": 6,
+				"title": "",
+				"words": 9,
+				"text": "&fleur; Specs are the source of truth. asdlc.io"
+			}
+		]
+	},
+	"after": {
+		"source_sha256": "99a50347921bcb9139d731db5142fc078f2c85b5b7f6014bc6d957dded3e38b4",
+		"total_words": 284,
+		"slides": [
+			{
+				"slide": 1,
+				"title": "Agentic software development lifecycle",
+				"words": 23,
+				"text": "Agentic software development lifecycle A pattern library for building software with agents. People design and govern the system. Agents carry out the work."
+			},
+			{
+				"slide": 2,
+				"title": "Three layers of agentic work",
+				"words": 47,
+				"text": "Three layers of agentic work ASDLC’s three layers and the human role in each Layer Function Human role Context The supply chain—requirements, schemas, specs delivered just-in-time Editor Agents The logistics layer—moving information, generating code, running tests Operator Gates Quality control—deterministic checks + human oversight Governor"
+			},
+			{
+				"slide": 3,
+				"title": "Keep the state. Name the change.",
+				"words": 89,
+				"text": "Keep the state. Name the change. The Spec STATE · LIVES WITH THE CODE The feature’s design and quality contract, kept current as the system changes. ## Blueprint Context, architecture, constraints ## Contract Done criteria, guardrails, scenarios Illustrative outline The PBI DELTA · CLOSED AFTER MERGE One scoped change, pointing to the spec and its verification criteria. A Product Backlog Item sets the task’s boundaries and how discoveries will be handled. When a change alters the contract, update the spec with it. Specs capture intent and constraints. Code remains authoritative for runtime logic."
+			},
+			{
+				"slide": 4,
+				"title": "Different checks. Different questions.",
+				"words": 56,
+				"text": "Different checks. Different questions. Quality DETERMINISTIC Does it compile and pass tests? Toolchain checks: types, lint, tests and build. Review PROBABILISTIC Does it satisfy the spec’s contracts? AI-assisted review of meaning, constraints and edge cases. Acceptance HUMAN JUDGMENT Is it the right thing? Usability, visual balance and strategic fit. ASDLC’s Context Gates pattern is marked Experimental."
+			},
+			{
+				"slide": 5,
+				"title": "Try one bounded change",
+				"words": 47,
+				"text": "Try one bounded change Spec PBI Implementation Gate Merge The introductory loop from ASDLC’s Getting Started guide. Give the agent the relevant context and a clear outcome to work toward. Review the evidence before accepting the change. Keep the spec current as the work teaches you more."
+			},
+			{
+				"slide": 6,
+				"title": "Build the system around the work.",
+				"words": 22,
+				"text": "Build the system around the work. Choose the patterns your project needs. Make the constraints and decisions explicit. Start with the guide ↗"
+			}
+		]
+	},
+	"reviewed_at": "2026-10-17T20:47:27+03:00",
+	"visual_comparison": {
+		"viewport": [1280, 720],
+		"before_reconstruction": "Historical HTML at before_commit with its authored content and CSS unchanged; current unchanged Lys 1.2.5 build inlined and Archivo/B612 font faces embedded from after deck instead of Google Fonts. This is a reconstruction, not a captured historical browser session.",
+		"coverage": "All six earlier slides; current Spec/PBI, gates, workflow and closing in browser, plus all six current slides in existing rendered contact sheet.",
+		"old_code_panel": {
+			"client_height_px": 517,
+			"scroll_height_px": 580,
+			"overflow_y": "auto"
+		},
+		"type_px": {
+			"before": {
+				"cover": 72,
+				"informational_heading": 36,
+				"list_body": 24,
+				"code": 16.8,
+				"closing_statement": 36
+			},
+			"after": {
+				"cover": 55.68,
+				"informational_heading": 33.92,
+				"ordinary_text_range": [18.56, 24.32],
+				"code": 17.28,
+				"caption_and_type_label_range": [12.16, 13.44],
+				"closing_statement": 46.08
+			}
+		},
+		"interpretation_limit": "Content, representations and styling changed together. Not a controlled test of Kata."
+	}
+}
