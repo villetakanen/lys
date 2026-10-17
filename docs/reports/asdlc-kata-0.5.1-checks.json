@@ -1,0 +1,67 @@
+{
+	"date": "2026-10-17",
+	"browser_results": {
+		"startTime": "2026-10-17T17:32:44.021Z",
+		"duration": 9098.277,
+		"expected": 41,
+		"skipped": 4,
+		"unexpected": 0,
+		"flaky": 0
+	},
+	"expected_skips": "Native PDF exports in Firefox and WebKit",
+	"viewports": [[1280, 720], [1440, 900], [390, 844], [844, 390]],
+	"modes": {
+		"aspect_ratio": "16:9",
+		"navigation": "native scroll-snap",
+		"transition_token_ms": 400,
+		"javascript": [true, false]
+	},
+	"pdfs": [
+		{
+			"javascript": false,
+			"pages": 6,
+			"points": [960, 540],
+			"visible_text": "all authored title and content tokens preserved",
+			"sha256": "c23e0a569b2a414f98ba0be03c3dcaf9e941e96361d734be673f1ff46ad3315f"
+		},
+		{
+			"javascript": true,
+			"pages": 6,
+			"points": [960, 540],
+			"visible_text": "all authored title and content tokens preserved",
+			"sha256": "fedc2bcb3391e47c9b378846219152679737d652f2661c9abf46ffebd90f9b38"
+		}
+	],
+	"pdf_pixel_comparison": "All six pages match exactly between JavaScript and CSS-only exports.",
+	"visual_review": [
+		"all six slides at 1280×720",
+		"390×844 portrait and 844×390 landscape samples",
+		"desktop and phone example listing with working ASDLC link",
+		"all six PDF pages and full-size spec slide",
+		"CSS-only screenshots"
+	],
+	"kata": {
+		"version": "0.5.1",
+		"commit": "ed08e83655ac04bb1f3069b15369ac32e662a037",
+		"unchanged_delivered_files_sha256": {
+			"SKILL.md": "5ed77679dec8962284efb1d841d115d1f068594612c85537f9715d3432300c41",
+			"references/practices.md": "b6ac914daee6f0e0398bd2fd116df9bccb2260ffdffb123e18eba576cc4730e7",
+			"references/composition.md": "673358df3d29cabfd71e799dfbc635ed7659f62f4f9d011c83bbd28b528e677e",
+			"references/integration.md": "049565d571e2bc90067b7f0f49e7107938bc9c2b679e87ca0f24df5a446bc278"
+		}
+	},
+	"artifacts": {
+		"examples/themed.html": {
+			"bytes": 942170,
+			"sha256": "99a50347921bcb9139d731db5142fc078f2c85b5b7f6014bc6d957dded3e38b4"
+		},
+		"site/examples/themed.html": {
+			"bytes": 952315,
+			"sha256": "d97f69c3b226910c5c157361d0cef1825dfdd070f8f08e81e738dca011e65d45"
+		},
+		"docs/reports/asdlc-kata-0.5.1-content.json": {
+			"bytes": 5597,
+			"sha256": "402e6c418d0b5404de81379e2cfb6fc0f1810faa73d304df845b57496bafbaf1"
+		}
+	}
+}

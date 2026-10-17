@@ -1,0 +1,74 @@
+{
+	"title": "ASDLC example authored content",
+	"date": "2026-10-17",
+	"kata": {
+		"version": "0.5.1",
+		"commit": "ed08e83655ac04bb1f3069b15369ac32e662a037",
+		"unchanged": true
+	},
+	"lys": "1.2.5",
+	"surface": "16:9",
+	"viewing_intent": "A six-slide introduction on a laptop, desktop or shared screen; compose and inspect at 1280×720. Phone checks verify proportional scaling, not comfortable long-form reading.",
+	"authorship": "Content and representations were selected and written from current ASDLC sources before composition. Kata is applied to this frozen copy and these slide boundaries.",
+	"design_source": {
+		"url": "https://asdlc.io/resources/design-system/",
+		"repository_commit": "73b2bd7096cf612fc730501f5a300d0e3cf62b4b",
+		"name": "Avionics / Timeless Industrial"
+	},
+	"slides": [
+		{
+			"id": "asdlc",
+			"label": "A FIELD GUIDE",
+			"title": "Agentic software development lifecycle",
+			"notes": "ASDLC stands for Agentic Software Development Lifecycle. This is an introduction to the site’s current framework and pattern library. Its recommendations are composable choices for a project, not a guarantee of deterministic model behaviour.",
+			"source": "https://asdlc.io/",
+			"sourceLabel": "ASDLC.io",
+			"content": "A pattern library for building software with agents. People design and govern the system. Agents carry out the work."
+		},
+		{
+			"id": "operating-model",
+			"label": "THE OPERATING MODEL",
+			"title": "Three layers of agentic work",
+			"notes": "The table retains the three layers, functions and human-role associations from Getting Started. These roles describe responsibilities, not necessarily three separate people. Humans remain responsible for designing the operating model.",
+			"source": "https://asdlc.io/getting-started/",
+			"sourceLabel": "Getting started",
+			"content": "ASDLC’s three layers and the human role in each Layer Function Human role Context The supply chain—requirements, schemas, specs delivered just-in-time Editor Agents The logistics layer—moving information, generating code, running tests Operator Gates Quality control—deterministic checks + human oversight Governor"
+		},
+		{
+			"id": "state-and-change",
+			"label": "DURABLE CONTEXT / BOUNDED WORK",
+			"title": "Keep the state. Name the change.",
+			"notes": "The current Spec pattern describes spec-anchored development, and rejects treating specs as the sole source from which all code is regenerated. The code block is an illustrative outline, not a complete template. A PBI defines the change and references permanent context; it does not copy the full design. Source: https://asdlc.io/patterns/the-pbi/",
+			"source": "https://asdlc.io/patterns/the-spec/",
+			"sourceLabel": "The Spec · The PBI",
+			"content": "The Spec STATE · LIVES WITH THE CODE The feature’s design and quality contract, kept current as the system changes. ## Blueprint Context, architecture, constraints ## Contract Done criteria, guardrails, scenarios Illustrative outline The PBI DELTA · CLOSED AFTER MERGE One scoped change, pointing to the spec and its verification criteria. A Product Backlog Item sets the task’s boundaries and how discoveries will be handled. When a change alters the contract, update the spec with it. Specs capture intent and constraints. Code remains authoritative for runtime logic."
+		},
+		{
+			"id": "gates",
+			"label": "QUALITY, REVIEW AND ACCEPTANCE",
+			"title": "Different checks. Different questions.",
+			"notes": "This slide summarises output gates. The source also describes input gates for filtering and summarising context. Its three output tiers have different purposes; passing toolchain checks does not establish usability or strategic fit. The Context Gates pattern is Experimental as read on 17 October 2026.",
+			"source": "https://asdlc.io/patterns/context-gates/",
+			"sourceLabel": "Context Gates · Experimental",
+			"content": "Quality DETERMINISTIC Does it compile and pass tests? Toolchain checks: types, lint, tests and build. Review PROBABILISTIC Does it satisfy the spec’s contracts? AI-assisted review of meaning, constraints and edge cases. Acceptance HUMAN JUDGMENT Is it the right thing? Usability, visual balance and strategic fit. ASDLC’s Context Gates pattern is marked Experimental."
+		},
+		{
+			"id": "first-change",
+			"label": "GETTING STARTED",
+			"title": "Try one bounded change",
+			"notes": "The sequence is explicitly supplied by the Getting Started page; it is not inferred from prose by Kata. A gate may send work back for correction, and discoveries can update the spec during implementation. This is an introductory loop, not a complete workflow for every team.",
+			"source": "https://asdlc.io/getting-started/",
+			"sourceLabel": "Try the loop",
+			"content": "Spec PBI Implementation Gate Merge The introductory loop from ASDLC’s Getting Started guide. Give the agent the relevant context and a clear outcome to work toward. Review the evidence before accepting the change. Keep the spec current as the work teaches you more."
+		},
+		{
+			"id": "start-here",
+			"label": "ASDLC.IO",
+			"title": "Build the system around the work.",
+			"notes": "The site describes optionality as a feature: patterns are composable choices. The guide links to concepts, patterns and practices for understanding the framework or applying one bounded change. Open the linked guide for the current material.",
+			"source": "https://asdlc.io/",
+			"sourceLabel": "asdlc.io",
+			"content": "Choose the patterns your project needs. Make the constraints and decisions explicit. Start with the guide ↗"
+		}
+	]
+}

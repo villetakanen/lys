@@ -521,3 +521,166 @@ test.describe("FREE//FALL — Northern Lights player pitch", () => {
 		});
 	}
 });
+
+// Exercise the themed example against the existing core, navigation and print
+// contracts. The manifest is author-supplied copy frozen before composition.
+test.describe("ASDLC — Avionics example", () => {
+	test("copy, offline assets and native navigation are preserved", async ({ page }, info) => {
+		const copy = JSON.parse(
+			await readFile("docs/reports/asdlc-kata-0.5.1-content.json", "utf8"),
+		) as { slides: Array<{ id: string; title: string; content: string; notes: string }> };
+		const requests: string[] = [];
+		await page.route("**/*", (route) => {
+			const url = route.request().url();
+			if (url.startsWith(BASE) || url.startsWith("data:")) return route.continue();
+			requests.push(url);
+			return route.abort();
+		});
+		await page.setViewportSize({ width: 1280, height: 720 });
+		await page.goto(`${BASE}/examples/themed.html`);
+		await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe("loaded");
+		const actual = await page.locator("article").evaluateAll((slides) => {
+			const text = (element: Element | null) => {
+				if (!element) return "";
+				const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+				const parts: string[] = [];
+				for (let node = walker.nextNode(); node; node = walker.nextNode())
+					parts.push(node.textContent ?? "");
+				return parts.join(" ").replace(/\s+/g, " ").trim();
+			};
+			return slides.map((slide) => {
+				const title = text(slide.querySelector("h1, h2"));
+				return {
+					id: slide.id,
+					title,
+					content: text(slide.querySelector(".composition")).slice(title.length).trim(),
+					notes: slide.getAttribute("data-notes"),
+				};
+			});
+		});
+		expect(actual).toEqual(
+			copy.slides.map(({ id, title, content, notes }) => ({ id, title, content, notes })),
+		);
+		expect(requests).toEqual([]);
+		await expect(page.locator('script[src], link[rel="stylesheet"]')).toHaveCount(0);
+		expect(
+			await page.evaluate(() =>
+				Array.from(document.fonts).map((font) => ({
+					family: font.family.replaceAll('"', ""),
+					status: font.status,
+				})),
+			),
+		).toEqual([
+			{ family: "Archivo", status: "loaded" },
+			{ family: "B612 Mono", status: "loaded" },
+		]);
+		// Preserve the original themed example's scroll-snap mode, not stacked fade mode.
+		await expect(page.locator("[data-lys]")).not.toHaveAttribute("data-lys-mode");
+		for (let index = 0; index < copy.slides.length; index++) {
+			const slide = page.locator(`#${copy.slides[index].id}`);
+			await expect(slide).toHaveAttribute("data-lys-active", "");
+			await expect(slide).toBeInViewport();
+			await page.screenshot({ path: info.outputPath(`asdlc-${index + 1}.png`) });
+			if (index < copy.slides.length - 1) await page.keyboard.press("ArrowRight");
+		}
+		await expect(page.locator("#start-here")).toBeFocused();
+		await expect(page.locator('article[aria-hidden="true"]')).toHaveCount(5);
+		await page.keyboard.press("Home");
+		await expect(page.locator("#asdlc")).toHaveAttribute("data-lys-active", "");
+		await page.keyboard.press("Space");
+		await expect(page.locator("#operating-model")).toHaveAttribute("data-lys-active", "");
+		await page.keyboard.press("End");
+		await expect(page.locator("#start-here")).toHaveAttribute("data-lys-active", "");
+	});
+
+	for (const javaScriptEnabled of [true, false]) {
+		for (const viewport of [
+			{ width: 1280, height: 720 },
+			{ width: 1440, height: 900 },
+			{ width: 390, height: 844 },
+			{ width: 844, height: 390 },
+		]) {
+			test(`16:9 text fits at ${viewport.width}×${viewport.height}, JS ${javaScriptEnabled}`, async ({
+				browser,
+			}, info) => {
+				const context = await browser.newContext({ viewport, javaScriptEnabled });
+				const page = await context.newPage();
+				await page.goto(`${BASE}/examples/themed.html`);
+				await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe("loaded");
+				const issues = await page.locator("article").evaluateAll((slides) =>
+					slides.flatMap((slide) => {
+						const box = slide.getBoundingClientRect();
+						const failures: string[] = [];
+						if (Math.abs(box.width / box.height - 16 / 9) > 0.005)
+							failures.push(`${slide.id}: ratio`);
+						const walker = document.createTreeWalker(slide, NodeFilter.SHOW_TEXT);
+						for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+							if (!node.textContent?.trim()) continue;
+							const range = document.createRange();
+							range.selectNodeContents(node);
+							for (const rect of range.getClientRects()) {
+								if (
+									rect.left < box.left - 1 ||
+									rect.right > box.right + 1 ||
+									rect.top < box.top - 1 ||
+									rect.bottom > box.bottom + 1
+								)
+									failures.push(`${slide.id}: ${node.textContent}`);
+							}
+						}
+						return failures;
+					}),
+				);
+				expect(issues).toEqual([]);
+				if (!javaScriptEnabled) {
+					await expect(page.locator("article[aria-hidden]")).toHaveCount(0);
+					await page.locator("#start-here").scrollIntoViewIfNeeded();
+					await expect(page.locator("#start-here")).toBeInViewport();
+					await page.screenshot({ path: info.outputPath("asdlc-css-only.png") });
+				}
+				await context.close();
+			});
+		}
+
+		test(`six complete PDF pages, JS ${javaScriptEnabled}`, async ({
+			browser,
+			browserName,
+		}, info) => {
+			test.skip(browserName !== "chromium", "Native PDF export is Chromium-only");
+			const context = await browser.newContext({ javaScriptEnabled });
+			const page = await context.newPage();
+			await page.goto(`${BASE}/examples/themed.html`);
+			await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe("loaded");
+			await page.setViewportSize({ width: 1280, height: 720 });
+			await page.emulateMedia({ media: "print" });
+			await expect(page.locator("[data-lys]")).toHaveCSS("outline-style", "none");
+			const edges = await page.locator("article").evaluateAll((slides) =>
+				slides.map((slide) => {
+					const box = slide.getBoundingClientRect();
+					const content = slide.querySelector(".slide-inner")?.getBoundingClientRect();
+					return {
+						left: box.left,
+						width: box.width,
+						offset: content ? content.left - box.left : -1,
+					};
+				}),
+			);
+			for (const edge of edges) {
+				expect(Math.abs(edge.left)).toBeLessThan(1);
+				expect(edge.width).toBeCloseTo(1280, 0);
+				expect(edge.offset).toBeCloseTo(0, 0);
+			}
+			const pdf = await page.pdf({ path: info.outputPath("asdlc.pdf"), preferCSSPageSize: true });
+			const bytes = pdf.toString("latin1");
+			expect((bytes.match(/\/Type\s*\/Page[^s]/g) ?? []).length).toBe(6);
+			const box = bytes
+				.match(/\/MediaBox \[([^\]]+)\]/)?.[1]
+				.trim()
+				.split(/\s+/)
+				.map(Number);
+			expect(box?.[2]).toBeCloseTo(960, 0);
+			expect(box?.[3]).toBeCloseTo(540, 0);
+			await context.close();
+		});
+	}
+});
