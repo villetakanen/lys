@@ -1,4 +1,4 @@
-import { copyFile, mkdir } from "node:fs/promises";
+import { copyFile, mkdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { expect, test } from "@playwright/test";
@@ -354,4 +354,170 @@ test("primary demo — native PDF print preserves the active slide", async ({
 	await page.pdf({ path: info.outputPath("demo.pdf"), preferCSSPageSize: true });
 	await expect(page.locator("#attributes")).toHaveAttribute("data-lys-active", "");
 	await expect(page.locator("#counter")).toHaveText("5 / 8");
+});
+
+// Northern Lights uses the same contracts in lys-core.spec.md and
+// print-layout.spec.md. Check the shipped example, including its authored copy.
+test.describe("FREE//FALL — Northern Lights player pitch", () => {
+	test("preserves the authored player copy and the requested closing explanation", async ({
+		page,
+	}) => {
+		const content = JSON.parse(
+			await readFile("docs/reports/free-fall-northern-lights-content.json", "utf8"),
+		) as { slides: Array<{ id: string; title: string; content: string; notes: string }> };
+		await page.goto(`${BASE}/examples/square.html`);
+		const actual = await page.locator("article").evaluateAll((slides) => {
+			const text = (element: Element | null) => {
+				if (!element) return "";
+				const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+				const parts: string[] = [];
+				for (let node = walker.nextNode(); node; node = walker.nextNode())
+					parts.push(node.textContent ?? "");
+				return parts.join(" ").replace(/\s+/g, " ").trim();
+			};
+			return slides.map((slide) => ({
+				id: slide.id,
+				title: text(slide.querySelector("h1, h2")),
+				content: text(slide.querySelector(".composition")),
+				notes: slide.getAttribute("data-notes"),
+			}));
+		});
+		expect(actual).toEqual(
+			content.slides.map(({ id, title, content, notes }) => ({ id, title, content, notes })),
+		);
+		await page.keyboard.press("End");
+		await expect(page.locator("#made-with-lys")).toHaveAttribute("data-lys-active", "");
+		await expect(page.locator("#made-with-lys")).toBeFocused();
+		await expect(page.locator("article[aria-hidden='true']")).toHaveCount(10);
+		await page.keyboard.press("Home");
+		await expect(page.locator("#northern-lights")).toHaveAttribute("data-lys-active", "");
+		await page.keyboard.press("ArrowRight");
+		await expect(page.locator("#world")).toHaveAttribute("data-lys-active", "");
+	});
+
+	for (const viewport of [
+		{ width: 1536, height: 640 },
+		{ width: 1440, height: 900 },
+		{ width: 390, height: 844 },
+		{ width: 844, height: 390 },
+	]) {
+		for (const javaScriptEnabled of [true, false]) {
+			test(`24:10 text fits at ${viewport.width}×${viewport.height}, JS ${javaScriptEnabled}`, async ({
+				browser,
+			}, info) => {
+				const context = await browser.newContext({ viewport, javaScriptEnabled });
+				const page = await context.newPage();
+				await page.goto(`${BASE}/examples/square.html`);
+				await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe("loaded");
+				const failures = await page.locator("article").evaluateAll((slides) =>
+					slides.flatMap((slide) => {
+						const box = slide.getBoundingClientRect();
+						const issues: string[] = [];
+						if (Math.abs(box.width / box.height - 2.4) > 0.005)
+							issues.push(`${slide.id}: aspect ratio`);
+						const walker = document.createTreeWalker(slide, NodeFilter.SHOW_TEXT);
+						for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+							if (!node.textContent?.trim()) continue;
+							const range = document.createRange();
+							range.selectNodeContents(node);
+							for (const rect of range.getClientRects()) {
+								if (
+									rect.left < box.left - 1 ||
+									rect.right > box.right + 1 ||
+									rect.top < box.top - 1 ||
+									rect.bottom > box.bottom + 1
+								)
+									issues.push(`${slide.id}: ${node.textContent.trim()}`);
+							}
+						}
+						return issues;
+					}),
+				);
+				expect(failures).toEqual([]);
+				if (javaScriptEnabled) {
+					await page.keyboard.press("End");
+					await expect(page.locator("#made-with-lys")).toHaveAttribute("data-lys-active", "");
+				} else {
+					await expect(page.locator("article[aria-hidden]")).toHaveCount(0);
+					await page.locator("#made-with-lys").scrollIntoViewIfNeeded();
+					await expect(page.locator("#made-with-lys")).toBeInViewport();
+					await page.screenshot({ path: info.outputPath("css-only-colophon.png") });
+				}
+				await context.close();
+			});
+		}
+	}
+
+	test("copied file includes its fonts and renderer offline", async ({ browser }, info) => {
+		const file = info.outputPath("northern-lights.html");
+		await mkdir(info.outputDir, { recursive: true });
+		await copyFile(resolve("site/examples/square.html"), file);
+		const context = await browser.newContext();
+		await context.route(/^https?:/, (route) => route.abort());
+		const page = await context.newPage();
+		const requests: string[] = [];
+		const errors: string[] = [];
+		page.on("pageerror", (error) => errors.push(error.message));
+		page.on("request", (request) => {
+			if (request.url().startsWith("http")) requests.push(request.url());
+		});
+		await page.goto(pathToFileURL(file).href);
+		await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe("loaded");
+		await page.keyboard.press("End");
+		await expect(page.locator("#made-with-lys")).toHaveAttribute("data-lys-active", "");
+		await expect(page.locator('script[src], link[rel="stylesheet"]')).toHaveCount(0);
+		expect(await page.evaluate(() => document.fonts.check('700 20px "Orbitron"'))).toBe(true);
+		expect(requests).toEqual([]);
+		expect(errors).toEqual([]);
+		await context.close();
+	});
+
+	for (const javaScriptEnabled of [true, false]) {
+		test(`11 complete pages in native PDF, JS ${javaScriptEnabled}`, async ({
+			browser,
+			browserName,
+		}, info) => {
+			test.skip(browserName !== "chromium", "Native PDF export is Chromium-only");
+			const context = await browser.newContext({ javaScriptEnabled });
+			const page = await context.newPage();
+			await page.goto(`${BASE}/examples/square.html`);
+			await expect.poll(() => page.evaluate(() => document.fonts.status)).toBe("loaded");
+			await page.setViewportSize({ width: 1536, height: 640 });
+			await page.emulateMedia({ media: "print" });
+			// Making the author canvas absolute requires a slide containing block.
+			// A relative slide must also clear stacked mode's left:50% / top:50%,
+			// otherwise page count passes while half the canvas prints off-page.
+			const geometry = await page.locator("article").evaluateAll((slides) =>
+				slides.map((slide) => {
+					const box = slide.getBoundingClientRect();
+					const canvas = slide.querySelector(".canvas")?.getBoundingClientRect();
+					return {
+						left: box.left,
+						width: box.width,
+						canvasOffset: canvas ? canvas.left - box.left : -1,
+					};
+				}),
+			);
+			for (const slide of geometry) {
+				expect(Math.abs(slide.left)).toBeLessThan(1);
+				expect(slide.width).toBeCloseTo(1536, 0);
+				expect(slide.canvasOffset).toBeCloseTo(0, 0);
+			}
+			const pdf = await page.pdf({
+				path: info.outputPath("northern-lights.pdf"),
+				preferCSSPageSize: true,
+			});
+			const bytes = pdf.toString("latin1");
+			expect((bytes.match(/\/Type\s*\/Page[^s]/g) ?? []).length).toBe(11);
+			const box = bytes
+				.match(/\/MediaBox \[([^\]]+)\]/)?.[1]
+				.trim()
+				.split(/\s+/)
+				.map(Number);
+			expect(box).toBeTruthy();
+			expect(box?.[2]).toBeCloseTo(1152, 0);
+			expect(box?.[3]).toBeCloseTo(480, 0);
+			await context.close();
+		});
+	}
 });

@@ -53,6 +53,14 @@ for (const file of readdirSync(examplesSrc)) {
 			return `<script>${runtime}</script>\n\t<script>(() => {${code}\n})();</script>`;
 		});
 	}
+	// The FREE//FALL player pitch is also a portable, offline example. Its font
+	// data and license notices already live in the authored HTML.
+	if (file === "square.html") {
+		const css = readFileSync(resolve(root, "dist/lys.css"), "utf8");
+		const runtime = readFileSync(resolve(root, "dist/lys.iife.js"), "utf8");
+		html = html.replace('<link rel="stylesheet" href="lys.css">', () => `<style>${css}</style>`);
+		html = html.replace('<script src="lys.iife.js"></script>', () => `<script>${runtime}</script>`);
+	}
 	writeFileSync(resolve(examplesOut, file), html);
 }
 

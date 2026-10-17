@@ -1,0 +1,163 @@
+{
+	"title": "Northern Lights player pitch authored content",
+	"retrieved": "2026-10-17",
+	"audience": "People arriving from the FREE//FALL site to play Northern Lights",
+	"boundary": "Only public briefing and general rules. No GM scenes, opposition, backstory or character-sheet secrets.",
+	"authorship": "Source selection, paraphrase, slide boundaries and order were authored for this request before applying Kata composition. HTML remains the maintained deck source.",
+	"kata": {
+		"version": "0.5.1",
+		"commit": "ed08e83655ac04bb1f3069b15369ac32e662a037"
+	},
+	"lys": {
+		"version": "1.2.5",
+		"base_commit": "9c7ea37cbc1dc8d76887bf522568746c54f57f95"
+	},
+	"sources": [
+		{
+			"url": "https://free-fall.myrrys.com/",
+			"sha256": "77340189041b424578c7ddea02a18ba7d20488b4bb57e732cfadfab868dd756e"
+		},
+		{
+			"url": "https://free-fall.myrrys.com/core-rulebook/00-intro/",
+			"sha256": "c1dffc4d3accaae2e6f27d978bd7e13f7bfe163906fecb4fc768a28db10ff337"
+		},
+		{
+			"url": "https://free-fall.myrrys.com/core-rulebook/01-world/",
+			"sha256": "f0d563e65e84b49c281d6ba461152bb4b827b905297b37277e7ed03e86a2279a"
+		},
+		{
+			"url": "https://free-fall.myrrys.com/core-rulebook/02-characters-and-crews/",
+			"sha256": "a395ade328a0e648626a3f68afac309e85bd9e22eb033d11f55736e9f53c1348"
+		},
+		{
+			"url": "https://free-fall.myrrys.com/core-rulebook/03-core-rules/",
+			"sha256": "90e551d11abd30b37ad5cefaaa92dfd80d32c55e3816dec0d7a6ff79eaf3b7af"
+		},
+		{
+			"url": "https://free-fall.myrrys.com/core-rulebook/04-tools-of-the-trade/",
+			"sha256": "cc45cf1e53060bf72d7c85f7a6098f9c6515d6783e428dab0d6497494dd7df7c"
+		},
+		{
+			"url": "https://free-fall.myrrys.com/srd/",
+			"sha256": "adfdecd103e517681d496c007189f890473ae75244972060403d9f53d7673e65"
+		},
+		{
+			"url": "https://free-fall.myrrys.com/about/",
+			"sha256": "bef53674e1aad1158147898409512fe8e91ea0851dbb3e74a7ce4c033e0d32a2"
+		},
+		{
+			"url": "https://free-fall.myrrys.com/scenarios/northern-lights/",
+			"sha256": "60683f3a75563bf56fca5f6980583006a7b263212d30055f88100257cbb6934a"
+		}
+	],
+	"fonts": [
+		{
+			"family": "Lato",
+			"weight": "400",
+			"url": "https://fonts.gstatic.com/s/lato/v25/S6uyw4BMUTPHvxk.ttf",
+			"bytes": 72312
+		},
+		{
+			"family": "Lato",
+			"weight": "700",
+			"url": "https://fonts.gstatic.com/s/lato/v25/S6u9w4BMUTPHh6UVew8.ttf",
+			"bytes": 70576
+		},
+		{
+			"family": "Orbitron",
+			"weight": "700",
+			"url": "https://fonts.gstatic.com/s/orbitron/v35/yMJMMIlzdpvBhQQL_SC3X9yhF25-T1ny_Cmxpg.ttf",
+			"bytes": 17708
+		}
+	],
+	"slides": [
+		{
+			"id": "northern-lights",
+			"label": "FREE//FALL 2048",
+			"title": "Northern Lights",
+			"content": "A boarding action in the Void. Public playtest 0.7.x A player briefing",
+			"source": "https://free-fall.myrrys.com/scenarios/northern-lights/",
+			"notes": "Northern Lights is the introductory FREE//FALL public-playtest scenario. This briefing uses only the public mission and general game rules. No GM scenes or backstory. Source: https://free-fall.myrrys.com/scenarios/northern-lights/"
+		},
+		{
+			"id": "world",
+			"label": "THE SETTING",
+			"title": "A fractured solar system",
+			"content": "THE GRAVITY WELL Heat. Scarcity. The daily hustle. On Earth, people survive ecological collapse in crowded cities and improvised technology. THE VOID Vacuum. Corporate flags. Industrial rust. Beyond Earth, a scrubbed filter and a magnetic seal are what keep you alive. It is 2048. Your crew takes the jobs corporate militaries cannot touch.",
+			"source": "https://free-fall.myrrys.com/core-rulebook/00-intro/",
+			"notes": "The introduction contrasts the Gravity Well with the Void. Northern Lights takes place in space. The operators are deniable mercenaries, not corporate military personnel. Source: https://free-fall.myrrys.com/core-rulebook/00-intro/"
+		},
+		{
+			"id": "mission",
+			"label": "PUBLIC MISSION BRIEF",
+			"title": "Njord’s Whisper",
+			"content": "20 h until the tracking solution degrades In the fiction. The ship is running silent toward the Jovian Trojan belts. Board the transport vessel. Extract the QNA hard-line data logs. Purge the Quantum Neural Array. Contract advisory Automated defenses appear active. The crew is considered compromised by AI or a logic virus. Rules of engagement: no witnesses. The Copenhagen Protocol is in effect.",
+			"source": "https://free-fall.myrrys.com/scenarios/northern-lights/",
+			"notes": "These are the employer’s instructions and assessment, not confirmed facts about what the players will find. QNA means Quantum Neural Array. The 20 hours is the fictional intercept window, not the session duration. Source: https://free-fall.myrrys.com/scenarios/northern-lights/"
+		},
+		{
+			"id": "operators",
+			"label": "YOUR CREW",
+			"title": "Five ready-made operators",
+			"content": "Pick a contractor. No character creation required. The Pilot Vehicles, transport and getting the crew there. The Operator Precision shooting and tactical support. The Wirehead Cracking systems and extracting data. The Fixer Keeping people and equipment running. The Spectre Infiltration, sabotage and surveillance. Your gear and augmentations supply capability. Your class adds a Skill.",
+			"source": "https://free-fall.myrrys.com/scenarios/northern-lights/",
+			"notes": "The public scenario lists Pilot, Operator, Wirehead, Fixer and Spectre. The role descriptions summarize the general Classes and Skills table, not the pregenerated character sheets. Choose with the GM; specific loadouts and Skills come from the actual sheets. Sources: https://free-fall.myrrys.com/scenarios/northern-lights/ and https://free-fall.myrrys.com/core-rulebook/02-characters-and-crews/"
+		},
+		{
+			"id": "binding",
+			"label": "CAPABILITY HAS A COST",
+			"title": "Gear gives you an edge",
+			"content": "You pay for it with capacity. Significant gear binds Body, Mind or Ghost, reducing the points you have available. BODY EXAMPLE Initial Body 12 Armor Binding −3 Maximum Current Body 9 Those available points can fund actions or negate incoming Harm. Broken gear still binds capacity until removed.",
+			"source": "https://free-fall.myrrys.com/core-rulebook/03-core-rules/",
+			"notes": "This example comes from the Core Rules: Body 12 with armor Binding 3 leaves a maximum Current Body of 9. Current points can fall below that maximum when spent. Binding costs add together and persist when equipment breaks. Source: https://free-fall.myrrys.com/core-rulebook/03-core-rules/"
+		},
+		{
+			"id": "action-pool",
+			"label": "WHEN THE PRESSURE IS ON",
+			"title": "One pool, several intentions",
+			"content": "5 d20 your base Action Pool Lose 1 die per filled Harm slot. Minimum pool: 2d20. Split your dice between the actions you declare. Each action needs at least one die. More dice on one action can earn more successes. NPCs declare first, then characters, then bosses. Actions resolve simultaneously; in a contest, the highest individual die goes first.",
+			"source": "https://free-fall.myrrys.com/core-rulebook/03-core-rules/",
+			"notes": "This is an orientation, not the complete procedure. Specialized actions need a relevant Skill, functional gear, one Current Attribute point, or one Harm taken before rolling. The declaration order and simultaneous resolution come from the introduction and SRD. Sources: https://free-fall.myrrys.com/core-rulebook/03-core-rules/ and https://free-fall.myrrys.com/core-rulebook/00-intro/ and https://free-fall.myrrys.com/srd/"
+		},
+		{
+			"id": "roll",
+			"label": "READING THE DICE",
+			"title": "Meet the Target Number",
+			"content": "Base difficulty Difficulty Target Number Normal No roll Challenging 11+ Hard 16+ Near Impossible 21+ 0 successes Failure; a complication may follow. 1 success You achieve the goal. 2+ successes A greater effect. A natural 20 always counts as at least one success, regardless of the Target Number.",
+			"source": "https://free-fall.myrrys.com/core-rulebook/03-core-rules/",
+			"notes": "The source table is retained as a lookup table. Normal means no roll is needed. Each die meeting the TN is one success. On attacks, a natural 20 doubles DV only within optimal range; outside optimal range it inflicts standard DV. A natural 1 in conflict may introduce a complication even when other dice succeed. Source: https://free-fall.myrrys.com/core-rulebook/03-core-rules/"
+		},
+		{
+			"id": "harm",
+			"label": "THE PRICE OF SURVIVAL",
+			"title": "What will you sacrifice?",
+			"content": "After armor and any Attribute spend, resolve each remaining level of Harm separately. Take the hit Fill an empty Harm slot with Transient Harm. Each filled slot costs one die. Transient Harm clears during downtime. Bear the scar Make an existing Transient Harm Permanent. Match the Harm type when typed. The slot stays filled and the consequence lasts. Break the gear Break gear bound to the Attribute corresponding to the Harm. The item stops working. Its Binding cost remains. If none of these options can resolve the Harm, you are Ousted. Your character’s story ends.",
+			"source": "https://free-fall.myrrys.com/core-rulebook/03-core-rules/",
+			"notes": "There are three Harm slots. A full set of slots does not automatically mean Ousted: matching Transient Harm may still become Permanent, or appropriate bound gear may break. Resolve multiple levels one at a time. One matching Current Attribute point can negate one incoming level before these choices. Source: https://free-fall.myrrys.com/core-rulebook/03-core-rules/"
+		},
+		{
+			"id": "session",
+			"label": "AT THE TABLE",
+			"title": "One session in the dark",
+			"content": "3–5 players 3–5 h session length No prior knowledge required. You learn the game by playing. Content warnings Violence Body horror Isolation & confinement Read the rulebook introduction if you want a head start. Leave the GM material unread so the ship can surprise you.",
+			"source": "https://free-fall.myrrys.com/scenarios/northern-lights/",
+			"notes": "The scenario specifies 3–5 players, a 3–5 hour session, and the listed content warnings. It ships with up to five ready-made operators. The public page says no prior knowledge is required; the rulebook introduction is sufficient preparation for players. Source: https://free-fall.myrrys.com/scenarios/northern-lights/"
+		},
+		{
+			"id": "boarding",
+			"label": "FREE//FALL",
+			"title": "What will be left of you when the job is done?",
+			"content": "Check your seals. Load your software. Bind your armor. Try not to bleed out. Northern Lights on free-fall.myrrys.com",
+			"source": "https://free-fall.myrrys.com/core-rulebook/00-intro/",
+			"notes": "The closing question comes from the introduction; the invitation is the public scenario’s closing line. The link leads to the player-visible briefing, not a sign-up form or a promise of playtest benefits. Sources: https://free-fall.myrrys.com/core-rulebook/00-intro/ and https://free-fall.myrrys.com/scenarios/northern-lights/"
+		},
+		{
+			"id": "made-with-lys",
+			"label": "ABOUT THIS EXAMPLE",
+			"title": "Built with Lys",
+			"content": "24:10 Exactly 2.4:1 A cinema-inspired canvas. Digital cinema Scope is nominally 2.39:1, often called 2.40:1. This deck uses the rounded ratio. Cinema ratio reference Lys 1.2.5 HTML articles, fixed-aspect scaling, keyboard and swipe navigation, 500 ms fades, and print. Kata 0.5.1 Composition within each slide: focus, equal peers, and a lead with support. FREE//FALL Setting, rules and identity. Adapted from the site for incoming Northern Lights players. One offline HTML file. Print page: 16 × 6.667 inches. Arrow keys / Space to advance. Home / End to jump.",
+			"source": "https://free-fall.myrrys.com/about/",
+			"notes": "This requested colophon explains the example itself. Exact slide token: --lys-aspect-ratio: 24 / 10. The print size preserves the existing approximately ratio-matched page. Lys owns rendering; Kata guides single-slide composition; content selection and deck order were authored for this player briefing. Source and reuse: https://free-fall.myrrys.com/about/ . Aspect-ratio convention: https://partnerzone.sonypictures.com/spe-video-master-specs.html"
+		}
+	]
+}

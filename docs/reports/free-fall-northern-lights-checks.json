@@ -1,0 +1,85 @@
+{
+	"title": "Northern Lights player pitch verification",
+	"date": "2026-10-17",
+	"surface": {
+		"ratio": "24:10",
+		"width_to_height": 2.4,
+		"print_inches": [16, 6.667],
+		"transition": "fade",
+		"transition_ms": 500
+	},
+	"automated": {
+		"lys_build": "passed; TypeScript, Vite, skill injection and site build",
+		"lys_lint": "passed; two informational notices in pre-existing ignored scratch files",
+		"lys_unit_tests": {
+			"passed": 192,
+			"files": 7
+		},
+		"kata_check": "passed; no Kata source or harness changes",
+		"browser_command": "pnpm exec playwright test tests/e2e/site.spec.ts tests/e2e/print.spec.ts --grep 'FREE//FALL|square' --reporter=json",
+		"browser_results": {
+			"startTime": "2026-10-17T09:43:47.404Z",
+			"duration": 7760.702,
+			"expected": 47,
+			"skipped": 4,
+			"unexpected": 0,
+			"flaky": 0
+		},
+		"expected_skips": "Four native PDF exports: Playwright supports this only in Chromium, not Firefox or WebKit.",
+		"browsers": ["Chromium", "Firefox", "WebKit"],
+		"fit_viewports": [[1536, 640], [1440, 900], [390, 844], [844, 390]],
+		"javascript_modes": [true, false],
+		"checks": [
+			"authored visible copy and subject notes match manifest",
+			"24:10 geometry and all text ranges inside each slide",
+			"Home, End and ArrowRight navigation with focus and hidden-slide state",
+			"copied standalone HTML runs with HTTP(S) blocked and embedded fonts",
+			"print wrapper starts at page edge; canvas offset zero",
+			"eleven PDF pages with requested dimensions"
+		],
+		"pdfs": [
+			{
+				"javascript": true,
+				"pages": 11,
+				"page_points": [1152.0, 480.0],
+				"authored_visible_text": "all titles and composition content preserved after NFKC, whitespace and ordered-list marker normalisation",
+				"sha256": "31ad92007d709b6dba3887da274698931a9b1a254696fb5ce46258bf4c76fc9c"
+			},
+			{
+				"javascript": false,
+				"pages": 11,
+				"page_points": [1152.0, 480.0],
+				"authored_visible_text": "all titles and composition content preserved after NFKC, whitespace and ordered-list marker normalisation",
+				"sha256": "8edff150417d7f9bad9083f6181269e4360c3cfade667251d2ea96a72a897cef"
+			}
+		]
+	},
+	"visual_review": {
+		"deck": "all eleven slides at 1536×640",
+		"phone": "portrait 390×844 and landscape 844×390 samples",
+		"listing": "1280×720 and 390×844; changed Northern Lights link opened the deck",
+		"css_only": "rendered output and full-size final PDF colophon",
+		"pdf": "all eleven pages as rendered contact sheets, plus full-size Harm slide"
+	},
+	"limits": [
+		"No independent reviewer or participant comprehension study",
+		"Portrait phone proportional scaling is too small for comfortable reading",
+		"No physical phone, real touch gesture, screen reader or complete accessibility audit",
+		"No native Firefox/Safari print-dialog export",
+		"Existing documentation tables outside the changed listing were not reviewed"
+	],
+	"artifacts": {
+		"examples/square.html": {
+			"bytes": 247181,
+			"sha256": "70e3e9b171573216c066288b75054082ba7e253ab1f927b210d68a1cc3aec867"
+		},
+		"site/examples/square.html": {
+			"bytes": 257326,
+			"sha256": "de74550f75836752a5d6ce38ebe0e4ac035878245678b3b845c3f61313b9d3e2"
+		},
+		"docs/reports/free-fall-northern-lights-content.json": {
+			"bytes": 12130,
+			"sha256": "8fd26f87f081a5ddbb8fc1cc45fa60de0a2eef90c900b3baf99037205a415a80"
+		}
+	}
+}
