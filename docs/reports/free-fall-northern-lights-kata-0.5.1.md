@@ -2,9 +2,11 @@
 
 17 October 2026
 
-Kata helped make the relationships within this eleven-slide pitch explicit: a deadline leads its mission context, operator choices receive equal treatment, and the costs of Harm remain beside each option. Its three forms were sufficient starting points for this text-led deck. They did not supply the cinema-specific proportions, the detailed treatment of five peers, or the arrangement of a rules lookup beside its explanation. Those decisions still required author judgment and rendered inspection.
+The owner judged this eleven-slide pitch an improvement over the previous deck, while finding the slides packed with large text, lacking balance and difficult to read. The rebuild clarified the content and its organisation, but the composition did not meet the owner's expectations. The initial report gave too much weight to named relationships, content preservation and successful fit checks when assessing the result.
 
-This is a worked use of Kata, not a controlled evaluation. One agent researched, authored, composed and checked the deck. There was no independent reviewer or player comprehension study. The observations below describe choices and defects encountered, not measured gains in understanding.
+The central finding is a failure to translate Kata's existing ideas about restraint, balance and dominance into effective choices of scale and density. This use does not establish whether the guidance was insufficiently actionable, the agent applied it mechanically, or both. More examples for wide surfaces may help investigate that failure; their absence is not an established explanation.
+
+This is a worked use of Kata, not a controlled evaluation. One agent researched, authored, composed and checked the deck. The owner's subsequent review, recorded below on 17 October 2026, revises that agent's assessment. There was no separate evaluator before delivery or player comprehension study.
 
 ## Brief and deliverables
 
@@ -18,6 +20,16 @@ The audience is people arriving from the FREE//FALL site to play **Northern Ligh
 The original FREE//FALL dark palette, Lato/Orbitron identity, exact **24:10** surface, **500 ms** fade and **16 × 6.667 inch** print page are retained. The last slide explains how Lys, Kata and the game material contribute. It also distinguishes the exact **2.4:1** canvas from nominal digital cinema **Scope at 2.39:1**, commonly called 2.40:1. This is a cinema-inspired HTML presentation, not a DCI delivery. The ratio explanation links to [Sony's specifications](https://partnerzone.sonypictures.com/spe-video-master-specs.html); the [ISDCF registry](https://www.isdcf.com/registry/projectoraspectratios/) confirms the Scope designation.
 
 ![Opening slide](free-fall-northern-lights-cover.png)
+
+## Owner review and revised assessment
+
+The owner described the result as better than the previous version, but questioned how the **24:10** surface should inform the expected amount of text and what counts as too large. Their compositional assessment was: “here all slides are packed with large text. No balance, very unlegible.” This is direct owner feedback about the delivered result, not a measured finding about every reader or a problem confined to portrait phones.
+
+The agent's revised interpretation is that recurring large headings, emphatic numbers or phrases, and several supporting blocks competed for attention. Space was used mainly to separate those text blocks. The agent did not successfully judge their combined visual weight or create enough quiet within each composition. Giving fields a named relationship did not establish that their relative scale was effective.
+
+The aspect ratio specifies the shape to compose within. It does not supply a word budget or a type scale. Viewing distance, display size, intended reading effort and communicative purpose should inform those choices. This run checked viewport dimensions without first establishing a sufficiently concrete viewing and reading target. On a shallow surface, enlarging a heading also spends height that its surrounding material needs; simply shrinking all text would not resolve the underlying judgment problem.
+
+Technical fit and content fidelity remain useful evidence. The agent's visual inspection also found delivery defects, but failed to recognise the overall compositional problem raised by the owner. Both the output and that assessment need to inform the next use of Kata.
 
 ## Inputs and responsibility
 
@@ -39,9 +51,9 @@ Content selection, paraphrase, slide boundaries and order were authoring work un
 
 These corrections came from source checking. Kata's preservation rules cannot determine whether supplied game rules are current or correct. The content adaptation credits Ville Takanen and Kustannusosakeyhtiö Myrrys and carries CC BY-SA 4.0 attribution and reuse information, following the site's [About page](https://free-fall.myrrys.com/about/). Font licenses are embedded in the HTML.
 
-## Composition decisions
+## Intended composition choices
 
-The alternatives below were considered in choosing the final arrangement. They were not all implemented as visual variants.
+The alternatives below were considered in choosing the final arrangement. They were not all implemented as visual variants. The table records the agent's intentions and reasoning; the owner's review shows that these rationales did not establish a balanced or comfortably legible result.
 
 | Slide | Choice and communicative role | Alternative and trade-off |
 | --- | --- | --- |
@@ -61,26 +73,30 @@ Layout rationale stays here, outside the audience content and subject notes. The
 
 ## What Kata contributed
 
-**The small repertoire was usable.** One focus directly served the title and closing question. Equal peers covered both two worlds and five operators. Lead with support connected an emphatic number to its meaning. There was no need to invent data relationships just to qualify for a form.
+**The small repertoire gave the agent a vocabulary for relationships.** One focus was selected for the title and closing question, equal peers for the worlds and operators, and lead with support for emphatic numbers and their context. These selections did not require invented data relationships. They also did not ensure successful scale, density or balance.
 
 **The shared practices did more than the names.** The most consequential choices concerned proximity and qualification: the fictional deadline versus real session hours, “maximum” versus currently available Body, the minimum Action Pool, and Harm eligibility. The instructions to keep qualifications attached made these explicit review targets.
 
-**It encouraged a reason for retaining familiar layouts.** Columns remained useful for the roster and Harm choices, but matching weight and distinct roles justified them. Borders were reduced to separators and shared rules rather than repeated boxes. The result still relies heavily on typography and columns; that is an authored design choice, not proof that the form names produced originality.
+**It prompted reasons for familiar layouts, without ensuring those reasons survived review.** The agent used matching weight and distinct roles to justify columns for the roster and Harm choices. Borders were reduced to separators and shared rules. The result still relied heavily on typography and columns, and the owner's criticism exposes the limits of that justification. Naming the intended relationship was easier than judging the whole composition.
 
 **Its inspection requirement found a real delivery defect.** An initial WebKit overflow prompted a change to the canvas wrapper. A subsequent PDF passed page count and page-size checks, yet visual inspection showed a retained stacked-mode offset pushing half the slide off-page. The author CSS now clears that offset in print, and the regression test measures slide edges as well as page count. Lys's engine was unchanged.
 
 ## What was lacking
 
-1. **Worked examples for a very wide, shallow surface.** The forms allow adaptation but give little concrete help for spending width when height is scarce. Here, header depth, column measures and subordinate text sizes came from author judgment. A single 2.4:1 example with two considered arrangements and fit limits would be more useful than a new universal proportion rule.
-2. **Larger peer sets.** The guidance mentions three brief peers; the five-person roster needed decisions about one row versus two, title wrapping and equal visual weight. A five-peer example with unequal description lengths would exercise the existing form without adding another category.
-3. **Mixed reference surfaces.** The difficulty table plus outcome definitions is neither a set of equivalent options nor a simple statement and evidence pair. The shared practices were usable, but the form examples did not demonstrate this case. A worked example could show when to leave an authored table intact and compose its surrounding explanation.
-4. **An operational check for readable support at the intended surface.** “Keep support readable” needs rendered judgment. This deck's general body is about 26.9 px on the 1536 px cinema canvas but only 6.8 px at a 390 px portrait width; some support is smaller. A proportional fit is not a comfortable phone reading experience. Kata should keep stating that limit clearly without taking over renderer behaviour or inventing reflow.
+1. **Effective judgment of scale, density and balance.** The existing [shared practices](../../.agents/skills/kata/references/practices.md) already ask for deliberate visual weight, whitespace and restraint, and explicitly allow a modest heading to let the subject lead. Those ideas were not absent. In this use, the agent did not turn them into effective decisions. The unresolved question is whether their expression needs to become more actionable, their application needs to improve, or both. The case does not justify another generic checklist on its own.
+2. **A concrete viewing and reading target.** The specified ratio was treated as enough context for selecting scale. The composition needed a clearer account of how the audience would read it before deciding what was prominent, comfortable or dense. This is context for composing the specified static surface; it does not require Kata to own responsive reflow or renderer behaviour. No universal word quota or type-size rule follows from 24:10.
+3. **Review that distinguishes fit from compositional success.** Automated checks established geometry and preservation. The agent's rendered review caught clipping but still accepted competing emphasis and insufficient balance. Future review of this case needs to address what attracts attention, what can remain quiet and whether the complete item can be read comfortably in its intended conditions. That is a design judgment to record, not a claim established by passing tests.
+4. **Examples that expose these decisions.** A wide, shallow surface, a five-person roster and a table beside its explanation remain useful cases. The initial report treated missing examples as the main gap too quickly. Their value would be in making real alternatives in scale, density and emphasis inspectable, rather than supplying another arrangement to imitate.
+
+Portrait-phone scaling is a separate delivery limitation: general body text is about 26.9 px on the 1536 px cinema canvas and 6.8 px at a 390 px portrait width; some support is smaller. That does not explain away the owner's broader criticism of oversized text and poor balance within the compositions.
 
 Researching the setting, resolving source conflicts, choosing spoilers to exclude and deciding the deck's sequence are necessary authoring responsibilities, not missing Kata features. The report does not propose adding them to Kata. No shared skill or harness guidance was changed during this use.
 
-The most useful follow-up would be one published, fixed-surface worked example using the roster or Harm slide, with two real alternatives and the same frozen copy. It could address the wide-surface and peer-set gaps together. These are proposals, not changes already delivered.
+The next useful investigation would retain one slide's authored copy and exact 24:10 surface, state its viewing and reading conditions, then render two meaningful alternatives that differ in heading scale, emphasis, grouping and use of space. The world or Harm slide would keep the comparison bounded. Record which existing guidance drove each decision, and obtain owner review of balance and legibility before calling either result successful. This could help distinguish an application failure from unclear guidance. Any change to the shared kit should follow the observed correction. This is proposed follow-up work; the deck and shared guidance have not been revised in response to this feedback.
 
 ## Verification and limits
+
+The following checks describe the delivered artifact's technical behaviour and the coverage of the agent's inspection. They do not establish aesthetic acceptance or comfortable legibility. The owner's subsequent review rejects the initial assessment of balance and readability while recognising improvement over the previous deck.
 
 - Build and type check passed. Lys lint passed with two informational notices in pre-existing ignored scratch files. All **192 unit tests** passed. Kata's project check passed without changing Kata files.
 - The focused browser suite passed **47 tests**, with **4 expected skips** for native PDF export in Firefox/WebKit. Chromium, Firefox and WebKit checked text fit and 24:10 geometry at **1536×640**, **1440×900**, **390×844** and **844×390**, with JavaScript enabled and disabled.
@@ -89,7 +105,7 @@ The most useful follow-up would be one published, fixed-surface worked example u
 - Chromium produced **11 pages**, each **1152×480 points**, with and without JavaScript. All final PDF pages were rendered and visually inspected; the dense Harm slide and CSS-only colophon received full-size checks. Text extraction was checked against the authored copy after normalising whitespace, ligatures and ordered-list markers.
 - Physical phones, real touch gestures, screen readers and native Firefox/Safari print dialogs were not tested. The contrast regression checks the slide foreground/background pair; it is not a complete accessibility audit. No claim of improved player understanding is made.
 
-Portrait phone scaling faithfully preserves the composition but is too small for comfortable reading. A desktop, shared screen or larger PDF view is the intended way to use this cinema deck. A separately authored mobile presentation would be a different surface and a separate task.
+Portrait phone scaling faithfully preserves the composition but is too small for comfortable reading. Desktop, shared-screen and larger PDF viewing were the intended uses; the owner's criticism still leaves their compositional quality unresolved. A separately authored mobile presentation would be a different surface and would not address the reported balance problem in this one.
 
 ### Final printed compositions
 
