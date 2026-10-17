@@ -1,0 +1,434 @@
+{
+	"desktop": {
+		"errors": [],
+		"requests": [],
+		"contentPreserved": true,
+		"axe": [[], [], [], [], [], [], [], []],
+		"measurements": [
+			{
+				"id": "intro",
+				"width": 1376,
+				"height": 774,
+				"scrollWidth": 1376,
+				"scrollHeight": 774,
+				"textSize": "25.92px"
+			},
+			{
+				"id": "overview",
+				"width": 1376,
+				"height": 774,
+				"scrollWidth": 1376,
+				"scrollHeight": 774,
+				"textSize": "25.92px"
+			},
+			{
+				"id": "contract",
+				"width": 1376,
+				"height": 774,
+				"scrollWidth": 1376,
+				"scrollHeight": 774,
+				"textSize": "25.92px"
+			},
+			{
+				"id": "enhancement",
+				"width": 1376,
+				"height": 774,
+				"scrollWidth": 1376,
+				"scrollHeight": 774,
+				"textSize": "25.92px"
+			},
+			{
+				"id": "attributes",
+				"width": 1376,
+				"height": 774,
+				"scrollWidth": 1376,
+				"scrollHeight": 774,
+				"textSize": "25.92px"
+			},
+			{
+				"id": "tokens",
+				"width": 1376,
+				"height": 774,
+				"scrollWidth": 1376,
+				"scrollHeight": 774,
+				"textSize": "25.92px"
+			},
+			{
+				"id": "principles",
+				"width": 1376,
+				"height": 774,
+				"scrollWidth": 1376,
+				"scrollHeight": 774,
+				"textSize": "25.92px"
+			},
+			{
+				"id": "closing",
+				"width": 1376,
+				"height": 774,
+				"scrollWidth": 1376,
+				"scrollHeight": 774,
+				"textSize": "25.92px"
+			}
+		]
+	},
+	"laptop": {
+		"errors": [],
+		"requests": [],
+		"contentPreserved": true,
+		"axe": [],
+		"measurements": [
+			{
+				"id": "intro",
+				"width": 960,
+				"height": 540,
+				"scrollWidth": 960,
+				"scrollHeight": 540,
+				"textSize": "18.432px"
+			},
+			{
+				"id": "overview",
+				"width": 960,
+				"height": 540,
+				"scrollWidth": 960,
+				"scrollHeight": 540,
+				"textSize": "18.432px"
+			},
+			{
+				"id": "contract",
+				"width": 960,
+				"height": 540,
+				"scrollWidth": 960,
+				"scrollHeight": 540,
+				"textSize": "18.432px"
+			},
+			{
+				"id": "enhancement",
+				"width": 960,
+				"height": 540,
+				"scrollWidth": 960,
+				"scrollHeight": 540,
+				"textSize": "18.432px"
+			},
+			{
+				"id": "attributes",
+				"width": 960,
+				"height": 540,
+				"scrollWidth": 960,
+				"scrollHeight": 540,
+				"textSize": "18.432px"
+			},
+			{
+				"id": "tokens",
+				"width": 960,
+				"height": 540,
+				"scrollWidth": 960,
+				"scrollHeight": 540,
+				"textSize": "18.432px"
+			},
+			{
+				"id": "principles",
+				"width": 960,
+				"height": 540,
+				"scrollWidth": 960,
+				"scrollHeight": 540,
+				"textSize": "18.432px"
+			},
+			{
+				"id": "closing",
+				"width": 960,
+				"height": 540,
+				"scrollWidth": 960,
+				"scrollHeight": 540,
+				"textSize": "18.432px"
+			}
+		]
+	},
+	"phone": {
+		"errors": [],
+		"requests": [],
+		"contentPreserved": true,
+		"axe": [[]],
+		"measurements": [
+			{
+				"id": "intro",
+				"width": 390,
+				"height": 549,
+				"scrollWidth": 390,
+				"scrollHeight": 549,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "overview",
+				"width": 390,
+				"height": 488,
+				"scrollWidth": 390,
+				"scrollHeight": 488,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "contract",
+				"width": 390,
+				"height": 402,
+				"scrollWidth": 390,
+				"scrollHeight": 402,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "enhancement",
+				"width": 390,
+				"height": 590,
+				"scrollWidth": 390,
+				"scrollHeight": 590,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "attributes",
+				"width": 390,
+				"height": 355,
+				"scrollWidth": 390,
+				"scrollHeight": 355,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "tokens",
+				"width": 390,
+				"height": 457,
+				"scrollWidth": 390,
+				"scrollHeight": 457,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "principles",
+				"width": 390,
+				"height": 479,
+				"scrollWidth": 390,
+				"scrollHeight": 479,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "closing",
+				"width": 390,
+				"height": 548,
+				"scrollWidth": 390,
+				"scrollHeight": 548,
+				"textSize": "17.6px"
+			}
+		]
+	},
+	"short": {
+		"errors": [],
+		"requests": [],
+		"contentPreserved": true,
+		"axe": [],
+		"measurements": [
+			{
+				"id": "intro",
+				"width": 1120,
+				"height": 325,
+				"scrollWidth": 1120,
+				"scrollHeight": 325,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "overview",
+				"width": 1120,
+				"height": 488,
+				"scrollWidth": 1120,
+				"scrollHeight": 488,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "contract",
+				"width": 1120,
+				"height": 379,
+				"scrollWidth": 1120,
+				"scrollHeight": 379,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "enhancement",
+				"width": 1120,
+				"height": 441,
+				"scrollWidth": 1120,
+				"scrollHeight": 441,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "attributes",
+				"width": 1120,
+				"height": 332,
+				"scrollWidth": 1120,
+				"scrollHeight": 332,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "tokens",
+				"width": 1120,
+				"height": 330,
+				"scrollWidth": 1120,
+				"scrollHeight": 330,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "principles",
+				"width": 1120,
+				"height": 377,
+				"scrollWidth": 1120,
+				"scrollHeight": 377,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "closing",
+				"width": 1120,
+				"height": 324,
+				"scrollWidth": 1120,
+				"scrollHeight": 324,
+				"textSize": "17.6px"
+			}
+		]
+	},
+	"nojs-desktop": {
+		"errors": [],
+		"requests": [],
+		"contentPreserved": true,
+		"axe": [],
+		"measurements": [
+			{
+				"id": "intro",
+				"width": 1120,
+				"height": 448,
+				"scrollWidth": 1120,
+				"scrollHeight": 448,
+				"textSize": "20px"
+			},
+			{
+				"id": "overview",
+				"width": 1120,
+				"height": 447,
+				"scrollWidth": 1120,
+				"scrollHeight": 447,
+				"textSize": "20px"
+			},
+			{
+				"id": "contract",
+				"width": 1120,
+				"height": 447,
+				"scrollWidth": 1120,
+				"scrollHeight": 447,
+				"textSize": "20px"
+			},
+			{
+				"id": "enhancement",
+				"width": 1120,
+				"height": 515,
+				"scrollWidth": 1120,
+				"scrollHeight": 515,
+				"textSize": "20px"
+			},
+			{
+				"id": "attributes",
+				"width": 1120,
+				"height": 447,
+				"scrollWidth": 1120,
+				"scrollHeight": 447,
+				"textSize": "20px"
+			},
+			{
+				"id": "tokens",
+				"width": 1120,
+				"height": 447,
+				"scrollWidth": 1120,
+				"scrollHeight": 447,
+				"textSize": "20px"
+			},
+			{
+				"id": "principles",
+				"width": 1120,
+				"height": 448,
+				"scrollWidth": 1120,
+				"scrollHeight": 448,
+				"textSize": "20px"
+			},
+			{
+				"id": "closing",
+				"width": 1120,
+				"height": 447,
+				"scrollWidth": 1120,
+				"scrollHeight": 447,
+				"textSize": "20px"
+			}
+		]
+	},
+	"nojs-phone": {
+		"errors": [],
+		"requests": [],
+		"contentPreserved": true,
+		"axe": [],
+		"measurements": [
+			{
+				"id": "intro",
+				"width": 390,
+				"height": 549,
+				"scrollWidth": 390,
+				"scrollHeight": 549,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "overview",
+				"width": 390,
+				"height": 488,
+				"scrollWidth": 390,
+				"scrollHeight": 488,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "contract",
+				"width": 390,
+				"height": 402,
+				"scrollWidth": 390,
+				"scrollHeight": 402,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "enhancement",
+				"width": 390,
+				"height": 590,
+				"scrollWidth": 390,
+				"scrollHeight": 590,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "attributes",
+				"width": 390,
+				"height": 355,
+				"scrollWidth": 390,
+				"scrollHeight": 355,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "tokens",
+				"width": 390,
+				"height": 457,
+				"scrollWidth": 390,
+				"scrollHeight": 457,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "principles",
+				"width": 390,
+				"height": 479,
+				"scrollWidth": 390,
+				"scrollHeight": 479,
+				"textSize": "17.6px"
+			},
+			{
+				"id": "closing",
+				"width": 390,
+				"height": 548,
+				"scrollWidth": 390,
+				"scrollHeight": 548,
+				"textSize": "17.6px"
+			}
+		]
+	}
+}

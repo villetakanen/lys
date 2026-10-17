@@ -90,6 +90,7 @@ Lys is designed to be used by language models generating presentations. If you a
 - [Live demo and examples](https://villetakanen.github.io/lys/)
 - [`llms.txt`](https://raw.githubusercontent.com/villetakanen/lys/main/llms.txt) — Machine-readable API reference
 - [`examples/`](./examples/) — Example decks
+- [`DESIGN.md`](./DESIGN.md) — Accepted palette for Lys-authored presentation materials
 - [`ARCHITECTURE.md`](./ARCHITECTURE.md) — Technical contract and internals
 - [`PROJECT.md`](./PROJECT.md) — Development setup and toolchain
 

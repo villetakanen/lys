@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.5] — 2026-10-16
+
+### Fixed
+
+- The primary demo keeps its authored 16:9 composition and Lys navigation at every viewport size. Removed the breakpoint reading adapter and reflow that came from Kata 0.5.0's out-of-scope instructions. Text, code and table geometry now scale with the slide, including CSS-only viewing.
+- Authoring guidance clarifies fixed-canvas scaling, and regression checks cover phone geometry, touch navigation, resize and print without changing renderer lifecycle.
+
+### Changed
+
+- Updated the vendored Kata skill to 0.5.1, restoring its static-composition scope.
+- Retained the primary demo's green palette, compositional improvements and standalone offline build. The palette is documented in DESIGN.md.
+
 ## [1.2.4] — 2026-10-15
 
 ### Fixed
@@ -151,7 +163,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Example decks: minimal, themed, full-featured, and 1:1 aspect ratio.
 - GitHub Pages site with token reference, article contract, and live examples.
 
-[Unreleased]: https://github.com/villetakanen/lys/compare/v1.2.4...HEAD
+[Unreleased]: https://github.com/villetakanen/lys/compare/v1.2.5...HEAD
+[1.2.5]: https://github.com/villetakanen/lys/compare/v1.2.4...v1.2.5
 [1.2.4]: https://github.com/villetakanen/lys/compare/v1.2.3...v1.2.4
 [1.2.3]: https://github.com/villetakanen/lys/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/villetakanen/lys/compare/v1.2.1...v1.2.2

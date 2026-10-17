@@ -252,3 +252,64 @@ A future CI step could automate README link checking and HTML validation, but th
 - **og:image.** A branded screenshot or generated image for social cards. Nice to have, not blocking.
 - **README localization.** Not planned.
 - **Changelog.** Could be auto-generated from conventional commits. Separate concern from this spec.
+
+## Primary demo composition and delivery (Kata 0.5.1 / Lys 1.2.5)
+
+`examples/demo.html` is the primary authored demo, linked from the Pages examples
+list. Its eight slides retain their supplied wording, order, code and capability
+table. Kata guides emphasis and grouping; this example's theme owns identity.
+
+The demo uses Lys's fixed-aspect 16:9 canvas at every viewport size. Text, spacing,
+columns, code and table geometry scale proportionally with the article. No phone
+or short-window breakpoint replaces the composition or destroys the Lys instance.
+Navigation, active-slide state and ARIA behavior remain Lys's responsibility.
+Presentation controls stay outside the canvas at a usable screen size. Without
+JavaScript the same fixed-aspect slides use Lys's CSS-only scroll-snap behavior.
+Print shows each complete canvas on one page and hides presentation controls.
+
+The built `site/examples/demo.html` inlines the current CSS, IIFE and scoped
+control script. It must work when copied elsewhere and opened offline, with no
+asset requests. Development continues using the source imports. No engine API,
+runtime dependency or public token changes are introduced.
+
+```gherkin
+Scenario: Primary demo navigates with matching visual and accessibility state
+  Given the built demo at a presentation viewport
+  When the reader uses arrow keys, Home, End or the previous/next buttons
+  Then the active slide, counter, focus and aria-hidden state agree
+  And controls are keyboard reachable
+
+Scenario: Small viewports preserve the authored composition
+  Given the built demo at 1440×900 on slide 5
+  When resized to 390×844 or 1440×500
+  Then each slide remains 16:9 with the same relative placement and type scale
+  And the current slide remains active with the same accessibility state
+  And navigation still works
+  When resized back
+  Then the current slide remains selected
+
+Scenario: Touch navigation remains available on a phone
+  Given the built demo at 390×844
+  When a horizontal swipe is dispatched
+  Then Lys selects the next slide and updates the counter
+
+Scenario: Demo works without JavaScript
+  Given the built demo with JavaScript disabled at desktop or phone size
+  Then all eight fixed-aspect slides remain available through CSS-only scrolling
+  And the supplied table and code fit inside the authored canvas
+
+Scenario: Demo is a portable offline artifact
+  Given a copy of the built demo outside the site directory
+  When opened with network access disabled
+  Then it initializes, navigates and renders without asset requests or errors
+
+Scenario: Demo print restores all slides
+  Given the built demo after navigating away from the first slide
+  When printed
+  Then every slide is visible on its own 16:9 page and controls are absent
+  And returning from print retains the current slide without lifecycle changes
+```
+
+Regression coverage: `tests/e2e/site.spec.ts`; print and visual evidence is recorded
+in `docs/reports/kata-lys-migration-0.5.1-demo.md`. The 0.5.0 report is retained as a
+superseded record of the responsive scope error.

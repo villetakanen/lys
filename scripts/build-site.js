@@ -39,6 +39,20 @@ for (const file of readdirSync(examplesSrc)) {
 	//    IIFE exports nothing anyway, so demo.html and full.html shipped to the
 	//    site with no JS at all: no keyboard nav, no ARIA, no data-class.
 	html = html.replaceAll("/src/lys.ts", "./lys.js");
+	// The primary demo also serves as the downloadable, offline artifact.
+	// Scope the example controls separately from the IIFE global.
+	if (file === "demo.html") {
+		const css = readFileSync(resolve(root, "dist/lys.css"), "utf8");
+		const runtime = readFileSync(resolve(root, "dist/lys.iife.js"), "utf8");
+		html = html.replace('<link rel="stylesheet" href="lys.css">', () => `<style>${css}</style>`);
+		html = html.replace(/<script type="module">([\s\S]*?)<\/script>/, (_, controls) => {
+			const code = controls.replace(
+				'import { Lys } from "./lys.js";',
+				"const { Lys } = window.Lys;",
+			);
+			return `<script>${runtime}</script>\n\t<script>(() => {${code}\n})();</script>`;
+		});
+	}
 	writeFileSync(resolve(examplesOut, file), html);
 }
 

@@ -130,6 +130,12 @@ height bounds to `100vh` was the pre-1.1.0 bug (#45) that forced the viewport ra
 paging stays one-slide-per-swipe via a full-viewport grid track plus `scroll-snap-stop`,
 not a forced full-height article.
 
+Viewport changes preserve the authored composition and aspect ratio. Lys does
+not select responsive rearrangements or switch to a reading document on phones.
+Author theme sizing should scale with the slide; a phone viewport verifies that
+same surface and navigation behavior. See `examples/demo.html` for a fixed-canvas
+example with container-relative type and spacing.
+
 ## Navigation
 
 Lys handles navigation through:

@@ -105,7 +105,7 @@ Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `build`, `ci`, `perf`
 - `AGENTS.md` is the canonical agent instruction file; `CLAUDE.md` is a symlink to it.
 - Skills live in `.agents/skills/<name>/SKILL.md`; `.claude/skills` is a symlink to that directory. Add new skills there, never under `.claude/` directly.
 - Workflow skills: `/planner`, `/spec`, `/dev`, `/critic`, `/assemble`, `/ship`, `/next-task`.
-- `/kata` is the [Kata](https://github.com/villetakanen/kata) slide-pattern skill (vendored from source commit `24ccfaa`, post-0.3.0). Use it when choosing or reviewing the visual structure of example decks. Update it by copying `skills/kata/` from the Kata repository; do not edit it in place.
+- `/kata` is the [Kata](https://github.com/villetakanen/kata) slide-pattern skill (vendored from source commit `ed08e83655ac04bb1f3069b15369ac32e662a037`, version 0.5.1). Use it when choosing or reviewing the visual structure of example decks. Update it by copying `skills/kata/` from the Kata repository; do not edit it in place.
 - `skill/SKILL.md` is the *delivered* Lys skill for end users, built by `pnpm build`. It is not part of the development harness.
 
 ## Key Architecture Decisions

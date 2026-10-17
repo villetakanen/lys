@@ -1,6 +1,6 @@
 {
 	"name": "@11thdeg/lys",
-	"version": "1.2.4",
+	"version": "1.2.5",
 	"type": "module",
 	"description": "A structural CSS+TS slide engine for LLM-generated presentations",
 	"main": "dist/lys.js",

@@ -6,6 +6,14 @@
 
 Slides are `<article>` elements inside a `<div data-lys>` container. Use standard HTML elements inside each article.
 
+### Fixed composition and scaling
+
+Lys fits the authored slide into the viewport at its specified aspect ratio.
+Keep the same composition on phones and short windows. Size theme content
+proportionally; do not add breakpoint reflow, a reading mode or lifecycle code
+that disables presentation navigation on small screens. CSS-only viewing retains
+the fixed-aspect slides when JavaScript is unavailable.
+
 ### Data Attributes (on `<article>`)
 
 | Attribute | Purpose | Example |
