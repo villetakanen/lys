@@ -20,17 +20,19 @@ A single Markdown file at the project root. Sections in order:
 1. **Title + badges** — `⚜ Lys` with npm version, bundle size (CSS + JS), and license badges.
 2. **One-line pitch** — What Lys is in one sentence.
 3. **Live demo link** — Points to the GitHub Pages site.
-4. **"What it does"** — 3 bullets max: structural slides, zero-dependency, LLM-first.
-5. **Minimal example** — The 4-line deck from `examples/minimal.html` (the `<div data-lys>` + `<article>` pattern). Copy-paste ready.
+4. **"What it does"** — 3 bullets max: predictable operation, author-controlled composition, portable delivery. Explain engine accessibility without claiming arbitrary deck conformance.
+5. **Delivery and minimal example** — Explain self-contained delivery, including authored assets. Supply a complete CDN-backed HTML example with explicit author styling and container-relative sizing. Label its network requirement and pin the runtime version.
 6. **CDN usage** — `<script>` and `<link>` tags using `unpkg.com/@11thdeg/lys`.
 7. **Token customization** — A `--lys-*` override snippet showing 2-3 tokens.
-8. **"For LLMs"** — Points to `llms.txt` (raw URL on GitHub) and `skill/SKILL.md`. Explains that LLMs should read `llms.txt` for the full API reference.
+8. **"Authoring with agents"** — Points to `llms.txt` (raw URL on GitHub) and `skill/SKILL.md`. Explains that LLMs should read `llms.txt` for the full API reference.
 9. **Links** — Pages site, `llms.txt`, `examples/`, `ARCHITECTURE.md`.
 10. **License** — MIT, one line.
 
+Additional sections may explain current-release limitations, fallback viewing, and opt-in navigation. Distinguish the agreed vision from behaviour that has not shipped.
+
 **Constraints:**
 - No install-from-source instructions in the README body — link to PROJECT.md instead.
-- No API reference in the README — that lives in `llms.txt` and ARCHITECTURE.md. The README is marketing, not documentation.
+- No API reference in the README — that lives in `llms.txt` and ARCHITECTURE.md. The README provides orientation and a working starting point; detailed contracts live in the linked references.
 - Badge URLs must use shields.io or similar static badge services — no custom badge servers.
 
 #### GitHub Pages site (`site/index.html`)
@@ -155,7 +157,7 @@ Scenario: README contains all required sections
   And a minimal HTML example
   And CDN usage instructions
   And a token customization snippet
-  And a "For LLMs" section
+  And an "Authoring with agents" section
   And links to Pages site, llms.txt, examples, ARCHITECTURE.md
   And a license line
 
