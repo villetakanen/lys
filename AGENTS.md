@@ -1,127 +1,38 @@
-# AGENTS.md
+# Lys development guidance
 
-> Agent constitution for ⚜ Lys — a structural CSS+TS slide engine for LLM-generated presentations.
+Lys is a zero-dependency presentation engine for portable HTML decks. People and agents author the contents; Lys supplies geometry and predictable behaviour. One deck belongs to one HTML document.
 
-## Project Context
+## Context and authority
 
-Lys is a zero-dependency library that turns `<article>` elements into accessible slide presentations. It ships as CSS + JS (ESM and IIFE). The primary consumer is LLMs generating presentations, but humans use it too.
+Read [VISION.md](VISION.md), [the approved 2.0 roadmap](docs/reports/lys-2.0-release-plan.md), [the contract baseline](specs/2.0-contracts.spec.md), and relevant feature specifications before changing behaviour. [PROJECT.md](PROJECT.md) defines tooling and verification. ARCHITECTURE.md and older feature specs describe 1.x until explicitly migrated. Update affected specs before implementing a 2.0 change; do not preserve obsolete requirements merely because an old test encodes them.
 
-Lys is **visually unopinionated** (no default fonts, colors, or spacing) but **heavily opinionated about behavior** — navigation, focus management, ARIA announcements, touch handling, and transition timing. This is the core value: LLMs can produce markup, but they cannot reliably produce correct interactive presentation behavior. Lys makes those decisions so the generated HTML doesn't have to.
+## Product boundaries
 
-Read these before working:
+- Keep runtime dependencies at zero. Ship self-contained CSS, ESM, and IIFE artifacts; no external imports/assets in the inline engine.
+- Articles are CSS size containers and clipping frames. Authors own composition. Do not inspect overflow, shrink text, rearrange content, or add internal spacing, typography, or foreground styling.
+- The deliberate surface defaults are a light/dark blue-grey backdrop and an overridable white/black slide background.
+- Prefer native HTML, CSS, and browser APIs. Preserve authored semantics, focus behaviour, IDs, and native controls. Do not generate or repair IDs.
+- No-JavaScript operation preserves access to authored payload; fidelity and UX may degrade. Print preserves the full slide frame and intentional clipping.
+- Accessibility requirements apply to engine behaviour, not a certification of arbitrary authored content. Do not add focus overrides or announcements without the agreed evidence. Reduced motion makes engine transitions immediate.
+- No reveals, metadata interpretation, visible chrome, author navigation buttons, fullscreen management, host protocol, or live slide-list mutation in 2.0.
+- Iframe embedding uses ordinary browser APIs. See the roadmap for the complete interaction contract and exclusions.
 
-- [VISION.md](./VISION.md) — Product principles. Understand *why* before *how*.
-- [ARCHITECTURE.md](./ARCHITECTURE.md) — API contract, tokens, events, data attributes.
-- [PROJECT.md](./PROJECT.md) — Toolchain config, testing strategy, agentic workflow.
-- `specs/*.spec.md` — Feature-level contracts. **Read the relevant spec before implementing.**
+## Working policy
 
-## Toolchain
+The coordinating agent owns integration, specification updates, verification, and local commits for bounded completed changes. Delegated workers, when authorised, edit only assigned files and do not commit. Development skills use this same policy; none has exclusive ownership of specifications. User instructions take precedence. Push, publish, merge, and external issue changes require user authorisation.
 
-| Action | Command |
-|---|---|
-| Dev server | `pnpm dev` |
-| Build | `pnpm build` |
-| Lint + format | `pnpm lint` |
-| Type check | `pnpm typecheck` |
-| Unit tests | `pnpm test` |
-| E2E tests | `pnpm test:e2e` |
-| Full suite | `pnpm test:all` |
+Resolve routine implementation choices within approved scope. Return material unresolved product/API decisions to the owner; do not ask again about already agreed work. New dependencies or scope outside the approved roadmap require discussion.
 
-Biome handles linting and formatting (tabs, double quotes, semicolons). Lefthook runs lint + typecheck + unit tests on pre-commit. Conventional Commits are enforced on commit-msg.
+Use Conventional Commits. Commit only relevant files after appropriate checks; preserve unrelated work. Do not fabricate contributor/model attribution. Use the runtime's configured model unless the user requests otherwise; development guidance must not hardcode model names.
 
-## Hard Constraints
+## Verification
 
-These are non-negotiable. Violating any of these is always wrong.
+Commands and budgets are authoritative in [PROJECT.md](PROJECT.md). Run mutating formatting first, then type checks and relevant tests. Never run a build concurrently with a browser suite that rebuilds the same outputs. Review generated changes before staging. Test behavioural changes against their specs; document manual evidence and gaps honestly. Browser DOM tests and axe scans do not prove screen-reader speech.
 
-- **Zero runtime dependencies.** Never add a `dependency` to package.json. Dev dependencies are fine.
-- **Inline-friendly outputs.** Both `lys.css` and `lys.iife.js` must be fully self-contained — no `@import`, no `url()` to external files, no dynamic `import()` in the IIFE build. An LLM must be able to paste both into a single HTML file's `<style>` and `<script>` tags and have a working presentation.
-- **Size budget.** JS < 5 KB gzip, CSS < 2 KB gzip. Raw (uncompressed) should stay well under 20 KB total for both, since inline usage means no gzip.
-- **Progressive enhancement.** CSS-only decks must remain functional. Never make JS required for basic slide viewing.
-- **No framework APIs.** No React, Lit, Vue, web component registries, or framework-specific patterns. This is vanilla CSS + TS.
-- **Semantic HTML contract.** Slides are `<article>` elements in a `[data-lys]` container. This structure is the public API — changing it is a breaking change.
-- **WCAG 2.1 AA.** Every feature must be accessible. `prefers-reduced-motion` must be respected in all animation code. ARIA attributes must be correct.
+Review verdicts are **PASS**, **FAIL**, or **DISCUSS**. PASS may include nonblocking notes; FAIL names actionable blockers; DISCUSS identifies a material unresolved decision. A passing review does not authorise publication.
 
-## Judgment Boundaries
+## Harness and delivered guidance
 
-### Never do without asking
+AGENTS.md is canonical; CLAUDE.md is its symlink. Development skills live in `.agents/skills/`; `.claude/skills` points there. `/planner`, `/spec`, `/dev`, `/critic`, `/assemble`, `/ship`, and `/next-task` must agree with this guidance.
 
-- Add a new `data-*` attribute to the article contract
-- Add a new custom event to the public API
-- Change the `--lys-*` token API (add, remove, or rename tokens)
-- Change the file structure
-- Add a dev dependency
-
-### Always do
-
-- Read the relevant `specs/*.spec.md` before implementing a feature
-- Write or update tests alongside implementation (unit for logic, e2e for browser behavior)
-- Commit after each discrete, working change (micro-commits)
-- Verify ARIA attributes on any DOM manipulation
-- Run `pnpm lint` before considering work complete
-- Update the spec if implementation reveals missing constraints
-
-### Prefer
-
-- CSS solutions over JS solutions (progressive enhancement)
-- Standard DOM APIs over abstractions
-- `const` over `let`, never `var`
-- Explicit types over inference for public API surfaces
-- Small, focused modules over monolithic files
-- Custom events over callbacks for extensibility
-
-## Spec-Driven Workflow
-
-This project uses a spec-anchored development model. Specs in `specs/` are living documents with two sections:
-
-- **Blueprint** — Architecture, API contracts, anti-patterns.
-- **Contract** — Definition of Done, regression guardrails, Gherkin scenarios.
-
-When implementing:
-
-1. Read the spec.
-2. Plan against the Blueprint section.
-3. Implement in micro-commits.
-4. Verify against the Contract section (every Gherkin scenario should have a test).
-5. Update the spec if you discover new constraints.
-
-If code and spec disagree, the spec wins — unless the spec is wrong, in which case update the spec first.
-
-## Commit Convention
-
-```
-type(scope): description
-
-feat(core): add slide container initialization
-fix(nav): prevent double-fire on rapid arrow key
-test(a11y): verify live region announces slide changes
-docs(spec): add edge case scenario for empty decks
-chore(build): update Vite to 6.x
-```
-
-Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `build`, `ci`, `perf`, `style`, `revert`.
-
-## Agent Harness
-
-- `AGENTS.md` is the canonical agent instruction file; `CLAUDE.md` is a symlink to it.
-- Skills live in `.agents/skills/<name>/SKILL.md`; `.claude/skills` is a symlink to that directory. Add new skills there, never under `.claude/` directly.
-- Workflow skills: `/planner`, `/spec`, `/dev`, `/critic`, `/assemble`, `/ship`, `/next-task`.
-- `/kata` is the [Kata](https://github.com/villetakanen/kata) slide-pattern skill (vendored from source commit `ed08e83655ac04bb1f3069b15369ac32e662a037`, version 0.5.1). Use it when choosing or reviewing the visual structure of example decks. Update it by copying `skills/kata/` from the Kata repository; do not edit it in place.
-- `skill/SKILL.md` is the *delivered* Lys skill for end users, built by `pnpm build`. It is not part of the development harness.
-
-## Key Architecture Decisions
-
-- **Two-tier CSS tokens.** Internal `--_lys-*` resolve against public `--lys-*` with fallback defaults. Authors only touch `--lys-*`. See ARCHITECTURE.md.
-- **Auto-init pattern.** IIFE build auto-discovers `[data-lys]` containers on DOMContentLoaded. ESM build exposes `Lys.init()` for manual control.
-
-## Test / Spec Alignment
-
-```
-specs/lys-core.spec.md      →  tests/unit/lys.test.ts + tests/unit/tokens.test.ts
-specs/navigation.spec.md    →  tests/unit/navigation.test.ts + tests/e2e/navigation.spec.ts
-specs/a11y.spec.md          →  tests/unit/a11y.test.ts + tests/e2e/a11y.spec.ts
-specs/transitions.spec.md   →  tests/unit/transitions.test.ts + tests/e2e/transitions.spec.ts
-specs/spa-nav.spec.md       →  tests/unit/nav.test.ts + tests/e2e/nav.spec.ts
-specs/print-layout.spec.md  →  tests/e2e/print.spec.ts + tests/unit/tokens.test.ts
-```
-
-A spec scenario without a test is a gap. A test without a spec scenario means the spec needs updating.
+The vendored Kata composition skill is separate from engine behaviour. Read its provenance before copying updates; do not edit the vendored copy in place. The delivered Lys authoring skill under `skill/` is generated by the build. Keep authoring guidance distinct from development workflow and describe capabilities as shipped only after implementation and verification.

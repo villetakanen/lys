@@ -32,15 +32,7 @@ If there are no changes (clean working tree), stop and tell the user.
 
 ### Step 2 — Quality Gates
 
-Run in parallel:
-
-- `pnpm lint`
-- `pnpm build`
-- `pnpm test`
-- `pnpm test:e2e`
-- `pnpm typecheck`
-
-All five must pass. On failure: report which gate failed with the error output and stop. Do not attempt to fix — that is the developer's job.
+Run sequentially: `pnpm lint`, `pnpm typecheck`, `pnpm test`, then `pnpm test:e2e`. The browser suite performs the fresh production build; do not run a separate build concurrently. Inspect generated outputs. All gates must pass. On failure: report which gate failed with the error output and stop. Do not attempt to fix — that is the developer's job.
 
 ### Step 3 — Spec Verification
 
@@ -64,7 +56,7 @@ For each relevant spec found:
    - Keep the subject line under 72 characters
    - Match the style of recent commits from Step 1
    - If the user provided a message via `$ARGUMENTS`, use it as the basis
-   - Add `Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>` trailer
+   - Do not invent or hardcode contributor/model attribution; use only verified attribution required by the user or repository policy
 3. Create the commit.
 
 ### Step 5 — Push
@@ -84,7 +76,7 @@ For each relevant spec found:
 ## Boundaries
 
 - Does not fix lint errors, test failures, or build issues.
-- Does not write or modify specs — that is the spec agent's job.
+- Missing spec updates block shipping; the coordinator may correct them in development under AGENTS.md. No exclusive spec-agent ownership.
 - Does not amend previous commits — always creates a new commit.
 - Does not push to `main` or `master` directly — warns and stops if on a protected branch.
 

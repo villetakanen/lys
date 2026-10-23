@@ -33,7 +33,7 @@ Review every change through ALL of these lenses. For each lens, either report fi
 - Progressive enhancement — does anything break CSS-only decks or require JS for basic viewing?
 - No framework APIs — any React/Lit/Vue/web-component patterns creeping in?
 - Semantic HTML contract — any changes to the `<article>` / `[data-lys]` structure?
-- WCAG 2.1 AA — any DOM manipulation missing ARIA attributes? Any missing `prefers-reduced-motion` handling in animation code?
+- WCAG 2.1 AA — any authored semantics overridden or unsupported focus/announcement behaviour introduced? Any missing `prefers-reduced-motion` handling in animation code?
 
 #### Spec Compliance
 - Do the changes match what the relevant spec says?
@@ -68,8 +68,8 @@ Review every change through ALL of these lenses. For each lens, either report fi
 
 Summarize with one of:
 
-- **Ship it** — No issues found. Changes are clean.
-- **Fix before commit** — List blocking issues that must be resolved. These are hard constraint violations, spec non-compliance, or missing tests for new behavior.
-- **Discuss** — List concerns that need a judgment call. These are design questions, spec ambiguities, or trade-offs that the author should decide.
+- **PASS** — No issues found. Changes are clean.
+- **FAIL** — List blocking issues that must be resolved. These are hard constraint violations, spec non-compliance, or missing tests for new behavior.
+- **DISCUSS** — List concerns that need a judgment call. These are design questions, spec ambiguities, or trade-offs that the author should decide.
 
 For each finding, reference the specific file and line, the lens it falls under, and the severity (blocking / should-fix / nit).

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Native HTML accessibility baseline</title>
+<style>
+  article { min-height: 100vh; }
+</style>
+<body>
+<article id="first">
+  <h1>First article</h1>
+  <p>Native HTML baseline. No Lys, live region, role override, or focus script.</p>
+  <a href="#third">Go to third article</a>
+  <a href="#detail">Go to detail inside third article</a>
+  <a href="#missing">Unresolved fragment</a>
+</article>
+<article>
+  <h2>Unnamed second article</h2>
+  <p>This article intentionally has no ID.</p>
+  <label>Example input <input type="text"></label>
+</article>
+<article id="third">
+  <h2>Third article</h2>
+  <p id="detail">Inner anchor target.</p>
+  <a href="#first">Return to first article</a>
+  <button type="button">Native control without an action</button>
+</article>
+</body>
+</html>

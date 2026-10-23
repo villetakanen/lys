@@ -62,16 +62,16 @@ After implementation, run these checks sequentially:
 After verification passes, report back:
 
 1. What was done (files changed, tests added)
-2. If implementation revealed new constraints, note what spec updates are needed
+2. Update affected specs before completing changed behaviour; identify unresolved product choices
 3. Any open questions
 
-Do NOT commit, push, or close the issue — that is the user's decision.
+Follow AGENTS.md: the coordinator updates specs and commits verified local increments; workers do not commit. Push and external issue changes require user authorisation.
 
 ## Rules
 
 - Never skip the verification step — all four checks must pass
 - If a check fails, fix it before proceeding
 - If the task is blocked (missing dependency, spec ambiguity), stop and ask rather than guessing
-- Do NOT commit, push, or close issues — the user controls git and GitHub operations
+- Follow AGENTS.md ownership for commits, specs, and external actions
 - Do not modify files outside the scope of the issue without asking
 - If the issue's acceptance criteria can't all be met, explain what's missing and why

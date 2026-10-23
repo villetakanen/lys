@@ -38,30 +38,38 @@ This is the slide markup. A delivered presentation also includes Lys, author CSS
 
 ### 2. Author-owned composition, reliable presentation behaviour
 
-Lys supplies the slide container and the behaviour needed to view, navigate, and print it. Authors supply everything within that surface: layout, spacing, typography, colours, backgrounds, and decoration. Under this boundary, internal padding, a base type size, and a default theme do not belong in the engine.
+Lys supplies the slide container and the behaviour needed to view, navigate, and print it. Authors supply the composition within that surface: layout, spacing, typography, colours, backgrounds, and decoration. Lys supplies a minimal light/dark slide-background default that authors are expected to override. This explicit surface-background exception does not extend to internal padding, a base type size, foreground styling, or an internal content theme.
 
 **The styling API boundary is the slide's CSS container.** Each slide article establishes a size containment context (`container-type: size`) with definite dimensions at the authored aspect ratio. Author CSS can use container queries and container-relative units such as `cqi` and `cqh` to size its contents against that surface. Lys supplies the geometry and containment; authors supply the rules that preserve their composition as the surface scales. A change in viewport size does not instruct Lys to rearrange the contents.
 
+One aspect ratio applies to the whole deck, defaulting to 16:9. Authors may choose any valid positive ratio, including portrait and square; the chosen ratio is preserved on screen and in print. Lys fits the complete slide within the available viewport while preserving that ratio; remaining space belongs to the surrounding backdrop. Resizing changes the slide container, while author CSS controls its contents. Lys does not rearrange content or shrink text to make it fit.
+
+Content extending beyond the slide boundary is an authoring error or intentional author styling. Lys preserves the slide geometry and does not automatically shrink, rearrange, or expand content to correct overflow. Lys does not inspect or validate in-slide composition, judge overflow, or distinguish intentional cropping from mistakes. Engine verification checks only that the slide boundary clips correctly and prevents content painting onto the backdrop. The slide is the final clipping frame: content may intentionally extend beyond its edges, but it must not paint onto the surrounding backdrop. For example, a heading positioned beyond the bottom or left edge may be deliberately cropped by the slide. This is valid composition, not an overflow defect; the slide boundary is not an author-overridable opening onto the backdrop.
+
 Lys targets evergreen browsers as of **August 2026**. This is the browser baseline for its rendering contract, including CSS containment, container queries, and container-relative sizing; legacy-browser fallbacks are outside that target.
 
-The surrounding viewport and backdrop belong to the presentation environment. They are distinct from the authored slide background. Environment styling must not impose foreground colours, typography, or other inherited styling on slide contents.
+The surrounding viewport and backdrop belong to the presentation environment. The backdrop uses CSS `light-dark()` with near-white and near-black blue-grey colours. It remains distinct from the slide surface, which defaults to `light-dark(white, black)` and is expected to receive an author-supplied background. Environment styling must not impose foreground colours, typography, or other inherited styling on slide contents.
 
-Lys owns navigation, focus management, slide-change announcements, motion-preference handling, and print placement and pagination. These mechanics support the authored surface without choosing its visual composition. Bare semantic HTML remains viewable; making it presentation-ready is the author's responsibility.
+Lys owns navigation, preservation of browser focus behaviour, motion-preference handling, and print placement and pagination. Custom slide announcements require evidence from native-accessibility verification before adoption. These mechanics support the authored surface without choosing its visual composition. Bare semantic HTML remains viewable; making it presentation-ready is the author's responsibility.
+
+A deck uses one transition style: none, fade, horizontal, or vertical. The default is none; authors explicitly select motion. Transition style changes only the visual movement between slides, never the meaning of navigation. Engine slide changes are immediate when the browser’s reduced-motion preference is enabled. Animations inside slides remain author-owned.
 
 ### 3. Reliable authoring for people and agents
 
 Agents are a primary authoring audience. Lys must be straightforward to author correctly, while the resulting presentation behaves consistently regardless of who wrote it. A small HTML contract helps authors produce valid decks; it does not make arbitrary generated HTML correct.
 
-- **A small, explicit contract.** Slides are sibling `<article>` elements inside a deck container. Contents use standard HTML. Optional metadata and its meaning are documented.
+- **A small, explicit contract.** Slides are sibling `<article>` elements inside a deck container. Contents use standard HTML. No engine-specific slide metadata is required or interpreted in 2.0. Slide articles and their order are fixed at initialisation; live changes to the slide list are outside 2.0 scope. Contents within a slide remain author-owned and may be interactive or dynamic.
 - **A complete authoring reference.** Authors must have enough information to produce a working deck without reverse-engineering examples or reading engine source. The delivered skill and API reference are part of the product and must agree with the supported implementation.
 - **Copyable, verified examples.** Examples must demonstrate author-owned styling, container-relative sizing, offline packaging, and print. Their delivered output must be checked, rather than assuming plausible markup establishes correct rendering.
-- **Predictable failure behaviour.** The contract must specify what happens when required structure or optional metadata is missing or invalid. Graceful degradation is a defined behaviour to verify, not a blanket promise that every authoring mistake is harmless.
+- **Predictable failure behaviour.** The contract must specify what happens when required structure is missing or invalid. Graceful degradation is a defined behaviour to verify, not a blanket promise that every authoring mistake is harmless.
+
+Authoring guidance must teach positioning and sizing relative to the article, not merely list supported units. Provide a complete, verified recipe in the README and delivered authoring skill: percentage-based dimensions and positions with an explicit containing block, container-relative typography and spacing, Grid/Flexbox for relationships, and absolute positioning where explicit coordinates are intended. Explain that percentages resolve against the relevant containing block and container units against the eligible query container; nested layout or query containers can change that reference. Use cqw/cqh for physical width/height and explain logical units such as cqi where used. Avoid viewport units for slide-relative content because the viewport can include space outside the slide. Example values remain author choices, never engine defaults.
 
 Authoring guidance teaches people and agents to use Lys accurately. It must not silently take over content authorship or compositional decisions. Those remain with the author and any separately chosen composition guidance.
 
 ### 4. The presentation engine must be accessible
 
-People must be able to operate Lys using different input methods and assistive technologies. Keyboard navigation, focus management, slide-change announcements, and respect for reduced-motion preferences are engine responsibilities. Accessibility is a requirement of these mechanics, not an optional mode.
+People must be able to operate Lys using different input methods and assistive technologies. Keyboard navigation, preservation of browser focus behaviour, and respect for reduced-motion preferences are engine responsibilities. Whether custom slide-change announcements are needed remains an evidence-dependent decision. Accessibility is a requirement of these mechanics, not an optional mode.
 
 Lys must preserve authored semantics and accessibility information, and must not obstruct access to slide content. Hiding inactive slides, moving focus, and handling keyboard input require deliberate design and verification so that the engine does not interfere with accessible content or its controls. Semantic HTML provides a foundation; it does not establish accessible engine behaviour by itself.
 
@@ -78,7 +86,7 @@ The contract must explicitly cover:
 - **Keyboard:** slide navigation, focus movement, and handling when authored links, inputs, or other interactive elements have focus.
 - **Mouse and trackpad:** scrolling, clicking, text selection, and interaction with slide content.
 - **Touch:** swipe navigation, gesture recognition, scrolling within content, and interaction with controls.
-- **Presentation chrome:** navigation controls and position indicators, their placement and visibility, and the connection between author-supplied controls and engine behaviour.
+- **Presentation chrome:** no built-in visible chrome or supported author-provided navigation buttons in 2.0. Ordinary links remain supported; fullscreen belongs to the browser.
 - **Browser integration:** URLs and history, resizing, focus entering or leaving the deck, and JavaScript-disabled operation.
 - **Assistive technology:** slide announcements, access to active content, and reduced-motion behaviour.
 
@@ -86,14 +94,20 @@ For each input, the contract must specify both what causes navigation and what m
 
 Architecture and feature specifications define the exact rules and their verification. Owning the chrome's interaction contract does not by itself require visible controls to ship by default.
 
+**Browser-native behaviour is the default.** Use standard HTML, CSS, and browser mechanisms wherever they fulfil the presentation contract. Do not introduce custom protocols or replace native behaviours when ordinary platform features suffice. Slide links use actual HTML IDs and native fragments; predictable IDs such as `slide_3` are naming conventions, not a custom URL language. IDs are optional and author-supplied: the runtime does not generate or repair them. Slides without IDs still support sequential navigation in document order. Any future automatic ID generation belongs in separate authoring tooling.
+
 ### 6. Progressive enhancement
 
 **Lys CSS and JavaScript together provide the intended presentation experience**, including the consistent interaction contract. Progressive enhancement preserves access to the material when that full experience is unavailable:
 
-- **Without JavaScript, with Lys CSS retained:** all slides must remain reachable and retain their authored composition. Browser scrolling and authored anchor links provide fallback navigation. This fallback does not promise the full engine interaction model.
+- **Without JavaScript, with Lys CSS retained:** the complete authored payload must remain accessible in document order through ordinary HTML and browser behaviour. This fallback serves compatibility, accessibility, and agents reading the HTML. Presentation fidelity and enhanced interaction may degrade; permanently hidden or inaccessible clipped content is a failure. Semantic HTML, links, and native controls remain usable. Authors must supply meaningful fallback content for their own JavaScript-dependent material.
 - **Without Lys:** the underlying HTML retains its semantics. A readable document layout is not guaranteed, because author CSS may depend on the slide's containment context and geometry.
 
 Graceful degradation must preserve access to the material without implying equivalent presentation behaviour at every level.
+
+### 7. Print as portable delivery
+
+Print and browser Save as PDF use one slide per page in document order. All slides print, regardless of the currently selected slide. Preserve slide proportions and authored composition, fitting the complete slide frame onto the printable page without additional cropping. Intentional clipping at the slide boundary is preserved. Printing uses the browser’s controls; Lys provides no export interface. Composition fidelity is part of portable delivery, unlike the permitted fidelity loss in the no-JavaScript viewing fallback.
 
 ## What Lys is NOT
 
@@ -116,19 +130,21 @@ The basic delivery structure is:
 ```
 Produce a single HTML file. Inline lys.css in a <style> tag and lys.iife.js in a <script> tag.
 Wrap slides in <article> elements inside a <div data-lys>.
-Use standard HTML elements. Speaker notes are optional metadata in data-notes="...".
+Use standard HTML elements. No engine-specific slide metadata is needed.
 Supply author CSS for the slide contents and embed all assets needed for offline viewing.
 No setup code needed — Lys auto-initializes.
 ```
 
 The primary delivery artifact is a **single, self-contained HTML file** that opens locally in a supported browser without a server, network connection, or viewer build step. Both Lys CSS and JavaScript are inlined. Author CSS and every asset required to view the deck offline—including images, fonts, and other media—must also be embedded; inlining the engine alone does not make a deck self-contained.
 
+Embedding uses a complete Lys HTML document in an iframe, retaining one deck per document. The host controls frame dimensions and its URL through standard browser APIs; Lys fits the presentation to the frame viewport. No Lys-specific host-control protocol is required for 2.0.
+
 Hosted and multi-file presentations remain supported alternatives. They must be distinguished from self-contained delivery when they require external resources. The authoring guidance supplies the complete rendering and packaging requirements beyond this basic structure.
 
 ## Decisions Still to Reconcile
 
 - **Author-owned surface:** current padding, base font-size, and inherited foreground defaults conflict with the intended boundary. Removing them requires an explicit implementation and compatibility decision.
-- **Interaction contract:** the architecture and feature specifications need a complete account of the input behaviour described above, including whether visible presentation chrome ships by default. This vision does not select the exact key bindings or gestures.
+- **Interaction contract:** the architecture and feature specifications need a complete account of the input behaviour described above, under the agreed exclusion of visible chrome and author-provided navigation buttons. This vision does not select the exact key bindings or gestures.
 - **Engineering budgets:** existing documents give different JavaScript size limits. Reconcile those by build artifact and measurement method; the former 50ms first-slide target lacks measurement conditions and is not retained here as a guarantee.
 
 Incremental reveals, a plugin API, and remote control remain unadopted feature ideas for separate evaluation. They are not product commitments. Transition mechanisms belong in the technical contracts rather than as an open product question in this vision.

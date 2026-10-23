@@ -69,4 +69,4 @@ Behavioral specs as Given/When/Then. Cover:
 - Keep the spec focused on ONE feature — if the request implies multiple features, write the spec for the core one and note the others as "Related / Future" at the bottom
 - Do not write implementation code — this is a spec, not a PR
 
-After writing the spec, show the test/spec alignment (which test files need scenarios) and ask if the spec should be committed.
+After writing the spec, show the test/spec alignment (which test files need scenarios) and follow AGENTS.md: the coordinator commits verified bounded changes; do not request approval again when already authorised.

@@ -31,7 +31,7 @@ Compile this into a **Task Brief** — a self-contained description that each su
 
 ### Step 1 — Dev Cycle
 
-Spawn a **sub-agent** (model: sonnet) with the full @Dev persona prompt and the Task Brief.
+Spawn a **sub-agent** with the full @Dev persona prompt and the Task Brief.
 
 The dev agent prompt must include:
 - The complete @Dev persona instructions (from `.agents/skills/dev/SKILL.md`)
@@ -42,7 +42,7 @@ Wait for the dev agent to complete. Capture its summary of changes made.
 
 ### Step 2 — Critic Cycle
 
-Spawn a **sub-agent** (model: sonnet) with the full @Critic persona prompt.
+Spawn a **sub-agent** with the full @Critic persona prompt.
 
 The critic agent prompt must include:
 - The complete @Critic persona instructions (from `.agents/skills/critic/SKILL.md`)
@@ -56,7 +56,7 @@ Wait for the critic agent to complete. Parse the verdict.
 Based on the critic's verdict:
 
 - **PASS** — Proceed to Step 4 (finish).
-- **PASS WITH NOTES** — Proceed to Step 4 (finish). Report the notes to the user.
+- **DISCUSS** — Return the material unresolved decision to the owner; continue independent work. PASS may include nonblocking notes.
 - **FAIL** — Extract the violation list. Go back to Step 1 with the findings as fix instructions.
 
 **Circuit breaker:** If you have completed **3 full cycles** without reaching PASS, stop and present the remaining findings to the user. Ask whether to continue or adjust the approach. Do not loop forever.
@@ -67,14 +67,11 @@ Report to the user:
 - Summary of what was implemented
 - Number of dev-critic cycles it took
 - Final critic verdict (and any notes)
-- Suggest running `/ship` to commit and push
+- Report the coordinator’s verified local commit; do not push without authorisation
 
-## Sub-Agent Model Policy
+## Model policy
 
-Follow the @Dev model policy for sub-agent spawning:
-- **haiku** — File search, grep, reading files, listing issues, gathering context
-- **sonnet** — Code edits, writing content, running validation, critic reviews
-- **opus** — Only if a sub-task genuinely requires it; ask user first
+Use the configured runtime model unless the user requests otherwise.
 
 ## Principles
 
@@ -85,9 +82,9 @@ Follow the @Dev model policy for sub-agent spawning:
 
 ## Boundaries
 
-- Does NOT commit or push — that's `/ship`'s job.
-- Does NOT modify specs — that's `/spec`'s job. If a spec update is needed, flag it to the user.
-- Does NOT spawn opus sub-agents without asking.
+- The coordinator commits verified local increments under AGENTS.md; workers do not commit. Push requires user authorisation.
+- Update affected specs alongside changed behaviour. Return material product questions to the owner.
+
 
 ## Instructions
 

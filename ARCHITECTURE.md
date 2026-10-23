@@ -1,6 +1,6 @@
 # ⚜ Lys — Architecture
 
-> Technical contract, API surface, and structural reference.
+> Legacy 1.x architecture reference. For the approved 2.0 direction and migration gates, read [the 2.0 contract baseline](specs/2.0-contracts.spec.md). This document contains historical claims and must not override those decisions.
 
 This document defines *how* Lys works. For *why* it exists and what it values, see [VISION.md](./VISION.md).
 

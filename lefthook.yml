@@ -3,8 +3,7 @@ pre-commit:
   commands:
     lint:
       glob: "*.{ts,css,json}"
-      run: pnpm biome check --write {staged_files}
-      stage_fixed: true
+      run: pnpm biome check {staged_files}
     typecheck:
       run: pnpm tsc --noEmit
     unit-test:
