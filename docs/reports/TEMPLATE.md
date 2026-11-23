@@ -1,7 +1,7 @@
 ---
 generated:
-  by: claude/fable-5.1
-  at: 2026-10-12T15:30:00+03:00
+  by: claude-code/claude-opus-5-5
+  at: 2026-11-23T17:46:23+02:00
 verified:
   - by: human:ville.takanen
     at: 2026-10-12T16:00:00+03:00
@@ -22,7 +22,7 @@ Required. Who produced the report and when.
 
 ## `verified`
 
-Omit entirely until a human has actually read and confirmed the report. Never pre-fill it. Once verified, a list of one or more entries using the same `by` and `at` conventions as `generated`.
+Omit entirely until a human has actually read and confirmed the report. Never pre-fill it. Once verified, a list of one or more entries. Verifiers are humans only: each `by` is `human:<id>`, and each `at` uses the same datetime convention as `generated`. An edit after verification makes earlier entries stale until a human confirms again; keep them as history.
 
 ## Body
 
