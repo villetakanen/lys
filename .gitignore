@@ -8,3 +8,11 @@ playwright-report/
 site/examples/
 site/llms.txt
 tmp
+
+# Local agent tooling
+/.fab/
+/.pi/extensions/fab-activity.ts
+/.codex/hooks.json
+/.codex/.fab-hooks-*.next
+/.claude/settings.local.json
+/.claude/.fab-settings-*.next
