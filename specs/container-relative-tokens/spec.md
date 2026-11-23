@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Container-Relative Token Defaults
 
 ## Blueprint (Design)
@@ -40,15 +46,15 @@ At a 1920x1080 viewport with 16:9 slides, the article content-box width is appro
 
 - **`src/lys.css`** — Token default values change (2 lines).
 - **`ARCHITECTURE.md`** — Token table updated with new defaults.
-- **`specs/lys-core.spec.md`** — Token table updated with new defaults.
+- **`specs/lys-core/spec.md`** — Token table updated with new defaults.
 - **`site/index.html`** — Token reference table updated (if one exists).
 - **`tests/unit/tokens.test.ts`** — Expected default values updated.
 - **No JS changes.** Token resolution is pure CSS.
 
 #### Integration points
 
-- **Container type** (`container-type.spec.md`): Depends on #28. `cqi` units only work because articles are now size containers.
-- **Print layout**: **Superseded by [`print-layout.spec.md`](./print-layout.spec.md) (#60).** This spec originally documented `@media print` resetting `container-type: normal` (#28), with `cqi` falling back to viewport-relative resolution. That reset is gone: with the ratio-matched `@page` box, the printed slide is definite on both axes, so articles stay `container-type: size` and `cqi` resolves against the **slide** — print typography now matches screen typography proportionally. See `print-layout.spec.md` §"`container-type` in print".
+- **Container type** (`container-type/spec.md`): Depends on #28. `cqi` units only work because articles are now size containers.
+- **Print layout**: **Superseded by [`print-layout/spec.md`](../print-layout/spec.md) (#60).** This spec originally documented `@media print` resetting `container-type: normal` (#28), with `cqi` falling back to viewport-relative resolution. That reset is gone: with the ratio-matched `@page` box, the printed slide is definite on both axes, so articles stay `container-type: size` and `cqi` resolves against the **slide** — print typography now matches screen typography proportionally. See `print-layout/spec.md` §"`container-type` in print".
 - **Reduced motion**: Unaffected. These tokens control sizing, not animation.
 - **Transitions**: Unaffected. `--lys-transition-duration` and `--lys-transition-easing` are unchanged.
 
@@ -72,10 +78,10 @@ At a 1920x1080 viewport with 16:9 slides, the article content-box width is appro
 5. At extreme aspect ratios (1:1 on a widescreen viewport), text scales with the slide and does not overflow.
 6. `clamp()` floor prevents font-size from dropping below `0.75rem` on very small containers.
 7. Authors can override both tokens with absolute values (`rem`, `px`) and the overrides take effect.
-8. ~~Print layout: text is readable (cqi falls back to viewport; clamp ceiling applies).~~ **Superseded by `print-layout.spec.md` (#60):** slides stay size containers in print, so `cqi` resolves against the slide. Text must be readable *and* proportional to the on-screen result.
+8. ~~Print layout: text is readable (cqi falls back to viewport; clamp ceiling applies).~~ **Superseded by `print-layout/spec.md` (#60):** slides stay size containers in print, so `cqi` resolves against the slide. Text must be readable *and* proportional to the on-screen result.
 9. `prefers-reduced-motion` still works (transition tokens unchanged).
 10. ARCHITECTURE.md token table reflects new defaults.
-11. `specs/lys-core.spec.md` token table reflects new defaults.
+11. `specs/lys-core/spec.md` token table reflects new defaults.
 12. No regressions in unit tests (after updating expected values).
 13. No regressions in e2e tests.
 14. Bundle size stays within budget (CSS < 2 KB gzip).
@@ -147,7 +153,7 @@ Scenario: author override at container level
 
 #### Print layout
 
-**Superseded by [`print-layout.spec.md`](./print-layout.spec.md) (#60).** The scenarios below
+**Superseded by [`print-layout/spec.md`](../print-layout/spec.md) (#60).** The scenarios below
 described `cqi` falling back to the viewport after the `container-type` reset. Slides are size
 containers in print now, so `cqi` resolves against the slide box:
 
@@ -193,7 +199,7 @@ Scenario: ARCHITECTURE.md token table is current
   And the --_lys-slide-padding row shows the new cqi-based default
 
 Scenario: lys-core spec token table is current
-  Given the specs/lys-core.spec.md file
+  Given the specs/lys-core/spec.md file
   Then the token table reflects the new defaults
 ```
 

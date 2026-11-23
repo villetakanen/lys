@@ -14,7 +14,7 @@ The [primary demo](kata-lys-migration-0.5.1-demo.md) and [Northern Lights](free-
 
 The [ASDLC report](asdlc-kata-0.5.1.md) records a second, narrower issue: the auto-focused deck container's outline appeared at PDF edges. Its theme now suppresses the outline in print, and the JavaScript-on/off PDFs matched.
 
-Current [print CSS](../../src/lys.css) intentionally changes stacked articles to `position: static`. The [print specification](../../specs/print-layout.spec.md), “Unchanged, restated here as this spec's responsibility” and “Regression Guardrails,” explicitly require this, as does [the stacked print test](../../tests/e2e/print.spec.ts). A generic change must revise that contract, not merely turn the existing assertion green. These findings are integration friction with an authored absolute frame, not proof that all stacked decks print incorrectly.
+Current [print CSS](../../src/lys.css) intentionally changes stacked articles to `position: static`. The [print specification](../../specs/print-layout/spec.md), “Unchanged, restated here as this spec's responsibility” and “Regression Guardrails,” explicitly require this, as does [the stacked print test](../../tests/e2e/print.spec.ts). A generic change must revise that contract, not merely turn the existing assertion green. These findings are integration friction with an authored absolute frame, not proof that all stacked decks print incorrectly.
 
 ## Proposed bounded changes
 
@@ -22,7 +22,7 @@ Current [print CSS](../../src/lys.css) intentionally changes stacked articles to
 
 **Focus candidate.** Evaluate print-only suppression of the `[data-lys]` container outline. Preserve screen focus behavior. Do not change initialization, navigation or focus restoration to solve a printed decoration.
 
-Proposed destinations: the print block in [src/lys.css](../../src/lys.css); the positioning, layout-mode and accessibility sections of [print-layout.spec.md](../../specs/print-layout.spec.md); shared regressions in [print.spec.ts](../../tests/e2e/print.spec.ts); and existing example-specific assertions in [site.spec.ts](../../tests/e2e/site.spec.ts). Update the spec before changing a contradictory contract. Remove redundant theme workarounds only once the engine behavior is verified against the built examples.
+Proposed destinations: the print block in [src/lys.css](../../src/lys.css); the positioning, layout-mode and accessibility sections of [print-layout/spec.md](../../specs/print-layout/spec.md); shared regressions in [print.spec.ts](../../tests/e2e/print.spec.ts); and existing example-specific assertions in [site.spec.ts](../../tests/e2e/site.spec.ts). Update the spec before changing a contradictory contract. Remove redundant theme workarounds only once the engine behavior is verified against the built examples.
 
 ## Acceptance evidence
 

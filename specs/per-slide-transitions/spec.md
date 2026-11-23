@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Per-Slide Transitions
 
 ## Blueprint (Design)
@@ -320,16 +326,16 @@ Scenario: Single fade slide in otherwise plain deck
 
 ## Spec Updates Required
 
-This spec **supersedes** the following sections of `specs/transitions.spec.md`:
+This spec **supersedes** the following sections of `specs/transitions/spec.md`:
 - Mode detection scenarios (deck-wide → stacked)
 - Anti-pattern "Per-slide transition mixing" (removed — this is now the supported behavior)
 - "Related / Future" item about per-slide transitions (now implemented)
 
 After implementation, these specs should be updated to reflect the new model:
-- `specs/transitions.spec.md` — mode detection, anti-patterns, related/future
-- `specs/direct-transition.spec.md` — references `data-lys-mode="direct"` which no longer exists
-- `specs/llm-deliverables.spec.md` — may reference deck-wide transition behavior
-- `specs/fouc-fade.spec.md` — references `data-lys-mode` behavior
+- `specs/transitions/spec.md` — mode detection, anti-patterns, related/future
+- `specs/direct-transition/spec.md` — references `data-lys-mode="direct"` which no longer exists
+- `specs/llm-deliverables/spec.md` — may reference deck-wide transition behavior
+- `specs/fouc-fade/spec.md` — references `data-lys-mode` behavior
 
 ## Related / Future
 

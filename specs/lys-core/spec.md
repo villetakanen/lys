@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Lys Core — Container, Article Contract, Tokens, Layout
 
 ## Blueprint (Design)
@@ -61,7 +67,7 @@ Internal tokens are declared on `[data-lys] > article` and consumed by `lys.css`
 
 - **Container:** `[data-lys]` is a scroll-snap container (`overflow-x: hidden; overflow-y: auto; scroll-snap-type: y mandatory`). Full viewport by default.
 - **Slides:** Each `article` is a scroll-snap child. Each slide occupies exactly one scroll-snap page so that scrolling/swiping advances exactly one slide. The slide's rendered box is sized by the aspect-ratio rule below and is **not** forced to fill the viewport height. Snap paging must be preserved **without wrapping author HTML** in extra elements (see Anti-Patterns). Content is padded per `--_lys-slide-padding`.
-- **Aspect ratio (contain-fit):** Slides always honor `--lys-aspect-ratio` (default `16/9`). The slide is sized to **fit within** the viewport at that ratio: **both** axes are bounded — width by `--_lys-slide-max-width` (default `100vw`) and height by `--_lys-slide-max-height` (default `100vh`) — and whichever bound is reached first governs, so the configured ratio is preserved on every viewport (mobile portrait, small landscape, desktop 16:9 *and* 16:10). The slide is centered; `--lys-backdrop` shows in the letterbox/pillarbox margins (per `backdrop-color.spec.md`). A slide must **never** stretch to the viewport's own ratio. Both axes stay definite so `container-type: size` and `cqi`/`cqh` scaling keep working (see `container-type.spec.md`).
+- **Aspect ratio (contain-fit):** Slides always honor `--lys-aspect-ratio` (default `16/9`). The slide is sized to **fit within** the viewport at that ratio: **both** axes are bounded — width by `--_lys-slide-max-width` (default `100vw`) and height by `--_lys-slide-max-height` (default `100vh`) — and whichever bound is reached first governs, so the configured ratio is preserved on every viewport (mobile portrait, small landscape, desktop 16:9 *and* 16:10). The slide is centered; `--lys-backdrop` shows in the letterbox/pillarbox margins (per `backdrop-color/spec.md`). A slide must **never** stretch to the viewport's own ratio. Both axes stay definite so `container-type: size` and `cqi`/`cqh` scaling keep working (see `container-type/spec.md`).
 - **`data-background` handling:** CSS rule applies the value as `background` shorthand on the article. Supports colors (`#hex`, `rgb()`, named), gradients (`linear-gradient(...)`), and images (`url(...)`).
 - **`data-class` handling:** JS reads `data-class` and adds those classes to the `<article>` element's `classList` on init.
 - **Print layout:** `@media print` removes scroll-snap, shows all slides vertically, applies `page-break-after: always` to each article.
@@ -73,7 +79,7 @@ Internal tokens are declared on `[data-lys] > article` and consumed by `lys.css`
 - `src/lys.css` — All layout, tokens, scroll-snap, print styles, `data-background` handling, `prefers-reduced-motion`.
 - `src/types.ts` — `LysInstance` interface, event detail types.
 
-This spec does NOT cover: keyboard/touch navigation (`navigation.spec.md`), ARIA attributes and focus management (`a11y.spec.md`), or transitions (`transitions.spec.md`).
+This spec does NOT cover: keyboard/touch navigation (`navigation/spec.md`), ARIA attributes and focus management (`a11y/spec.md`), or transitions (`transitions/spec.md`).
 
 ### Anti-Patterns
 
@@ -336,10 +342,10 @@ Scenario: Transitions are disabled when reduced motion is preferred
 ## Known Gaps
 
 - **Auto-init test coverage.** The IIFE module-level auto-init code path (`DOMContentLoaded` listener / immediate `Lys.init()`) has no unit test. Will be covered by e2e tests in `tests/e2e/slides.spec.ts`.
-- **No ARIA attributes in core init.** The `destroy()` contract mentions cleaning up "ARIA attributes added by JS," but core currently sets none. ARIA roles (`role="group"`, `aria-roledescription`), live regions, and focus management are deferred to `a11y.spec.md`. Track this to ensure the a11y module is implemented before shipping.
+- **No ARIA attributes in core init.** The `destroy()` contract mentions cleaning up "ARIA attributes added by JS," but core currently sets none. ARIA roles (`role="group"`, `aria-roledescription`), live regions, and focus management are deferred to `a11y/spec.md`. Track this to ensure the a11y module is implemented before shipping.
 
 ## Related / Future
 
-- **Navigation** (`specs/navigation.spec.md`) — Keyboard, touch, hash routing, `next()`/`prev()`/`goTo()` methods. Depends on core initialization.
-- **Accessibility** (`specs/a11y.spec.md`) — ARIA roles, live region, focus management. Augments core init with a11y attributes.
-- **Transitions** (`specs/transitions.spec.md`) — `data-transition` is declared here; transition modes are defined in the transitions spec.
+- **Navigation** (`specs/navigation/spec.md`) — Keyboard, touch, hash routing, `next()`/`prev()`/`goTo()` methods. Depends on core initialization.
+- **Accessibility** (`specs/a11y/spec.md`) — ARIA roles, live region, focus management. Augments core init with a11y attributes.
+- **Transitions** (`specs/transitions/spec.md`) — `data-transition` is declared here; transition modes are defined in the transitions spec.

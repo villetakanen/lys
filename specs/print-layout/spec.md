@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Print Layout
 
 ## Blueprint (Design)
@@ -50,12 +56,12 @@ for the printed page as a whole:
 
 | Spec | Print clause | Disposition here |
 |---|---|---|
-| `backdrop-color.spec.md` | container background transparent in print | **Kept**, restated below |
-| `spa-nav.spec.md` | nav region not pinned (`position: static`) | **Superseded** — hidden instead |
-| `per-slide-transitions.spec.md` | print override targets `[data-lys][data-lys-mode] > article` | **Kept**, restated below |
-| `container-relative-tokens.spec.md` | `container-type: normal` in print (#28) | **Superseded** — `size` is kept |
-| `stacked-mode-nav-bug.spec.md` | print must still show all slides | **Kept**, restated below |
-| `fouc-fade.spec.md` | print is unaffected by the FOUC guard | **Kept**, no change |
+| `backdrop-color/spec.md` | container background transparent in print | **Kept**, restated below |
+| `spa-nav/spec.md` | nav region not pinned (`position: static`) | **Superseded** — hidden instead |
+| `per-slide-transitions/spec.md` | print override targets `[data-lys][data-lys-mode] > article` | **Kept**, restated below |
+| `container-relative-tokens/spec.md` | `container-type: normal` in print (#28) | **Superseded** — `size` is kept |
+| `stacked-mode-nav-bug/spec.md` | print must still show all slides | **Kept**, restated below |
+| `fouc-fade/spec.md` | print is unaffected by the FOUC guard | **Kept**, no change |
 
 This spec becomes the single owner of the `@media print` block. The clauses above stay in
 their home specs as guardrails; where this spec says *superseded*, the source spec is updated
@@ -181,7 +187,7 @@ layout resolves cleanly.
 This is the payoff of the whole change: the printed slide is the screen slide at a different
 scale, so a deck that fits on screen fits on paper, with proportional type.
 
-`container-relative-tokens.spec.md` §"Print layout" and its DoD item 8 are superseded and must
+`container-relative-tokens/spec.md` §"Print layout" and its DoD item 8 are superseded and must
 be updated to reference this spec.
 
 #### 5. Slide backgrounds — `print-color-adjust`
@@ -196,7 +202,7 @@ be updated to reference this spec.
 ```
 
 - Scoped to **articles only**. The `[data-lys]` container background stays `transparent`
-  (`backdrop-color.spec.md`), so the out-of-slide area still costs no ink.
+  (`backdrop-color/spec.md`), so the out-of-slide area still costs no ink.
 - This is an accessibility floor, not a visual opinion — the same reasoning as #47. A slide's
   background is not decoration: it is the surface its foreground color was chosen against.
   Dropping it inverts the contrast pair and can take a deck to zero effective contrast.
@@ -206,24 +212,24 @@ be updated to reference this spec.
 
 #### 6. Nav region
 
-`spa-nav.spec.md` specifies `position: static` in print so the fixed region does not overlay
+`spa-nav/spec.md` specifies `position: static` in print so the fixed region does not overlay
 the slides. Measured on `examples/nav.html` in print media, that region then occupies 51 px of
 block flow at the top of the container and pushes slide 1 down by 51 px — which, once the slide
 box equals the page box, spills slide 1 onto a second page.
 
 **Decision: `display: none` in print.** The nav is on-screen navigation chrome; a printed deck
 has no navigation. Its links remain in the DOM for the accessibility tree and for non-print
-media. `spa-nav.spec.md` DoD item 11 and its print scenario are superseded and must be updated.
+media. `spa-nav/spec.md` DoD item 11 and its print scenario are superseded and must be updated.
 
 #### 7. Unchanged, restated here as this spec's responsibility
 
 - `[data-lys]` → `display: block; overflow: visible; height: auto; scroll-snap-type: none;`
-  and `background: transparent` (`backdrop-color.spec.md`).
+  and `background: transparent` (`backdrop-color/spec.md`).
 - Articles → `break-after: page` (with the legacy `page-break-after: always` alias),
   `:last-child` → `break-after: avoid`, so there is no trailing blank page.
 - Stacked mode (`[data-lys][data-lys-mode] > article`) → `position: static; transform: none;
   opacity: 1; pointer-events: auto`, so all slides print, not just the active one
-  (`per-slide-transitions.spec.md`, `stacked-mode-nav-bug.spec.md`).
+  (`per-slide-transitions/spec.md`, `stacked-mode-nav-bug/spec.md`).
 - `overflow: hidden` on articles is retained: the clip prevents overflow bleeding across a page
   boundary. Note the qualifier this originally omitted — content that fits on screen fits on
   paper **only when the page box is at least as wide as the width the deck was authored at**.
@@ -301,7 +307,7 @@ CSS-only decks (no JS) print identically — nothing here depends on the JS laye
 15. Stacked/fade decks print all slides, not only the active one.
 16. Print behavior is identical with JS disabled.
 17. `lys.css` stays under 2 KB gzip and contains no `@import` or `url()`.
-18. `container-relative-tokens.spec.md` and `spa-nav.spec.md` are updated where this spec
+18. `container-relative-tokens/spec.md` and `spa-nav/spec.md` are updated where this spec
     supersedes their print clauses.
 19. `ARCHITECTURE.md` documents `--lys-print-page-size` in the token table, with the
     `:root`-only caveat.
@@ -513,7 +519,7 @@ one case for the token default only.
 | Aspect-ratio mismatch | `tests/e2e/print.spec.ts` | **New** |
 | Container query context | `tests/e2e/print.spec.ts` | **Rewrite** — existing test asserts `normal`; now asserts `size` |
 | Slide backgrounds and contrast | `tests/e2e/print.spec.ts` | **New** |
-| Nav region | `tests/e2e/print.spec.ts` | **New** — `spa-nav.spec.md` mapped a print scenario to `nav.spec.ts`, but no such test was ever written (a pre-existing spec/test gap). The print-nav scenarios live here instead. |
+| Nav region | `tests/e2e/print.spec.ts` | **New** — `spa-nav/spec.md` mapped a print scenario to `nav.spec.ts`, but no such test was ever written (a pre-existing spec/test gap). The print-nav scenarios live here instead. |
 | Layout modes | `tests/e2e/print.spec.ts` | **Exists** — keep as guardrail |
 | Progressive enhancement | `tests/e2e/print.spec.ts` | **New** |
 | Accessibility | `tests/e2e/print.spec.ts` | **New** |
@@ -522,7 +528,7 @@ one case for the token default only.
 Add to the alignment table in CLAUDE.md:
 
 ```
-specs/print-layout.spec.md  →  tests/e2e/print.spec.ts
+specs/print-layout/spec.md  →  tests/e2e/print.spec.ts
 ```
 
 **Test technique.** Geometry must be measured, not inferred. Two complementary methods, both

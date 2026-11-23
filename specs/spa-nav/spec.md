@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Chapter Navigation — Author Nav Region + Active-State Hook
 
 ## Blueprint (Design)
@@ -16,7 +22,7 @@ tracks the active link; if not, nothing happens. Lys never generates links, deri
 or ships a toggle/progress/hamburger — that was rejected as over-reach against Lys's
 *visually unopinionated* and *do-not-mutate-author-HTML* principles.
 
-It is the deliberate, opt-in **exception** to navigation.spec.md's "no built-in UI" rule:
+It is the deliberate, opt-in **exception** to navigation/spec.md's "no built-in UI" rule:
 the default deck still ships zero UI; the nav appears only when the author adds the region.
 
 ### Division of responsibility
@@ -60,7 +66,7 @@ full viewport snap row and render as a blank "slide." Out-of-flow positioning co
 and keeps the nav visible while the deck scrolls, in both default and stacked modes. The rule
 is structural and visually unopinionated (no colors/fonts/sizes that assume a look); authors
 override positioning and supply all appearance. In `@media print`, the region is **hidden** —
-see [`print-layout.spec.md`](./print-layout.spec.md) (#60), which supersedes the original
+see [`print-layout/spec.md`](../print-layout/spec.md) (#60), which supersedes the original
 `position: static` rule here: unpinning alone left the region in block flow, where it pushed
 slide 1 down its page and spilled it onto a second sheet.
 
@@ -134,7 +140,7 @@ This is the entire JS surface: observe → resolve current slide `id` → set th
 9. `destroy()` removes the active-state attributes and every nav listener/observer; no leaks.
 10. Multiple decks each track their own region independently.
 11. The nav does not break scroll-snap one-slide-per-swipe, contain-fit aspect ratio, or print
-    (region hidden in `@media print` — `print-layout.spec.md`, #60).
+    (region hidden in `@media print` — `print-layout/spec.md`, #60).
 12. Bundle sizes within budget after the feature (record actuals).
 
 ### Regression Guardrails
@@ -210,7 +216,7 @@ Scenario: Print hides the nav
 ```
 
 > Print scenarios for the nav live in `tests/e2e/print.spec.ts` and are owned by
-> [`print-layout.spec.md`](./print-layout.spec.md) (#60).
+> [`print-layout/spec.md`](../print-layout/spec.md) (#60).
 
 ## Test / Spec Alignment
 
@@ -236,10 +242,10 @@ Scenario: Print hides the nav
 
 ## Related / Future
 
-- **Navigation** (`navigation.spec.md`) — the hook consumes `lys:slidechange` and the existing
+- **Navigation** (`navigation/spec.md`) — the hook consumes `lys:slidechange` and the existing
   `id` anchors; it adds no new navigation mechanics, only an active-state reflection. It is the
   scoped exception to that spec's "no built-in UI" rule.
-- **Accessibility** (`a11y.spec.md`) — `aria-current` marks the active link; live-region
+- **Accessibility** (`a11y/spec.md`) — `aria-current` marks the active link; live-region
   announcements on `lys:slidechange` are unchanged.
 - **Document layout (#43, gated)** — the anchor/active-state model generalizes to non-article
   `[id]` targets if that layout ships.

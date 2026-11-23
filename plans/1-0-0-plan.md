@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Lys 1.0.0 Release Plan
 
 > From v0.1.0 (core engine, navigation, a11y) to 1.0.0 (publishable, LLM-ready).
@@ -20,9 +26,9 @@ A version that can be published to npm, referenced from CDN, discovered by searc
 
 **Status:** In article contract, not implemented.
 **Issue:** New — needs filing.
-**Spec:** Needs writing (`specs/transitions.spec.md`).
+**Spec:** Needs writing (`specs/transitions/spec.md`).
 
-The `data-transition` attribute is declared in ARCHITECTURE.md and lys-core.spec.md but has no implementation. For 1.0, two modes:
+The `data-transition` attribute is declared in ARCHITECTURE.md and lys-core/spec.md but has no implementation. For 1.0, two modes:
 
 - **Default (no attribute)** — Scroll-snap behavior. This is the baseline and should not require any markup.
 - **`fade`** — Opacity crossfade between slides. Requires switching from scroll-snap to a stacked layout for the affected deck (position: absolute, JS-driven visibility with opacity transitions). Must respect `prefers-reduced-motion`.
@@ -62,7 +68,7 @@ These serve double duty: human reference and test fixtures for e2e.
 
 - CLAUDE.md: Remove presenter references from context paragraph, key architecture decisions, commit example, and test/spec alignment table
 - ARCHITECTURE.md: Clean up remaining presenter mentions (file structure still lists `presenter.ts`)
-- Verify `specs/presenter.spec.md` row is removed from CLAUDE.md alignment table
+- Verify `specs/presenter/spec.md` row is removed from CLAUDE.md alignment table
 
 ### WI-5: `llms.txt` and `SKILL.md` (#11)
 

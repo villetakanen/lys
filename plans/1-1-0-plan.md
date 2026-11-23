@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Lys 1.1.0 Release Plan
 
 > From 1.0.0 (published, LLM-ready slide engine) to 1.1.0: **aspect-ratio conformity**
@@ -49,12 +55,12 @@ Comfortable, but the nav feature adds JS + CSS. Size is an explicit guardrail (W
 
 **Status:** Issue filed (#45); diagnosis in `plans/aspect-ratio-conformity-findings.md`.
 
-Update an existing spec rather than adding one — the constraint lives in `lys-core.spec.md`
+Update an existing spec rather than adding one — the constraint lives in `lys-core/spec.md`
 ("Aspect ratio: … using `aspect-ratio` + `max-width`/`max-height` + centering"), which is the
 exact rule that is wrong. Revise that line and the related Gherkin to specify **contain-fit**
 sizing (both axes bounded, letterbox/pillarbox against `--lys-backdrop`). Cross-check
-`container-type.spec.md` (both axes must stay definite) and `transitions.spec.md` /
-`direct-transition.spec.md` (stacked-mode height).
+`container-type/spec.md` (both axes must stay definite) and `transitions/spec.md` /
+`direct-transition/spec.md` (stacked-mode height).
 
 ### WI-AR2: Implement the fix (#45)
 
@@ -83,14 +89,14 @@ asserts font-size — never the rendered ratio. That gap is why the bug shipped.
 
 ### WI-AR4: Docs for the fix
 
-- `ARCHITECTURE.md` + `lys-core.spec.md` token notes describe contain-fit behavior and the
+- `ARCHITECTURE.md` + `lys-core/spec.md` token notes describe contain-fit behavior and the
   backdrop letterbox.
 - `CHANGELOG.md` — `### Fixed` entry under `[Unreleased]`.
 
 ### WI-1: Spec the chapter nav (#42)
 
 **Status:** Issue filed (#42), no spec.
-**Spec:** Write `specs/spa-nav.spec.md` (Blueprint + Contract) **before any code**, per the
+**Spec:** Write `specs/spa-nav/spec.md` (Blueprint + Contract) **before any code**, per the
 spec-driven workflow. Add the spec→test mapping row to CLAUDE.md.
 
 Blueprint must pin down:
@@ -136,7 +142,7 @@ Get explicit owner approval for:
   (jsdom), reduced-motion branch, mobile toggle aria state.
 - **E2e** (`tests/e2e/nav.spec.ts`) — real-browser: nav renders, active highlight follows
   scroll, click jumps, keyboard reachability, works in both scroll-snap and stacked decks.
-- Every Gherkin scenario in `specs/spa-nav.spec.md` maps to a test (no gaps).
+- Every Gherkin scenario in `specs/spa-nav/spec.md` maps to a test (no gaps).
 
 ### WI-4: Example + docs for chapter nav
 
@@ -166,7 +172,7 @@ sections flow at natural height. It touches the core identity question in VISION
 **Gate:** Resolve with the owner *whether a document layout belongs in Lys at all*. If yes and
 it fits a minor (additive `data-lys-mode` value, no contract break), include in 1.1.0:
 
-- Spec `specs/document-layout.spec.md` first; API sign-off for the new `data-lys-mode` value
+- Spec `specs/document-layout/spec.md` first; API sign-off for the new `data-lys-mode` value
   and any spacing tokens.
 - Implement variable-height layout; compose with the WI-2 nav.
 - Candidate sub-primitive: **reveal-on-scroll** transition (gate on `prefers-reduced-motion`).
@@ -221,7 +227,7 @@ patterns from the source study (`plans/spa-mode-findings.md`).
 
 **Aspect-ratio conformity (#45) — priority:**
 
-- [ ] `lys-core.spec.md` aspect-ratio rule + Gherkin updated to contain-fit
+- [ ] `lys-core/spec.md` aspect-ratio rule + Gherkin updated to contain-fit
 - [ ] Default and stacked modes honor `--lys-aspect-ratio`; both axes stay definite
 - [ ] Scroll-snap one-slide-per-swipe preserved; print still pages one slide per page
 - [ ] E2e asserts rendered ratio ≈ target **and** no overflow across the viewport matrix
@@ -230,7 +236,7 @@ patterns from the source study (`plans/spa-mode-findings.md`).
 **Chapter nav (#42):**
 
 - [ ] API sign-off recorded for `data-lys-nav` (and any new token) — WI-0
-- [ ] `specs/spa-nav.spec.md` written; CLAUDE.md spec→test row added
+- [ ] `specs/spa-nav/spec.md` written; CLAUDE.md spec→test row added
 - [ ] Chapter nav implemented (opt-in, label-from-heading, active tracking, progress, mobile)
 - [ ] Works in both scroll-snap and stacked decks; CSS-only deck unaffected
 - [ ] `prefers-reduced-motion` respected; ARIA verified on nav, links, toggle

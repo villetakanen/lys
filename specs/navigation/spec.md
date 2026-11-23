@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Navigation — Keyboard, Touch, Hash Routing, Programmatic API
 
 ## Blueprint (Design)
@@ -512,7 +518,7 @@ Scenario: Hash routing targets the correct deck
 
 ## Related / Future
 
-- **Accessibility** (`specs/a11y.spec.md`) — Listens for `lys:slidechange` to manage focus and ARIA live region. Navigation provides the events; a11y provides the announcements.
-- **Transitions** (`specs/transitions.spec.md`) — Fade mode changes how `goTo()` renders slide changes (opacity instead of scroll). Navigation itself is unchanged.
+- **Accessibility** (`specs/a11y/spec.md`) — Listens for `lys:slidechange` to manage focus and ARIA live region. Navigation provides the events; a11y provides the announcements.
+- **Transitions** (`specs/transitions/spec.md`) — Fade mode changes how `goTo()` renders slide changes (opacity instead of scroll). Navigation itself is unchanged.
 - **Fragments / steps** (VISION.md open question) — Incremental reveals within a slide. If implemented, `next()` would need to check for pending fragments before advancing to the next slide. This spec does not account for fragments; it would require a spec update.
 - **`data-transition` visual effects** — The `data-transition` attribute is part of the article contract but its visual implementation is deferred. Navigation changes state; transitions are a separate concern.

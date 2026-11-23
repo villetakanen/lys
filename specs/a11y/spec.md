@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Accessibility — ARIA Roles, Live Region, Focus Management
 
 ## Blueprint (Design)
@@ -94,7 +100,7 @@ Focus management ensures keyboard users maintain orientation during slide transi
 
 2. **Focus restoration on destroy:** When `destroy()` is called, remove `tabindex` attributes that were added by the a11y module (not author-provided ones). Do not move focus — let the browser handle it.
 
-3. **Focus outline suppression:** Slides fill the entire viewport — a visible focus ring provides no orientation value and creates distracting borders on navigation. The outline is suppressed via `[data-lys] > article:focus { outline: none }`. The `--lys-focus-ring` token remains defined in the public token API for authors who want to apply it in their own CSS. See `specs/focus-ring-bug.spec.md` for rationale.
+3. **Focus outline suppression:** Slides fill the entire viewport — a visible focus ring provides no orientation value and creates distracting borders on navigation. The outline is suppressed via `[data-lys] > article:focus { outline: none }`. The `--lys-focus-ring` token remains defined in the public token API for authors who want to apply it in their own CSS. See `specs/focus-ring-bug/spec.md` for rationale.
 
 #### Module boundaries
 
@@ -107,7 +113,7 @@ Focus management ensures keyboard users maintain orientation during slide transi
 
 - **navigation** — Navigation emits `lys:slidechange`. The a11y module listens for it. No direct coupling.
 - **core** — The a11y module is called from `Lys` constructor and `destroy()`. It receives the container and slides as arguments.
-- **transitions** — Fade mode uses the same a11y infrastructure. No changes needed (see `transitions.spec.md`).
+- **transitions** — Fade mode uses the same a11y infrastructure. No changes needed (see `transitions/spec.md`).
 
 ### Anti-Patterns
 

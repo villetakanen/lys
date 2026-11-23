@@ -356,8 +356,8 @@ test("primary demo — native PDF print preserves the active slide", async ({
 	await expect(page.locator("#counter")).toHaveText("5 / 8");
 });
 
-// Northern Lights uses the same contracts in lys-core.spec.md and
-// print-layout.spec.md. Check the shipped example, including its authored copy.
+// Northern Lights uses the same contracts in lys-core/spec.md and
+// print-layout/spec.md. Check the shipped example, including its authored copy.
 test.describe("FREE//FALL — Northern Lights player pitch", () => {
 	test("preserves the authored player copy and the requested closing explanation", async ({
 		page,

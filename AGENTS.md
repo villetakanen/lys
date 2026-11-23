@@ -1,10 +1,16 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Lys development guidance
 
 Lys is a zero-dependency presentation engine for portable HTML decks. People and agents author the contents; Lys supplies geometry and predictable behaviour. One deck belongs to one HTML document.
 
 ## Context and authority
 
-Read [VISION.md](VISION.md), [the approved 2.0 roadmap](docs/reports/lys-2.0-release-plan.md), [the contract baseline](specs/2.0-contracts.spec.md), and relevant feature specifications before changing behaviour. [PROJECT.md](PROJECT.md) defines tooling and verification. ARCHITECTURE.md and older feature specs describe 1.x until explicitly migrated. Update affected specs before implementing a 2.0 change; do not preserve obsolete requirements merely because an old test encodes them.
+Read [VISION.md](VISION.md), [the approved 2.0 roadmap](docs/reports/lys-2.0-release-plan.md), [the contract baseline](specs/2.0-contracts/spec.md), and relevant feature specifications before changing behaviour. [PROJECT.md](PROJECT.md) defines tooling and verification. ARCHITECTURE.md and older feature specs describe 1.x until explicitly migrated. Update affected specs before implementing a 2.0 change; do not preserve obsolete requirements merely because an old test encodes them.
 
 ## Product boundaries
 

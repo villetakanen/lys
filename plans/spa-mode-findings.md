@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # SPA / Chapter-Nav Mode — Findings
 
 > Source studied: a 1.6 MB single-page editorial microsite proposal (external HTML, since removed).
@@ -74,5 +80,5 @@ These can ship independently; #1 is the clear first win.
 
 ## Suggested next step
 
-If we proceed, start with feature #1 and write `specs/spa-nav.spec.md` (Blueprint + Contract)
+If we proceed, start with feature #1 and write `specs/spa-nav/spec.md` (Blueprint + Contract)
 before any code, per the spec-driven workflow.

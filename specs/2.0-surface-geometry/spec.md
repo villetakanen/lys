@@ -1,7 +1,7 @@
 ---
 generated:
   by: "claude-code/claude-opus-5-5"
-  at: "2026-11-23T18:29:15+02:00"
+  at: "2026-11-23T18:34:13+02:00"
 verified:
   - by: "human:ville.takanen"
     at: "2026-11-23T18:23:20+02:00"
@@ -13,7 +13,7 @@ verified:
 
 ### Context
 
-Lys fits the slide frame to the viewport; authors compose everything inside it. This spec defines the screen surface in the [2.0 contract baseline](2.0-contracts.spec.md).
+Lys fits the slide frame to the viewport; authors compose everything inside it. This spec defines the screen surface in the [2.0 contract baseline](../2.0-contracts/spec.md).
 
 ### Architecture
 
@@ -37,11 +37,11 @@ Do not measure or rearrange payload to make it fit, add engine padding, typograp
 
 ### Definition of Done
 
-The scenarios below hold with production CSS under the verification requirements in [PROJECT.md](../PROJECT.md).
+The scenarios below hold with production CSS under the verification requirements in [PROJECT.md](../../PROJECT.md).
 
 ### Regression Guardrails
 
-Frame styling preserves authored IDs, semantics, focusability, and native control actions. The [baseline](2.0-contracts.spec.md) records the disposition of historical 1.x CSS settings.
+Frame styling preserves authored IDs, semantics, focusability, and native control actions. The [baseline](../2.0-contracts/spec.md) records the disposition of historical 1.x CSS settings.
 
 ### Scenarios (Gherkin)
 

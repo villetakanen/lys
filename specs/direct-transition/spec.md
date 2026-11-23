@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Direct Transition Mode (No Animation)
 
 ## Blueprint (Design)
@@ -134,7 +140,7 @@ Direct mode is always instant. `prefers-reduced-motion` has no additional effect
 
 ### Regression Guardrails
 
-- All existing transitions.spec.md scenarios must continue to pass — direct mode must not alter fade or scroll-snap behavior.
+- All existing transitions/spec.md scenarios must continue to pass — direct mode must not alter fade or scroll-snap behavior.
 - The `data-lys-active` attribute semantics are unchanged.
 - The `data-lys-mode="fade"` value continues to work exactly as before.
 - Default decks (no `data-transition`) must not be affected by any CSS selector changes (e.g., generalizing `[data-lys-mode="fade"]` to `[data-lys-mode]` must not introduce side effects for decks without the attribute).

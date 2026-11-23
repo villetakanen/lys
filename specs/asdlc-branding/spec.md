@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # ASDLC Branding
 
 ## Blueprint (Design)
@@ -92,7 +98,7 @@ Scenario: No external dependencies added
 
 ## Test / Spec Alignment
 
-These scenarios are documentation validation checks, not automated test suite scenarios — consistent with the parent spec (`readme-and-pages.spec.md`).
+These scenarios are documentation validation checks, not automated test suite scenarios — consistent with the parent spec (`readme-and-pages/spec.md`).
 
 | Scenario group | Verification method |
 |---|---|

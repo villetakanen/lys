@@ -1,10 +1,16 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Transitions — Scroll-Snap, Fade, and Direct Modes
 
 ## Blueprint (Design)
 
 ### Context
 
-Lys supports three layout modes for presenting slides: **scroll-snap** (the default), **fade** (an opacity crossfade), and **direct** (instant switching, no animation). The default scroll-snap mode requires no markup beyond the standard `[data-lys]` + `<article>` structure — it is the CSS-only progressive enhancement baseline. Fade and direct modes are activated by the `data-transition` attribute and require JS. See `specs/direct-transition.spec.md` for the full direct mode spec.
+Lys supports three layout modes for presenting slides: **scroll-snap** (the default), **fade** (an opacity crossfade), and **direct** (instant switching, no animation). The default scroll-snap mode requires no markup beyond the standard `[data-lys]` + `<article>` structure — it is the CSS-only progressive enhancement baseline. Fade and direct modes are activated by the `data-transition` attribute and require JS. See `specs/direct-transition/spec.md` for the full direct mode spec.
 
 This matters because LLMs generating presentations may want crossfade transitions for a polished feel, instant switching for kiosk/utility decks, or the zero-config default for simpler decks. The transition system must be transparent to navigation — keyboard, touch, hash, and API navigation all work identically regardless of transition mode.
 
@@ -28,7 +34,7 @@ This matters because LLMs generating presentations may want crossfade transition
 **Direct mode (`data-transition="direct"`):**
 - Shares the same stacked layout as fade mode but with `transition-duration: 0ms` — slides switch instantly with no animation.
 - Fade takes precedence over direct if both are present in the same deck.
-- See `specs/direct-transition.spec.md` for full details.
+- See `specs/direct-transition/spec.md` for full details.
 
 #### Mode detection (`src/lys.ts`)
 
@@ -45,7 +51,7 @@ If `#mode` is non-null:
 1. Set `data-lys-mode="stacked"` on the container (used as a CSS hook for stacked layout).
 2. Store the mode internally for `goTo()` to branch on.
 
-Per-slide transition behavior (fade vs instant) is handled entirely by CSS, based on each article's `data-transition` attribute. See `specs/per-slide-transitions.spec.md` for the full model.
+Per-slide transition behavior (fade vs instant) is handled entirely by CSS, based on each article's `data-transition` attribute. See `specs/per-slide-transitions/spec.md` for the full model.
 
 On `destroy()`:
 1. Remove `data-lys-mode` from the container. Once removed, the scoped CSS rules no longer apply and the deck reverts to scroll-snap behavior. No inline style cleanup is needed because fade mode uses CSS rules (via `data-lys-active` and `data-lys-mode`), not inline styles.

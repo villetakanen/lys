@@ -1,12 +1,12 @@
 ---
 generated:
   by: "claude-code/claude-opus-5-5"
-  at: "2026-11-23T18:29:15+02:00"
+  at: "2026-11-23T18:34:13+02:00"
 ---
 
 # Lys 2.0 contract baseline
 
-Status: specification work in progress, 23 October 2026. The [approved roadmap](../docs/reports/lys-2.0-release-plan.md) defines settled product decisions. Runtime is still 1.2.5. This specification identifies migration boundaries and gates; it does not claim implementation or complete task 1.
+Status: specification work in progress, 23 October 2026. The [approved roadmap](../../docs/reports/lys-2.0-release-plan.md) defines settled product decisions. Runtime is still 1.2.5. This specification identifies migration boundaries and gates; it does not claim implementation or complete task 1.
 
 ## Blueprint
 
@@ -14,7 +14,7 @@ Status: specification work in progress, 23 October 2026. The [approved roadmap](
 
 Use the roadmap's agreed contracts as normative product requirements. Older feature specifications remain useful for understanding 1.x behaviour; their conflicting requirements (forced focus, generated slide labels, per-slide transitions, padding/type defaults, custom hash syntax, metadata, multiple decks) must not be carried into 2.0 by default.
 
-The [2.0 surface and geometry CSS spec](2.0-surface-geometry.spec.md) defines screen fit, clipping, surface defaults, and token migration. Input recognition, native anchor/visual-state integration, inactive-slide accessibility, and public lifecycle/API choices need the evidence and decisions below before implementation. Do not invent a new author API just to simplify internal code.
+The [2.0 surface and geometry CSS spec](../2.0-surface-geometry/spec.md) defines screen fit, clipping, surface defaults, and token migration. Input recognition, native anchor/visual-state integration, inactive-slide accessibility, and public lifecycle/API choices need the evidence and decisions below before implementation. Do not invent a new author API just to simplify internal code.
 
 ### Actual 1.2.5 interface inventory
 
@@ -49,7 +49,7 @@ Source basis: src/lys.ts, src/types.ts, src/navigation.ts, src/nav.ts, src/a11y.
 | `--lys-focus-ring` | Not a 2.0 surface setting; preserve native focus indicators |
 | `--lys-print-page-size` | Investigate actual page-context resolution and native print sizing before retaining/replacing |
 
-Use ordinary article background CSS to override the slide background; no new token is needed. The [surface spec](2.0-surface-geometry.spec.md) defines exact backdrop colours and deck-local colour-scheme behaviour. Transition configuration and print page sizing remain open.
+Use ordinary article background CSS to override the slide background; no new token is needed. The [surface spec](../2.0-surface-geometry/spec.md) defines exact backdrop colours and deck-local colour-scheme behaviour. Transition configuration and print page sizing remain open.
 
 ### Native history and unnamed slides
 
@@ -59,7 +59,7 @@ Unknown fragments are not errors to repair. Following an inner anchor must not l
 
 ### Accessibility gate
 
-Task 1a uses [the observation protocol](../docs/reports/lys-2.0-native-accessibility.md). No new live-region, role, or forced-focus requirement is approved. Determine inactive-slide exposure using native mechanisms and actual assistive-technology evidence. No-JavaScript payload access remains required, independently of enhanced rendering.
+Task 1a uses [the observation protocol](../../docs/reports/lys-2.0-native-accessibility.md). No new live-region, role, or forced-focus requirement is approved. Determine inactive-slide exposure using native mechanisms and actual assistive-technology evidence. No-JavaScript payload access remains required, independently of enhanced rendering.
 
 ## Contract
 

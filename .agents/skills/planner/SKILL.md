@@ -41,7 +41,7 @@ For each task, create a GitHub issue using `gh issue create` with:
 One paragraph: what this task does and why, referencing the spec if applicable.
 
 ## Spec Reference
-`specs/<name>.spec.md` — <relevant section or scenario>
+`specs/<name>/spec.md` — <relevant section or scenario>
 (or "N/A — this is a bug fix / chore" if no spec)
 
 ## Acceptance Criteria

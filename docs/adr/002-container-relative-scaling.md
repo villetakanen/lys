@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # ADR-002: Container-Relative Scaling for Slide Content
 
 | Field | Value |
@@ -5,7 +11,7 @@
 | Status | **Accepted** |
 | Date | 2026-03-30 |
 | Decision makers | @villetakanen |
-| Scope | `src/lys.css`, `specs/lys-core.spec.md`, token defaults |
+| Scope | `src/lys.css`, `specs/lys-core/spec.md`, token defaults |
 
 ## Context
 

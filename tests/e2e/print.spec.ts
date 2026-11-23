@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
 /**
- * Print layout — see specs/print-layout.spec.md.
+ * Print layout — see specs/print-layout/spec.md.
  *
  * Geometry is measured, never inferred from computed properties: the pre-#60
  * suite asserted only property values, which is why slides covering 43% of the

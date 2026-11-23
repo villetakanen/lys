@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # End-to-End Test Coverage
 
 ## Blueprint (Design)
@@ -14,13 +20,13 @@ The existing specs (`lys-core`, `navigation`, `a11y`, `transitions`) each define
 
 | E2E test file | Spec source(s) | Status |
 |---|---|---|
-| `tests/e2e/a11y.spec.ts` | `specs/a11y.spec.md` | Exists — needs fixes + axe-core |
-| `tests/e2e/transitions.spec.ts` | `specs/transitions.spec.md` | Exists — complete |
-| `tests/e2e/slides.spec.ts` | `specs/lys-core.spec.md` + `specs/navigation.spec.md` | **Missing** |
-| `tests/e2e/navigation.spec.ts` | `specs/navigation.spec.md` | **Missing** |
-| `tests/e2e/print.spec.ts` | `specs/lys-core.spec.md` + `specs/transitions.spec.md` | **Missing** |
+| `tests/e2e/a11y.spec.ts` | `specs/a11y/spec.md` | Exists — needs fixes + axe-core |
+| `tests/e2e/transitions.spec.ts` | `specs/transitions/spec.md` | Exists — complete |
+| `tests/e2e/slides.spec.ts` | `specs/lys-core/spec.md` + `specs/navigation/spec.md` | **Missing** |
+| `tests/e2e/navigation.spec.ts` | `specs/navigation/spec.md` | **Missing** |
+| `tests/e2e/print.spec.ts` | `specs/lys-core/spec.md` + `specs/transitions/spec.md` | **Missing** |
 
-Note: The existing specs originally mapped navigation e2e scenarios to `slides.spec.ts`. This spec splits them into `navigation.spec.ts` for clarity, since navigation has 17 e2e scenarios that would dominate a combined file. The alignment tables in `navigation.spec.md` and `lys-core.spec.md` have been updated to reflect this split.
+Note: The existing specs originally mapped navigation e2e scenarios to `slides.spec.ts`. This spec splits them into `navigation.spec.ts` for clarity, since navigation has 17 e2e scenarios that would dominate a combined file. The alignment tables in `navigation/spec.md` and `lys-core/spec.md` have been updated to reflect this split.
 
 #### Fixtures
 
@@ -107,7 +113,7 @@ E2e tests do not touch source code. They test against `dist/` output served by V
 
 #### slides.spec.ts — CSS-only layout
 
-These scenarios come from `lys-core.spec.md` CSS-only layout and data attribute groups.
+These scenarios come from `lys-core/spec.md` CSS-only layout and data attribute groups.
 
 ```gherkin
 Scenario: Minimal deck renders as scroll-snap slides
@@ -153,7 +159,7 @@ Scenario: Reduced motion disables transitions
 
 #### navigation.spec.ts — Keyboard navigation
 
-These scenarios come from `navigation.spec.md` keyboard, touch, and hash groups.
+These scenarios come from `navigation/spec.md` keyboard, touch, and hash groups.
 
 ```gherkin
 Scenario: ArrowRight advances to next slide
@@ -256,7 +262,7 @@ Scenario: Hash routing targets the correct deck
 
 #### print.spec.ts — Print layout
 
-These scenarios come from `lys-core.spec.md` print layout and `transitions.spec.md` fade print groups. The fade-mode print test currently lives in `transitions.spec.ts`; `print.spec.ts` consolidates all print scenarios into one file. The existing test in `transitions.spec.ts` should be removed once `print.spec.ts` covers it, to avoid duplication.
+These scenarios come from `lys-core/spec.md` print layout and `transitions/spec.md` fade print groups. The fade-mode print test currently lives in `transitions.spec.ts`; `print.spec.ts` consolidates all print scenarios into one file. The existing test in `transitions.spec.ts` should be removed once `print.spec.ts` covers it, to avoid duplication.
 
 ```gherkin
 Scenario: Scroll-snap print layout shows all slides
@@ -300,11 +306,11 @@ Scenario: Fade-mode deck has zero axe-core violations
 
 | E2E test file | Scenarios | Source specs |
 |---|---|---|
-| `tests/e2e/slides.spec.ts` | CSS-only layout (3), auto-init (1), data attributes (2), reduced motion (1) | `lys-core.spec.md` |
-| `tests/e2e/navigation.spec.ts` | Keyboard (8), hash routing (7), multiple decks (2) | `navigation.spec.md` |
-| `tests/e2e/print.spec.ts` | Scroll-snap print (1), fade print (1) | `lys-core.spec.md`, `transitions.spec.md` |
-| `tests/e2e/a11y.spec.ts` | Fix existing (1), axe-core scan (2) | `a11y.spec.md` |
-| `tests/e2e/transitions.spec.ts` | *(already complete — no changes)* | `transitions.spec.md` |
+| `tests/e2e/slides.spec.ts` | CSS-only layout (3), auto-init (1), data attributes (2), reduced motion (1) | `lys-core/spec.md` |
+| `tests/e2e/navigation.spec.ts` | Keyboard (8), hash routing (7), multiple decks (2) | `navigation/spec.md` |
+| `tests/e2e/print.spec.ts` | Scroll-snap print (1), fade print (1) | `lys-core/spec.md`, `transitions/spec.md` |
+| `tests/e2e/a11y.spec.ts` | Fix existing (1), axe-core scan (2) | `a11y/spec.md` |
+| `tests/e2e/transitions.spec.ts` | *(already complete — no changes)* | `transitions/spec.md` |
 
 **Total new e2e scenarios:** 28 (across 4 files, one existing)
 

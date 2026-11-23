@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # ADR-001: Defer Presenter Mode to Post-1.0
 
 | Field | Value |
@@ -5,7 +11,7 @@
 | Status | **Accepted** |
 | Date | 2026-03-27 |
 | Decision makers | @villetakanen |
-| Scope | `src/presenter.ts`, `specs/presenter.spec.md`, issues #7, #8 |
+| Scope | `src/presenter.ts`, `specs/presenter/spec.md`, issues #7, #8 |
 
 ## Context
 
@@ -47,7 +53,7 @@ The core value proposition of Lys is: **LLMs can produce markup, but they cannot
 **Defer presenter mode to a post-1.0 release.** Remove it from the 1.0 scope entirely.
 
 Specifically:
-- Do not create `specs/presenter.spec.md` for 1.0.
+- Do not create `specs/presenter/spec.md` for 1.0.
 - Do not implement `src/presenter.ts` for 1.0.
 - Close issues #7 and #8 with a reference to this ADR.
 - Keep `data-notes` and `data-timing` attributes in the article contract — they are useful metadata independent of presenter mode, and removing them would be a contract change.

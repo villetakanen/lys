@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Container Type Size on Slide Articles
 
 ## Blueprint (Design)
@@ -48,10 +54,10 @@ This is added to the existing slide layout rule block in `src/lys.css`.
 
 #### Integration points
 
-- **Transitions** (`transitions.spec.md`): Stacked/fade mode uses `position: absolute` + `opacity` on articles. Size containment is compatible — absolute-positioned elements still participate as size containers when they have explicit dimensions.
+- **Transitions** (`transitions/spec.md`): Stacked/fade mode uses `position: absolute` + `opacity` on articles. Size containment is compatible — absolute-positioned elements still participate as size containers when they have explicit dimensions.
 - **Print layout** (`@media print`): Articles become `position: static` with `min-height: auto`. Size containment without explicit dimensions may cause articles to collapse to zero height in print. The print media query should reset `container-type` to ensure content-driven sizing.
-- **A11y** (`a11y.spec.md`): No interaction — containment does not affect ARIA attributes or focus management.
-- **Navigation** (`navigation.spec.md`): No interaction — containment does not affect scroll-snap behavior or keyboard/touch handling.
+- **A11y** (`a11y/spec.md`): No interaction — containment does not affect ARIA attributes or focus management.
+- **Navigation** (`navigation/spec.md`): No interaction — containment does not affect scroll-snap behavior or keyboard/touch handling.
 
 ### Anti-Patterns
 
@@ -191,4 +197,4 @@ All scenarios are e2e because `container-type` and `cqi` resolution require a re
 
 - **#29 — Container-relative token defaults.** Changes `--_lys-font-size-base` and `--_lys-slide-padding` defaults to use `cqi` units. Depends on this spec.
 - **#30 — Example migration.** Updates example decks to use `em`/`cqi`-based typography. Depends on #28 + #29.
-- **#31 — Spec and docs update.** Updates `lys-core.spec.md` token table and ARCHITECTURE.md. Depends on #28 + #29.
+- **#31 — Spec and docs update.** Updates `lys-core/spec.md` token table and ARCHITECTURE.md. Depends on #28 + #29.

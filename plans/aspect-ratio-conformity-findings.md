@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Aspect-Ratio Conformity — Diagnosis
 
 > Why a set `--lys-aspect-ratio` (e.g. 4/3 portrait) is not honored across viewports.
@@ -46,7 +52,7 @@ semantics):
   `height: min(100vh, 100vw / R)`.
 - **Remove the `min-height: 100vh` pin** in default mode (it is what forces the viewport ratio).
 - Letterbox/pillarbox shows the `--lys-backdrop` around the slide — that token already exists
-  for this gap (`specs/backdrop-color.spec.md`).
+  for this gap (`specs/backdrop-color/spec.md`).
 
 This holds the ratio identically on mobile, small, and desktop.
 

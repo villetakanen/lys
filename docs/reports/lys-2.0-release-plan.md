@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Lys 2.0.0 release plan
 
 Status: approved for execution on 23 October 2026. Begin tasks 1, 1a, and 2; implement each bounded area after its contract is ready. Unresolved product decisions remain explicit gates. No runtime capability is claimed by this document.
@@ -133,6 +139,6 @@ The [field-trial lessons](lys-field-trials-lessons-0.5.x.md) and proposals are i
 
 ## Execution record
 
-23 October 2026: tasks 1, 1a, and 2 started. See [2.0 contract baseline](../../specs/2.0-contracts.spec.md) for implementation readiness and the source-backed API inventory. Task 1a remains pending actual screen-reader observation; the [native-accessibility protocol](lys-2.0-native-accessibility.md) defines the evidence needed. Runtime remains 1.2.5.
+23 October 2026: tasks 1, 1a, and 2 started. See [2.0 contract baseline](../../specs/2.0-contracts/spec.md) for implementation readiness and the source-backed API inventory. Task 1a remains pending actual screen-reader observation; the [native-accessibility protocol](lys-2.0-native-accessibility.md) defines the evidence needed. Runtime remains 1.2.5.
 
 Initial increment: added a source-backed API/token inventory and implementation gates in the contract baseline; aligned AGENTS/PROJECT and development skill ownership/verdict rules; made pre-commit lint read-only so concurrent checks cannot race a formatter. A native HTML fixture and three-browser fragment/history observations support task 1a, but actual screen-reader speech is still pending. Tasks 1 and 1a remain open. Task 2 guidance changes are implemented. Verification: pnpm lint passed with two existing informational notices; TypeScript checks and all 192 unit tests passed; local documentation links and whitespace checks passed. The complete runtime/browser regression suite is deferred until runtime changes; the native three-browser experiment is recorded separately.

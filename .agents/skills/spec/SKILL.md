@@ -15,14 +15,14 @@ You are writing a spec for the Lys project — a structural CSS+TS slide engine.
 1. Read `AGENTS.md` for product boundaries, authority, and working policy
 2. Read `VISION.md` for product principles
 3. Read the [approved 2.0 roadmap](../../../docs/reports/lys-2.0-release-plan.md) for settled product contracts and exclusions
-4. Read the [2.0 contract baseline](../../../specs/2.0-contracts.spec.md) for the current API/token inventory, migration dispositions, and open gates
+4. Read the [2.0 contract baseline](../../../specs/2.0-contracts/spec.md) for the current API/token inventory, migration dispositions, and open gates
 5. Read `PROJECT.md` section "Test evidence" for verification expectations
 
 Then check existing specs in `specs/` to understand scope boundaries and avoid overlap. `ARCHITECTURE.md` and older feature specs describe 1.x until explicitly migrated: use them as evidence of current behaviour, not as authority over the 2.0 contracts.
 
 ## Output
 
-Create a new file at `specs/<feature-slug>.spec.md` following this exact structure:
+Create a new file at `specs/<feature-slug>/spec.md` following this exact structure:
 
 ```markdown
 # <Feature Name>

@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # Native accessibility baseline for Lys 2.0
 
 Status: task 1a in progress. Protocol prepared 23 October 2026. Actual screen-reader observation is pending; no speech results or announcement policy are approved.
@@ -30,7 +36,7 @@ Actions: open document; read in order; follow slide and inner-content links; nav
 - Does an actual gap require a position announcement, or would one duplicate native speech?
 - Can any gap be resolved through native layout/semantics before introducing custom behaviour?
 
-Record observations first, then a reasoned policy and its limitations. The owner decides any material deviation from the agreed browser-native model. Formalise the resulting policy in specs/a11y.spec.md before implementing it.
+Record observations first, then a reasoned policy and its limitations. The owner decides any material deviation from the agreed browser-native model. Formalise the resulting policy in specs/a11y/spec.md before implementing it.
 
 ## Evidence ledger
 

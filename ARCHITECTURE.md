@@ -1,6 +1,12 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:34:13+02:00"
+---
+
 # ⚜ Lys — Architecture
 
-> Legacy 1.x architecture reference. For the approved 2.0 direction and migration gates, read [the 2.0 contract baseline](specs/2.0-contracts.spec.md). This document contains historical claims and must not override those decisions.
+> Legacy 1.x architecture reference. For the approved 2.0 direction and migration gates, read [the 2.0 contract baseline](specs/2.0-contracts/spec.md). This document contains historical claims and must not override those decisions.
 
 This document defines *how* Lys works. For *why* it exists and what it values, see [VISION.md](./VISION.md).
 
@@ -90,7 +96,7 @@ One token stands outside the two-tier convention:
 It is consumed directly by `@page` inside `@media print`, with no `--_lys-` alias: the page
 context has no element to resolve one on. **It must be set at `:root`** — the page context
 inherits custom properties from the root element only, so a value scoped to `[data-lys]` or an
-`<article>` silently does nothing. See [`specs/print-layout.spec.md`](./specs/print-layout.spec.md).
+`<article>` silently does nothing. See [`specs/print-layout/spec.md`](specs/print-layout/spec.md).
 
 Authors override by setting the public token at any level — `:root`, the `[data-lys]` container, or a single `<article>`:
 
@@ -231,10 +237,10 @@ const deck: LysInstance = new Lys(document.getElementById('my-deck'));
     a11y.ts              ← ARIA live region, focus management
     types.ts             ← shared type definitions
   specs/
-    lys-core.spec.md     ← spec: slide rendering, tokens, layout
-    navigation.spec.md   ← spec: keyboard, touch, hash routing
-    a11y.spec.md         ← spec: accessibility contract
-    transitions.spec.md  ← spec: scroll-snap and fade transition modes
+    lys-core/spec.md     ← spec: slide rendering, tokens, layout
+    navigation/spec.md   ← spec: keyboard, touch, hash routing
+    a11y/spec.md         ← spec: accessibility contract
+    transitions/spec.md  ← spec: scroll-snap and fade transition modes
   tests/
     unit/                ← Vitest + happy-dom
     e2e/                 ← Playwright (real browser)
