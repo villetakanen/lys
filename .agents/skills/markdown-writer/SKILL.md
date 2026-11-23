@@ -26,7 +26,7 @@ If `generated` already exists, replace its `by` and `at` with the new values. `g
 
 ## Verification
 
-`verified` records human confirmation only. Each entry's `by` is `human:<id>`; never add agent, model, `process:`, or CI entries. The project owner's ID is always `human:ville.takanen`.
+`verified` records human confirmation only. Each entry's `by` is `human:<id>`; never add agent, model, `process:`, or CI entries.
 
 ```yaml
 verified:
