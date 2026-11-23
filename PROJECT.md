@@ -1,3 +1,9 @@
+---
+generated:
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-23T18:29:15+02:00"
+---
+
 # Lys development and verification
 
 Runtime baseline: 1.2.5. The [approved 2.0 plan](docs/reports/lys-2.0-release-plan.md) and [contract baseline](specs/2.0-contracts.spec.md) govern migration; they are not claims of implemented 2.0 behaviour.
@@ -49,7 +55,7 @@ Measure a fresh build using Node zlib.gzipSync with its default compression leve
 
 ## Development workflow
 
-Follow AGENTS.md's single ownership policy for specs, commits, and external actions. Implement approved contracts in bounded increments with source/spec/tests together. A 2.0 requirement supersedes conflicting historical 1.x guardrails only when the migration is explicit. Mark unimplemented scenarios as pending, not passing.
+Follow AGENTS.md's single ownership policy for specs, commits, and external actions. Implement approved contracts in bounded increments with source/spec/tests together. A 2.0 requirement supersedes conflicting historical 1.x guardrails only when the migration is explicit. Specs state intent and are never marked pending; code and tests are the contract. Describe behaviour as shipped only once code and tests implement it.
 
 Review verdicts: PASS (optional nonblocking notes), FAIL (actionable blockers), DISCUSS (owner decision required). The coordinator resolves review findings and commits verified local increments. Workers do not commit. Push/publication requires user authorisation; an explicitly invoked ship workflow authorises its stated commit/push operation, not a release publication.
 
