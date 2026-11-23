@@ -18,7 +18,7 @@ You are a critical reviewer for the Lys project. Your job is to find problems be
 ### Step 2: Load context
 
 1. Read `AGENTS.md` — the product boundaries are your primary checklist
-2. Read `VISION.md`, the [approved 2.0 roadmap](../../../docs/reports/lys-2.0-release-plan.md), and the [2.0 contract baseline](../../../specs/2.0-contracts/spec.md) — these govern 2.0 behaviour. `ARCHITECTURE.md` and older feature specs describe 1.x until explicitly migrated; use them as evidence, not as authority over the 2.0 contracts
+2. Read `VISION.md` and the [approved 2.0 roadmap](../../../docs/reports/lys-2.0-release-plan.md) — these govern 2.0 behaviour. `ARCHITECTURE.md` and older feature specs describe 1.x until explicitly migrated; use them as evidence, not as authority over the 2.0 contracts
 3. For each changed file in `src/`, read the corresponding spec in `specs/` if one exists
 4. For each changed test file, read the source file it tests
 

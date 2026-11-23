@@ -1,7 +1,7 @@
 ---
 generated:
   by: "claude-code/claude-opus-5-5"
-  at: "2026-11-23T18:34:13+02:00"
+  at: "2026-11-23T18:35:06+02:00"
 ---
 
 # Lys 2.0.0 release plan
@@ -86,6 +86,98 @@ These tasks translate settled intent into implementable contracts. They do not r
 | Runtime lifecycle/API | Inventory existing initialisation, methods, events, and teardown. Specify the minimal supported surface and migration. Iframe support does not itself approve removing every existing public method or event. | 1 |
 | Validation/budgets | Behaviour for invalid deck structure/configuration; reconcile artifact size budgets and measurement; exact browser versions and verification coverage. | 1, 2 |
 
+## Task 1 working material
+
+Use this plan's agreed contracts as normative product requirements. Older feature specifications remain useful for understanding 1.x behaviour; their conflicting requirements (forced focus, generated slide labels, per-slide transitions, padding/type defaults, custom hash syntax, metadata, multiple decks) must not be carried into 2.0 by default. Feature specs live in `specs/<feature>/spec.md` and state intent; code and tests are the contract.
+
+The [surface geometry spec](../../specs/surface-geometry/spec.md) defines screen fit, clipping, surface defaults, and surface token migration. Input recognition, native anchor/visual-state integration, inactive-slide accessibility, and public lifecycle/API choices need the evidence and decisions below before implementation. Do not invent a new author API just to simplify internal code.
+
+### 1.x interface inventory
+
+Source basis: src/lys.ts, src/types.ts, src/navigation.ts, src/nav.ts, src/a11y.ts, src/lys.css. This inventory separates runtime code from historical architecture claims.
+
+| Current surface | Source behaviour | 2.0 disposition |
+| --- | --- | --- |
+| `Lys.init()` | Discovers every deck, returns an array | One deck model agreed; exact return shape and invalid multiple-deck handling pending |
+| `Lys.from(element)` / constructor | Idempotent lookup / destroys an existing instance before replacement | Lifecycle API retention pending; embedding alone does not require these |
+| Module side effect | Auto-initialisation occurs in shared entry code, including ESM, despite docs implying IIFE-only | Explicit ESM versus automatic IIFE policy must be specified |
+| `next`, `prev`, `goTo` | Public imperative navigation by index/ID | Internal commands required; public exposure not yet decided |
+| `current`, `total`, `slide` | Public state getters | Retention pending API decision |
+| `destroy()` | Removes listeners/state and reverts selected author transformations | Define teardown if public lifecycle retained; must preserve authored values |
+| `lys:ready`, `lys:slidechange` | Public events used by internal modules | Decide public retention separately from internal coordination |
+| `data-class`, `data-background` | Mutate article class/style | Remove author shorthand behaviour under standard HTML/CSS boundary; migrate to ordinary class/style |
+| `data-notes`, `data-timing` | Advertised metadata, no presenter UI | No engine metadata contract in 2.0; remove documentation promises |
+| Article `data-transition` | Any fade/direct article activates stacked mode | Replace per-slide interpretation with one deck style; exact configuration pending |
+| `data-lys-nav`, active markers | Optional navigation-region styling and active-link management | Custom navigation integration is not implied by ordinary anchor support; removal/migration must be explicit |
+| `#slide=…` | Custom numeric/ID parser; sequential replaceState | Replace with actual optional authored IDs; no ID synthesis/repair |
+| Accessibility mutations | Article roles replaced; labels/tabindex/live region added; focus moved | Do not adopt as native baseline; task 1a gates replacements |
+
+### Open token decisions
+
+| 1.x token | Migration direction |
+| --- | --- |
+| `--lys-transition-duration`, `--lys-transition-easing` | Retain motion configuration only if needed; deck scope, reduced-motion override must win |
+| `--lys-print-page-size` | Investigate actual page-context resolution and native print sizing before retaining/replacing |
+
+### Native history and unnamed slides
+
+A real ID supplies a reloadable fragment target. Unnamed slide navigation clears the fragment through replacement, as agreed. The URL alone then cannot identify which unnamed slide was selected. Evaluate browser scroll restoration first. If stacked rendering cannot restore selection, a private entry in standard history.state could preserve the index without generating IDs; that is a candidate, not an approved mechanism. Preserve unrelated state and document how fresh loads differ from Back/Forward. Return the trade-off to the owner if native behaviour cannot fulfil the agreed contract.
+
+Unknown fragments are not errors to repair. Following an inner anchor must not lose the browser's target/focus handling merely to select the containing slide. No custom URL parser or ID fixer.
+
+### Accessibility gate
+
+Task 1a uses [the observation protocol](lys-2.0-native-accessibility.md). No new live-region, role, or forced-focus requirement is approved. Determine inactive-slide exposure using native mechanisms and actual assistive-technology evidence. No-JavaScript payload access remains required, independently of enhanced rendering.
+
+### Task 1 definition of done
+
+- Migrate relevant feature specs and architecture with explicit source/API changes and test mapping.
+- Resolve configuration, input ownership, lifecycle/API scope, native history integration, fallback/print mechanics, and invalid structure behaviour.
+- Record exact August 2026 browser versions and separate current test versions from that baseline.
+- Complete task 1a's evidence and decision before finalising accessibility behaviour.
+- Preserve agreed exclusions.
+
+### Scenarios for feature specs
+
+These state required 2.0 outcomes. Each moves into the feature spec that owns it when that spec is written; the surface outcome is in the surface geometry spec.
+
+These state required 2.0 intent. Code and tests are the contract; until they change, 1.2.5 behaviour stands.
+
+```gherkin
+Scenario: Native optional IDs
+  Given one named slide and one unnamed slide
+  When Lys initialises and sequential navigation visits both
+  Then their authored IDs remain unchanged
+  And no IDs are generated
+  And the unnamed slide has no stale slide fragment in the URL
+
+Scenario: Input ownership
+  Given focus is inside an authored interactive control
+  When a normally supported deck navigation key is pressed
+  Then Lys does not consume the control's native action
+
+Scenario: Reduced motion
+  Given any supported deck transition style
+  And reduced motion is requested
+  When navigation changes slides
+  Then the engine change is immediate
+
+Scenario: No-JavaScript access
+  Given engine JavaScript is unavailable
+  When the document is read in document order
+  Then engine fallback mechanics do not hide any authored payload
+
+Scenario: Complete print frames
+  Given a deck on any selected slide
+  When browser printing is used
+  Then all slide frames print in document order, one per page
+  And their ratios and intentional edge clipping are preserved
+```
+
+### Verification mapping
+
+Surface → token/core and browser geometry tests; input/history → navigation tests; semantics/focus → a11y tests plus task 1a observations; print → rendered PDF and print tests; fallback → JS-disabled browser checks. Update individual specs alongside each implementation increment. No tests of author composition or assumptions about authored intent.
+
 ## Ordered work and completion evidence
 
 | Work | Dependencies and destinations | Completion evidence |
@@ -139,6 +231,8 @@ The [field-trial lessons](lys-field-trials-lessons-0.5.x.md) and proposals are i
 
 ## Execution record
 
-23 October 2026: tasks 1, 1a, and 2 started. See [2.0 contract baseline](../../specs/2.0-contracts/spec.md) for implementation readiness and the source-backed API inventory. Task 1a remains pending actual screen-reader observation; the [native-accessibility protocol](lys-2.0-native-accessibility.md) defines the evidence needed. Runtime remains 1.2.5.
+23 October 2026: tasks 1, 1a, and 2 started. See [task 1 working material](#task-1-working-material) for implementation readiness and the source-backed API inventory. Task 1a remains pending actual screen-reader observation; the [native-accessibility protocol](lys-2.0-native-accessibility.md) defines the evidence needed. Runtime remains 1.2.5.
 
 Initial increment: added a source-backed API/token inventory and implementation gates in the contract baseline; aligned AGENTS/PROJECT and development skill ownership/verdict rules; made pre-commit lint read-only so concurrent checks cannot race a formatter. A native HTML fixture and three-browser fragment/history observations support task 1a, but actual screen-reader speech is still pending. Tasks 1 and 1a remain open. Task 2 guidance changes are implemented. Verification: pnpm lint passed with two existing informational notices; TypeScript checks and all 192 unit tests passed; local documentation links and whitespace checks passed. The complete runtime/browser regression suite is deferred until runtime changes; the native three-browser experiment is recorded separately.
+
+23 November 2026: the [surface geometry spec](../../specs/surface-geometry/spec.md) defines screen fit, clipping, surface defaults, and surface token migration. Specs moved to `specs/<feature>/spec.md`. The former contract baseline was not a feature spec, so its task 1 material moved into this plan and its surface token dispositions into the surface spec. No product decisions changed in the move.

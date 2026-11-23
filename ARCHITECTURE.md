@@ -1,12 +1,12 @@
 ---
 generated:
   by: "claude-code/claude-opus-5-5"
-  at: "2026-11-23T18:34:13+02:00"
+  at: "2026-11-23T18:35:06+02:00"
 ---
 
 # ⚜ Lys — Architecture
 
-> Legacy 1.x architecture reference. For the approved 2.0 direction and migration gates, read [the 2.0 contract baseline](specs/2.0-contracts/spec.md). This document contains historical claims and must not override those decisions.
+> Legacy 1.x architecture reference. For the approved 2.0 direction and migration gates, read [the approved 2.0 roadmap](docs/reports/lys-2.0-release-plan.md). This document contains historical claims and must not override those decisions.
 
 This document defines *how* Lys works. For *why* it exists and what it values, see [VISION.md](./VISION.md).
 

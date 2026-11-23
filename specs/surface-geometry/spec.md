@@ -1,7 +1,7 @@
 ---
 generated:
   by: "claude-code/claude-opus-5-5"
-  at: "2026-11-23T18:34:13+02:00"
+  at: "2026-11-23T18:35:06+02:00"
 verified:
   - by: "human:ville.takanen"
     at: "2026-11-23T18:23:20+02:00"
@@ -13,7 +13,7 @@ verified:
 
 ### Context
 
-Lys fits the slide frame to the viewport; authors compose everything inside it. This spec defines the screen surface in the [2.0 contract baseline](../2.0-contracts/spec.md).
+Lys fits the slide frame to the viewport; authors compose everything inside it. This spec defines the screen surface agreed in the [2.0 roadmap](../../docs/reports/lys-2.0-release-plan.md).
 
 ### Architecture
 
@@ -29,6 +29,19 @@ Lys fits the slide frame to the viewport; authors compose everything inside it. 
 
 `src/lys.css` owns frame geometry and paint. Transitions share the same frame dimensions and clip; reduced motion makes engine changes immediate without suppressing author animation. Before enhancement, frame styling must not hide authored payload. Print preserves the ratio, definite query-container dimensions, and clip. Transition behaviour, fallback access, and print pagination are specified separately.
 
+### Token migration
+
+| 1.x token | 2.0 disposition |
+| --- | --- |
+| `--lys-aspect-ratio` | Retain; move per-article declarations to the deck. Default 16/9 |
+| `--lys-backdrop` | Retain backdrop capability; near-white/near-black blue-grey light-dark defaults |
+| `--lys-slide-max-width`, `--lys-slide-max-height` | Remove from screen geometry; size the iframe if the presentation needs a smaller viewport |
+| `--lys-slide-padding`, `--lys-font-size-base` | Remove; use ordinary CSS for spacing and typography, with container-relative units where they should scale with the frame |
+| `--lys-slide-gap` | Remove; no adjustable gap between enhanced frames |
+| `--lys-focus-ring` | Not a 2.0 surface setting; preserve native focus indicators |
+
+Override the slide background with ordinary article background CSS; no token is needed.
+
 ### Anti-Patterns
 
 Do not measure or rearrange payload to make it fit, add engine padding, typography, foreground or focus styling, or repair markup in response to invalid CSS. No new author-facing tokens, attributes, events, or container names.
@@ -41,7 +54,7 @@ The scenarios below hold with production CSS under the verification requirements
 
 ### Regression Guardrails
 
-Frame styling preserves authored IDs, semantics, focusability, and native control actions. The [baseline](../2.0-contracts/spec.md) records the disposition of historical 1.x CSS settings.
+Frame styling preserves authored IDs, semantics, focusability, and native control actions. The token migration table records the disposition of historical 1.x CSS settings.
 
 ### Scenarios (Gherkin)
 

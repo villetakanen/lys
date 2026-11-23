@@ -1,12 +1,12 @@
 ---
 generated:
   by: "claude-code/claude-opus-5-5"
-  at: "2026-11-23T18:34:13+02:00"
+  at: "2026-11-23T18:35:06+02:00"
 ---
 
 # Lys development and verification
 
-Runtime baseline: 1.2.5. The [approved 2.0 plan](docs/reports/lys-2.0-release-plan.md) and [contract baseline](specs/2.0-contracts/spec.md) govern migration; they are not claims of implemented 2.0 behaviour.
+Runtime baseline: 1.2.5. The [approved 2.0 plan](docs/reports/lys-2.0-release-plan.md) governs migration; it is not a claim of implemented 2.0 behaviour.
 
 ## Toolchain
 
