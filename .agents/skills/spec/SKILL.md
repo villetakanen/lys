@@ -12,12 +12,13 @@ $ARGUMENTS
 
 You are writing a spec for the Lys project — a structural CSS+TS slide engine. Read these files for context before writing:
 
-1. Read `VISION.md` for product principles
-2. Read `ARCHITECTURE.md` for the technical contract (API, tokens, events, data attributes)
-3. Read `CLAUDE.md` for hard constraints and judgment boundaries
-4. Read `PROJECT.md` section "Spec Structure" for the anatomy of a spec
+1. Read `AGENTS.md` for product boundaries, authority, and working policy
+2. Read `VISION.md` for product principles
+3. Read the [approved 2.0 roadmap](../../../docs/reports/lys-2.0-release-plan.md) for settled product contracts and exclusions
+4. Read the [2.0 contract baseline](../../../specs/2.0-contracts.spec.md) for the current API/token inventory, migration dispositions, and open gates
+5. Read `PROJECT.md` section "Test evidence" for verification expectations
 
-Then check existing specs in `specs/` to understand scope boundaries and avoid overlap.
+Then check existing specs in `specs/` to understand scope boundaries and avoid overlap. `ARCHITECTURE.md` and older feature specs describe 1.x until explicitly migrated: use them as evidence of current behaviour, not as authority over the 2.0 contracts.
 
 ## Output
 
@@ -33,15 +34,15 @@ Why does this feature exist? What problem does it solve for Lys users (LLMs and 
 
 ### Architecture
 - DOM structure and data attributes involved
-- API surface (methods, events, tokens) — reference ARCHITECTURE.md conventions
+- API surface (methods, events, tokens) — reference the contract baseline's inventory and its 2.0 disposition
 - Module boundaries — which source file(s) this touches
 - Integration points with existing modules (navigation, a11y, transitions, core)
 
 ### Anti-Patterns
 What must NOT be done. Include at least:
-- Patterns that would violate the hard constraints in CLAUDE.md
+- Patterns that would violate the product boundaries in AGENTS.md
 - Common implementation mistakes for this kind of feature
-- Approaches that would break progressive enhancement
+- Approaches that would hide authored payload without JavaScript
 
 ## Contract (Quality)
 
@@ -57,15 +58,15 @@ Behavioral specs as Given/When/Then. Cover:
 - Boundary conditions
 - Error / edge cases
 - Accessibility requirements
-- Progressive enhancement (CSS-only fallback)
+- No-JavaScript payload access (fidelity may degrade)
 - prefers-reduced-motion behavior (if applicable)
 ```
 
 ## Rules
 
-- Reference specific ARCHITECTURE.md sections (tokens, events, data attributes) rather than inventing new API surface
-- If the feature requires a new `data-*` attribute, new custom event, or new `--lys-*` token, flag it clearly with a "**New API surface**" callout — these require explicit approval per CLAUDE.md
-- Map each Gherkin scenario to the test file it belongs in using the alignment table from CLAUDE.md
+- Build on the roadmap's agreed contracts and the contract baseline's inventory rather than inventing new API surface; do not carry conflicting 1.x requirements into 2.0 by default
+- If the feature requires a new `data-*` attribute, new custom event, or new `--lys-*` token, flag it clearly with a "**New API surface**" callout — scope outside the approved roadmap requires discussion per AGENTS.md
+- Map each Gherkin scenario to the test file it belongs in, following the contract baseline's verification mapping and PROJECT.md "Test evidence"
 - Keep the spec focused on ONE feature — if the request implies multiple features, write the spec for the core one and note the others as "Related / Future" at the bottom
 - Do not write implementation code — this is a spec, not a PR
 

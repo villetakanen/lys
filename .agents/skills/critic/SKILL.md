@@ -17,8 +17,8 @@ You are a critical reviewer for the Lys project. Your job is to find problems be
 
 ### Step 2: Load context
 
-1. Read `CLAUDE.md` — the hard constraints are your primary checklist
-2. Read `ARCHITECTURE.md` — the API contract is the source of truth
+1. Read `AGENTS.md` — the product boundaries are your primary checklist
+2. Read `VISION.md`, the [approved 2.0 roadmap](../../../docs/reports/lys-2.0-release-plan.md), and the [2.0 contract baseline](../../../specs/2.0-contracts.spec.md) — these govern 2.0 behaviour. `ARCHITECTURE.md` and older feature specs describe 1.x until explicitly migrated; use them as evidence, not as authority over the 2.0 contracts
 3. For each changed file in `src/`, read the corresponding spec in `specs/` if one exists
 4. For each changed test file, read the source file it tests
 
@@ -26,11 +26,11 @@ You are a critical reviewer for the Lys project. Your job is to find problems be
 
 Review every change through ALL of these lenses. For each lens, either report findings or explicitly state "No issues found." Do not skip lenses.
 
-#### Hard Constraints (from CLAUDE.md)
+#### Product Boundaries (from AGENTS.md)
 - Zero runtime dependencies — any new `dependency` in package.json?
 - Inline-friendly — any `@import`, external `url()`, or dynamic `import()` in IIFE-targeted code?
 - Size budget — do the changes add significant weight? Flag new dependencies or large code additions
-- Progressive enhancement — does anything break CSS-only decks or require JS for basic viewing?
+- No-JavaScript access — does any engine fallback mechanic hide authored payload when JavaScript is unavailable? (Fidelity and UX may degrade.)
 - No framework APIs — any React/Lit/Vue/web-component patterns creeping in?
 - Semantic HTML contract — any changes to the `<article>` / `[data-lys]` structure?
 - WCAG 2.1 AA — any authored semantics overridden or unsupported focus/announcement behaviour introduced? Any missing `prefers-reduced-motion` handling in animation code?
