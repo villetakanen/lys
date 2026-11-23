@@ -140,8 +140,8 @@ example with container-relative type and spacing.
 
 Lys handles navigation through:
 
-- **Keyboard** — `ArrowRight`/`ArrowLeft`, `Space`/`Shift+Space`, `Home`/`End`, number keys for direct jump.
-- **Touch** — Horizontal swipe gestures with configurable threshold.
+- **Keyboard** — `ArrowRight`/`ArrowDown` and `Space` advance; `ArrowLeft`/`ArrowUp` and `Shift+Space` go back; `Home`/`End` jump to the first/last slide. Keys combined with Ctrl, Alt or Meta are ignored, and Space is ignored when focus is inside an interactive element.
+- **Touch** — A horizontal swipe of more than 50px navigates (swipe left = next, right = previous); vertical-dominant gestures are ignored.
 - **URL hash** — `#slide=3` or `#slide=intro` (by `id` attribute on article).
 - **API** — `lys.next()`, `lys.prev()`, `lys.goTo(n)`, `lys.goTo('intro')`.
 

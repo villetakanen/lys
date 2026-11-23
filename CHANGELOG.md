@@ -148,8 +148,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Core slide engine: `<article>` elements inside a `[data-lys]` container become navigable slides.
 - CSS layout engine with design tokens (`--lys-aspect-ratio`, `--lys-slide-padding`, `--lys-transition-duration`, `--lys-transition-easing`, `--lys-font-size-base`, `--lys-slide-gap`, `--lys-slide-max-width`, `--lys-slide-max-height`, `--lys-focus-ring`).
 - Two-tier token system: authors set `--lys-*` public tokens; internals resolve via `--_lys-*` with fallback defaults.
-- Keyboard navigation: Arrow keys, Space/Shift+Space, Home/End, number keys for direct jump.
-- Touch/swipe navigation with configurable gesture threshold.
+- Keyboard navigation: Arrow keys, Space/Shift+Space, Home/End.
+- Touch/swipe navigation: a horizontal swipe of more than 50px moves one slide.
 - URL hash routing (`#slide=3` or `#slide=intro` by article `id`).
 - Programmatic API: `Lys.init()`, `lys.next()`, `lys.prev()`, `lys.goTo()`, `lys.destroy()`.
 - IIFE build with auto-initialization on `DOMContentLoaded` — zero setup code needed.
