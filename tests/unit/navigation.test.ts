@@ -309,29 +309,29 @@ describe("destroy lifecycle", () => {
 	});
 });
 
-describe("reduced motion scroll behavior", () => {
+describe("default screen navigation", () => {
 	afterEach(() => {
 		cleanup();
 		vi.restoreAllMocks();
 	});
 
-	it("uses smooth scroll when motion is allowed", () => {
+	it("navigates immediately without reduced motion", () => {
 		vi.spyOn(window, "matchMedia").mockReturnValue({ matches: false } as MediaQueryList);
 		const { container, instance } = createDeck(5);
 		const slide = container.querySelectorAll("article")[1] as HTMLElement;
 		const spy = vi.fn();
 		slide.scrollIntoView = spy;
 		instance.next();
-		expect(spy).toHaveBeenCalledWith({ behavior: "smooth", block: "start" });
+		expect(spy).toHaveBeenCalledWith({ behavior: "instant", block: "center" });
 	});
 
-	it("uses instant scroll when reduced motion is preferred", () => {
+	it("navigates immediately with reduced motion", () => {
 		vi.spyOn(window, "matchMedia").mockReturnValue({ matches: true } as MediaQueryList);
 		const { container, instance } = createDeck(5);
 		const slide = container.querySelectorAll("article")[1] as HTMLElement;
 		const spy = vi.fn();
 		slide.scrollIntoView = spy;
 		instance.next();
-		expect(spy).toHaveBeenCalledWith({ behavior: "instant", block: "start" });
+		expect(spy).toHaveBeenCalledWith({ behavior: "instant", block: "center" });
 	});
 });

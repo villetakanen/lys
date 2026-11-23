@@ -15,6 +15,8 @@ export default defineConfig({
 			},
 		},
 		cssMinify: true,
+		// Keep native light-dark(); lowering it to a media query loses color-scheme overrides.
+		cssTarget: ["chrome145", "firefox146", "safari26"],
 		minify: "oxc",
 		target: "es2022",
 	},

@@ -1,92 +1,90 @@
 /* ⚜ Lys — Structural slide engine */
-/* No visual opinions. No @import. No url(). */
-
-/* === Two-tier design tokens === */
-/* Container-level tokens resolved on [data-lys]. */
 [data-lys] {
-	--_lys-backdrop: var(--lys-backdrop, light-dark(#fff, #000));
-}
-
-/* Slide-level tokens resolved on the article so per-slide overrides of --lys-* tokens work. */
-[data-lys] > article {
-	--_lys-aspect-ratio: var(--lys-aspect-ratio, 16 / 9);
-	--_lys-slide-padding: var(--lys-slide-padding, 4cqi);
+	--_lys-deck-ratio: var(--lys-aspect-ratio, 16 / 9);
 	--_lys-transition-duration: var(--lys-transition-duration, 300ms);
 	--_lys-transition-easing: var(--lys-transition-easing, ease-in-out);
-	--_lys-font-size-base: var(--lys-font-size-base, clamp(0.75rem, 2.5cqi, 1.5rem));
-	--_lys-slide-gap: var(--lys-slide-gap, 0);
-	--_lys-slide-max-width: var(--lys-slide-max-width, 100vw);
-	--_lys-slide-max-height: var(--lys-slide-max-height, 100vh);
-	--_lys-focus-ring: var(--lys-focus-ring, 2px solid currentColor);
 }
 
-/* === Container layout === */
-/* Grid gives each slide a full-viewport snap page (grid-auto-rows), so a slide
-   smaller than the viewport (contain-fit, below) still pages one-per-swipe
-   without wrapping author HTML. */
-[data-lys] {
-	display: grid;
-	grid-auto-rows: var(--lys-slide-max-height, 100vh);
-	justify-items: center;
-	align-items: center;
-	overflow-x: hidden;
-	overflow-y: auto;
-	scroll-snap-type: y mandatory;
-	height: 100vh;
-	margin: 0;
+:where([data-lys]) {
 	color-scheme: light dark;
-	background: var(--_lys-backdrop);
-	/* Accessible default foreground — inverse of the backdrop so unstyled decks
-	   stay legible in both schemes (#47). Authors override with standard color. */
-	color: light-dark(#000, #fff);
+	background: var(--lys-backdrop, light-dark(#f3f6f9, #111820));
 }
 
-/* === Slide layout === */
-[data-lys] > article {
-	scroll-snap-align: center;
-	scroll-snap-stop: always;
-	padding: var(--_lys-slide-padding);
-	font-size: var(--_lys-font-size-base);
-	box-sizing: border-box;
-	position: relative;
-	overflow: hidden;
-	container-type: size;
+:where([data-lys] > article) {
+	background: light-dark(white, black);
 }
 
-/* === Aspect ratio (contain-fit) === */
-/* Both axes bound the slide; the smaller governs. Width is the lesser of the
-   max width and the width the ratio implies at the max height
-   (max-height × ratio), so a height-governed ratio (taller than the viewport)
-   shrinks the width too — aspect-ratio then derives a fitting height. A
-   definite max-width alone can't do this: max-height clamps height but never
-   feeds back to width, leaving the slide at the viewport ratio (the #45 bug).
-   No min-height: pinning height would force the viewport ratio. */
-[data-lys] > article {
-	width: min(var(--_lys-slide-max-width), var(--_lys-slide-max-height) * var(--_lys-aspect-ratio));
-	aspect-ratio: var(--_lys-aspect-ratio);
-	max-height: var(--_lys-slide-max-height);
+@media screen {
+	:where(body:has(> [data-lys][data-lys-current])) {
+		margin: 0;
+	}
+
+	/* A full-viewport snap row centers even a letterboxed frame. JS owns
+	   selection; the existing native scroll interaction remains in place. */
+	[data-lys][data-lys-current] {
+		display: grid;
+		grid-auto-rows: 100dvh;
+		place-items: center;
+		width: 100dvw;
+		height: 100dvh;
+		overflow: hidden auto;
+		scrollbar-width: none;
+		scroll-snap-type: y mandatory;
+	}
+
+	[data-lys] > article {
+		--_lys-frame-ratio: var(--_lys-resolved-ratio, var(--_lys-deck-ratio));
+		width: min(100dvw, 100dvh * (var(--_lys-frame-ratio)));
+		height: min(100dvh, 100dvw / (var(--_lys-frame-ratio)));
+		box-sizing: border-box;
+		position: relative;
+		container-type: size;
+		margin-inline: auto;
+	}
+
+	/* Paint containment catches fixed and transformed descendants. Clipping
+	   is enhanced only and doesn't create a programmatic scroll container. */
+	[data-lys][data-lys-current] > article {
+		contain: paint;
+		overflow: clip;
+		scroll-snap-align: center;
+		scroll-snap-stop: always;
+	}
+
+	[data-lys][data-lys-mode] {
+		position: relative;
+		overflow: clip;
+	}
+
+	[data-lys][data-lys-mode] > article {
+		position: absolute;
+		inset: 0;
+		margin: auto;
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	[data-lys][data-lys-mode] > article[data-lys-active] {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	/* Legacy fade compatibility. Never apply engine timing to descendants. */
+	@media (prefers-reduced-motion: no-preference) {
+		[data-lys][data-lys-ready][data-lys-mode] > article[data-transition="fade"] {
+			transition: opacity var(--_lys-transition-duration) var(--_lys-transition-easing);
+		}
+	}
+
+	/* Legacy opt-in navigation integration. */
+	[data-lys] [data-lys-nav] {
+		position: fixed;
+		inset: 0 0 auto;
+		z-index: 1;
+	}
 }
 
-/* === Slide gap === */
-[data-lys] > article + article {
-	margin-top: var(--_lys-slide-gap);
-}
-
-/* === data-background === */
-[data-lys] > article[data-background] {
-	background: attr(data-background type(<color>), none);
-}
-
-/* Fallback: JS applies background from data-background for broader support */
-
-/* === Transitions — only stacked/fade slides need transitions === */
-
-/* === Focus — suppress outline (slides fill the viewport; ring adds no orientation) === */
-[data-lys] > article:focus {
-	outline: none;
-}
-
-/* === Visually hidden (screen-reader only) === */
+/* Legacy live region (accessibility migration is separate). */
 .lys-sr-only {
 	position: absolute;
 	width: 1px;
@@ -99,141 +97,38 @@
 	border: 0;
 }
 
-/* === Chapter nav region (opt-in, author-provided) === */
-/* The author supplies the [data-lys-nav] region, its links, and all styling.
-   Lys only lifts it out of the scroll-snap flow (fixed → no grid row consumed)
-   so it floats above the slides instead of rendering as a blank snap page. */
-[data-lys] [data-lys-nav] {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	z-index: 1;
-}
-
-/* === Stacked layout (fade + direct modes) === */
-[data-lys][data-lys-mode] {
-	display: block;
-	position: relative;
-	overflow: hidden;
-	scroll-snap-type: none;
-}
-
-/* Slides stack centered; contain-fit (width + aspect-ratio + max-height) is
-   inherited from the base rule, so stacked slides honor the ratio too. */
-[data-lys][data-lys-mode] > article {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	scroll-snap-align: unset;
-	scroll-snap-stop: unset;
-	opacity: 0;
-	pointer-events: none;
-}
-
-/* Enable opacity transitions only after init, only for fade slides — prevents FOUC (#22) */
-[data-lys][data-lys-ready][data-lys-mode] > article[data-transition="fade"] {
-	transition-property: opacity;
-	transition-duration: var(--_lys-transition-duration);
-	transition-timing-function: var(--_lys-transition-easing);
-}
-
-/* Non-fade slides in stacked mode: instant switch */
-[data-lys][data-lys-mode] > article:not([data-transition="fade"]) {
-	transition-duration: 0ms;
-}
-
-[data-lys][data-lys-mode] > article[data-lys-active] {
-	opacity: 1;
-	pointer-events: auto;
-}
-
-/* === Reduced motion === */
-/* Override the token on the article too, not just the container: the article
-   re-declares --_lys-transition-duration (for per-slide overrides), which would
-   otherwise shadow a container-only reset and keep fade slides animating. */
-@media (prefers-reduced-motion: reduce) {
-	[data-lys],
-	[data-lys] > article {
-		--_lys-transition-duration: 0ms;
-	}
-}
-
-/* === Print layout === */
 @media print {
-	/* Page box matches the deck's shape, so the slide fills it exactly: the
-	   letterboxing contain-fit produces on screen collapses to zero, and there
-	   is no dead band to center a slide in. Without this the page stays
-	   portrait and a 16/9 slide covers ~43% of it (#60).
-	   13.333in x 7.5in is 1280x720 CSS px — the PowerPoint/Keynote widescreen
-	   size, and the size decks are typically authored at. A smaller page shrinks
-	   the slide below that, and any content sized in absolute units does not
-	   shrink with it, so it overflows and is clipped (#63).
-	   The token is read directly rather than through a --_lys-* alias: the page
-	   context has no element to resolve one on. It inherits custom properties
-	   from the root element only, so --lys-print-page-size must be set at :root. */
 	@page {
 		size: var(--lys-print-page-size, 13.333in 7.5in);
 		margin: 0;
 	}
 
 	[data-lys] {
-		display: block;
-		overflow: visible;
-		height: auto;
-		scroll-snap-type: none;
 		background: transparent;
 	}
 
-	/* Slide geometry is inherited from the contain-fit rule above, not restated:
-	   with a landscape, ratio-matched page box, 100vw/100vh now resolve against
-	   the kind of box that formula was written for. A print-specific width or
-	   height would be a second layout to keep in sync, and that drift is what
-	   produced #60. max-height therefore stays at the page height, so a slide
-	   can never exceed its page, and container-type stays `size` — the box is
-	   definite on both axes here, so author cqi type resolves against the slide
-	   rather than silently against the page (reverses the #28 print reset).
-	   Margins are reset so --lys-slide-gap cannot push a slide off its page;
-	   `auto` inline keeps a slide centered when the page ratio does not match. */
+	/* Keep the existing print placement and pagination until the print task. */
 	[data-lys] > article {
-		scroll-snap-align: unset;
+		--_lys-frame-ratio: var(--_lys-resolved-ratio, var(--_lys-deck-ratio));
+		width: min(100vw, 100vh * (var(--_lys-frame-ratio)));
+		height: min(100vh, 100vw / (var(--_lys-frame-ratio)));
+		box-sizing: border-box;
+		position: relative;
+		container-type: size;
+		contain: paint;
+		overflow: clip;
 		margin: 0 auto;
 		page-break-after: always;
 		break-after: page;
-		/* A slide's background is the surface its foreground color was chosen
-		   against. Chrome prints with "Background graphics" off by default,
-		   which drops it and takes a dark deck to zero contrast. */
 		-webkit-print-color-adjust: exact;
 		print-color-adjust: exact;
 	}
 
-	/* Same specificity as the screen gap rule, which would otherwise outrank the
-	   margin reset above and push every slide after the first down its page. */
-	[data-lys] > article + article {
-		margin-top: 0;
-	}
-
-	/* :last-of-type, not :last-child — a11y.ts appends the .lys-sr-only live
-	   region to the container, so once JS initializes the final article is no
-	   longer the last child and the break-avoid silently stopped matching,
-	   emitting a trailing blank page (#60). */
 	[data-lys] > article:last-of-type {
 		page-break-after: avoid;
 		break-after: avoid;
 	}
 
-	[data-lys][data-lys-mode] > article {
-		position: static;
-		transform: none;
-		opacity: 1;
-		pointer-events: auto;
-	}
-
-	/* A printed deck has no navigation. Leaving the region in flow (the former
-	   `position: static`) gives it block space at the top of the container,
-	   which pushes slide 1 down and spills it onto a second page. The links stay
-	   in the DOM and in the accessibility tree for screen media. */
 	[data-lys] [data-lys-nav] {
 		display: none;
 	}

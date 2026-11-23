@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
  * Token resolution tests.
  *
  * happy-dom cannot resolve CSS custom properties or process stylesheets,
- * so these tests read the CSS source file directly to verify the two-tier
+ * so these tests read the CSS source file directly to verify the
  * token declarations and structural rules. Full computed-style resolution
  * is verified in e2e tests.
  */
@@ -18,16 +18,9 @@ const cssText = cssRaw.replace(/\/\*[\s\S]*?\*\//g, "");
 
 describe("token default values", () => {
 	const expectedTokens = [
-		["--_lys-backdrop", "--lys-backdrop", "light-dark(#fff, #000)"],
-		["--_lys-aspect-ratio", "--lys-aspect-ratio", "16"],
-		["--_lys-slide-padding", "--lys-slide-padding", "4cqi"],
+		["--_lys-deck-ratio", "--lys-aspect-ratio", "16 / 9"],
 		["--_lys-transition-duration", "--lys-transition-duration", "300ms"],
 		["--_lys-transition-easing", "--lys-transition-easing", "ease-in-out"],
-		["--_lys-font-size-base", "--lys-font-size-base", "clamp(0.75rem, 2.5cqi, 1.5rem)"],
-		["--_lys-slide-gap", "--lys-slide-gap", "0"],
-		["--_lys-slide-max-width", "--lys-slide-max-width", "100vw"],
-		["--_lys-slide-max-height", "--lys-slide-max-height", "100vh"],
-		["--_lys-focus-ring", "--lys-focus-ring", "2px solid currentColor"],
 	] as const;
 
 	for (const [internal, public_, defaultVal] of expectedTokens) {
@@ -38,9 +31,10 @@ describe("token default values", () => {
 		});
 	}
 
-	it("defines all ten two-tier tokens", () => {
-		const internalTokenCount = (cssText.match(/--_lys-[\w-]+:\s*var\(--lys-/g) ?? []).length;
-		expect(internalTokenCount).toBe(10);
+	it("drops historical spacing, type, axis limits and focus tokens", () => {
+		expect(cssText).not.toMatch(
+			/--lys-(slide-(padding|gap|max-(width|height))|font-size-base|focus-ring)/,
+		);
 	});
 });
 
@@ -53,9 +47,8 @@ describe("CSS structural rules", () => {
 		expect(cssText).not.toMatch(/url\s*\(/);
 	});
 
-	it("contains prefers-reduced-motion rule setting duration to 0ms", () => {
-		expect(cssText).toContain("prefers-reduced-motion");
-		expect(cssText).toContain("0ms");
+	it("only enables engine fade when motion is allowed", () => {
+		expect(cssText).toContain("(prefers-reduced-motion: no-preference)");
 	});
 
 	it("contains print media rules with page breaks", () => {

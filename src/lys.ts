@@ -2,6 +2,7 @@ import { type A11yHandle, setupA11y } from "./a11y.js";
 import "./lys.css";
 import { type NavHandle, setupNav } from "./nav.js";
 import { type NavigationHandle, setupNavigation } from "./navigation.js";
+import { watchAspectRatio } from "./surface.js";
 import type { LysInstance, LysReadyDetail, LysSlideChangeDetail } from "./types.js";
 
 /** Registry of initialized containers to instances (for idempotency). */
@@ -20,6 +21,7 @@ export class Lys implements LysInstance {
 	#classMap = new Map<HTMLElement, string[]>();
 	#mode: "stacked" | null = null;
 	#readyFrame = 0;
+	#stopWatchingRatio: (() => void) | undefined;
 	#navigation: NavigationHandle | null = null;
 	#a11y: A11yHandle | null = null;
 	#nav: NavHandle | null = null;
@@ -72,6 +74,7 @@ export class Lys implements LysInstance {
 		if (this.#current >= 0) {
 			this.#slides[this.#current]?.setAttribute("data-lys-active", "");
 			container.setAttribute("data-lys-current", String(this.#current));
+			this.#stopWatchingRatio = watchAspectRatio(container);
 		}
 
 		// Detect transition mode — any recognized data-transition triggers stacked layout.
@@ -150,11 +153,7 @@ export class Lys implements LysInstance {
 		// In scroll-snap mode, scroll the target slide into view.
 		// In fade/direct mode, CSS handles visibility via data-lys-active — no scrolling needed.
 		if (!this.#mode) {
-			const prefersReducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-			nextSlide.scrollIntoView({
-				behavior: prefersReducedMotion ? "instant" : "smooth",
-				block: "start",
-			});
+			nextSlide.scrollIntoView({ behavior: "instant", block: "center" });
 		}
 
 		// Dispatch slidechange event.
@@ -180,6 +179,9 @@ export class Lys implements LysInstance {
 		this.#navigation = null;
 		this.#nav?.destroy();
 		this.#nav = null;
+
+		this.#stopWatchingRatio?.();
+		this.#stopWatchingRatio = undefined;
 
 		// Remove state attributes.
 		for (const slide of this.#slides) {

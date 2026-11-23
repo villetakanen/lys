@@ -327,8 +327,13 @@ test.describe("print — container query context", () => {
 		}
 	});
 
-	test("print layout padding resolves against the slide", async ({ page }) => {
-		await gotoDeck(page, "/examples/minimal.html");
+	test("authored descendant padding resolves against the printed slide", async ({ page }) => {
+		await gotoDeck(
+			page,
+			"/examples/minimal.html",
+			`[data-lys] { --lys-aspect-ratio: 4 / 3; }
+			article > h1 { padding-left: 6cqw; }`,
+		);
 		await page.setViewportSize(PAGE_BOX);
 		await page.emulateMedia({ media: "print" });
 
@@ -336,12 +341,11 @@ test.describe("print — container query context", () => {
 			.locator("[data-lys] > article")
 			.first()
 			.evaluate((el) => ({
-				paddingLeft: Number.parseFloat(getComputedStyle(el).paddingLeft),
+				paddingLeft: Number.parseFloat(getComputedStyle(el.querySelector("h1") ?? el).paddingLeft),
 				slideWidth: el.getBoundingClientRect().width,
 			}));
 
-		// minimal.html sets --lys-slide-padding: 6cqi. Asserting the ratio (not a
-		// pixel value) is what proves cqi resolves against the slide, not the page.
+		// The 4:3 frame is narrower than the page; cqw must use the frame.
 		expect(paddingLeft).toBeGreaterThan(0);
 		expect(paddingLeft / slideWidth).toBeCloseTo(0.06, 3);
 	});
@@ -449,7 +453,7 @@ test.describe("print — layout modes", () => {
 			}).toPass({ timeout: 2000 });
 
 			const position = await slides.nth(i).evaluate((el) => getComputedStyle(el).position);
-			expect(position).toBe("static");
+			expect(position).toBe("relative");
 		}
 	});
 });

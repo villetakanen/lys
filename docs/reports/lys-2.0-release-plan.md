@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "claude-code/claude-opus-5-5"
-  at: "2026-11-23T18:35:06+02:00"
+  by: "pi/gpt-6.2-sol"
+  at: "2026-11-23T20:10:43+02:00"
 ---
 
 # Lys 2.0.0 release plan
@@ -236,3 +236,7 @@ The [field-trial lessons](lys-field-trials-lessons-0.5.x.md) and proposals are i
 Initial increment: added a source-backed API/token inventory and implementation gates in the contract baseline; aligned AGENTS/PROJECT and development skill ownership/verdict rules; made pre-commit lint read-only so concurrent checks cannot race a formatter. A native HTML fixture and three-browser fragment/history observations support task 1a, but actual screen-reader speech is still pending. Tasks 1 and 1a remain open. Task 2 guidance changes are implemented. Verification: pnpm lint passed with two existing informational notices; TypeScript checks and all 192 unit tests passed; local documentation links and whitespace checks passed. The complete runtime/browser regression suite is deferred until runtime changes; the native three-browser experiment is recorded separately.
 
 23 November 2026: the [surface geometry spec](../../specs/surface-geometry/spec.md) defines screen fit, clipping, surface defaults, and surface token migration. Specs moved to `specs/<feature>/spec.md`. The former contract baseline was not a feature spec, so its task 1 material moved into this plan and its surface token dispositions into the surface spec. No product decisions changed in the move.
+
+23 November 2026: implemented the Task 3 surface increment: deck-wide screen fit and ratio validation, size containment, clipping, scheme-aware paint, and immediate default navigation. The existing fade/direct modes share the new frame; reduced motion bypasses engine fade without disabling author animations. Deck-wide transition configuration and horizontal/vertical motion still need the Task 1 contract; this increment introduces no public configuration.
+
+Verification: 185 unit tests and 446 Playwright tests passed (28 existing skips). The production surface fixture ran on Playwright Chromium 145.0.7632.6, Firefox 146.0.1, and WebKit 26.0; these are test versions, not the August 2026 baseline. Fresh artifact raw/gzip bytes: ESM 9,560/3,273; IIFE 7,854/2,941; CSS 2,228/821. Screen-reader observations and native print verification remain separate release work.

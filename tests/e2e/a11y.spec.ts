@@ -10,23 +10,14 @@ test.beforeEach(async ({ page }) => {
 	});
 });
 
-test.describe("focus outline suppressed (#23)", () => {
-	test("no outline on arrow key navigation", async ({ page }) => {
+test.describe("focus on navigation", () => {
+	test("engine surface does not suppress an authored focus outline", async ({ page }) => {
+		await page.addStyleTag({ content: "article:focus { outline: 2px dashed currentColor; }" });
 		await page.keyboard.press("ArrowRight");
 
 		const second = page.locator("[data-lys] > article").nth(1);
-		await expect(second).toHaveAttribute("data-lys-active", "");
-
-		const outline = await second.evaluate((el) => getComputedStyle(el).outlineStyle);
-		expect(outline).toBe("none");
-	});
-
-	test("no outline on mouse click", async ({ page }) => {
-		const slide = page.locator("[data-lys] > article").first();
-		await slide.click();
-
-		const outline = await slide.evaluate((el) => getComputedStyle(el).outlineStyle);
-		expect(outline).toBe("none");
+		await expect(second).toBeFocused();
+		await expect(second).toHaveCSS("outline-style", "dashed");
 	});
 
 	test("focus still moves to active slide", async ({ page }) => {

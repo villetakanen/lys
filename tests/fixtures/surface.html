@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Surface geometry fixture</title>
+  <link rel="stylesheet" href="/examples/lys.css">
+  <style>
+    body { color: rgb(20, 40, 60); font: 19px serif; }
+    .units { position: absolute; inset: 25% auto auto 25%; width: 50cqw; height: 50cqh; }
+    .crop { position: fixed; inset: -300px; background: magenta; transform: translateX(30px); }
+    .scroll { position: relative; width: 50px; height: 35px; overflow: auto; }
+    .scroll div { height: 125px; }
+  </style>
+</head>
+<body>
+  <main data-lys>
+    <article id="first"><h1>First</h1><div class="units"></div></article>
+    <article id="second"><h2>Second</h2><div class="crop" hidden></div><div class="scroll"><div>Scrollable</div></div></article>
+  </main>
+  <script src="/examples/lys.iife.js"></script>
+</body>
+</html>

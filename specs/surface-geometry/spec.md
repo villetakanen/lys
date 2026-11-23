@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "claude-code/claude-opus-5-5"
-  at: "2026-11-23T18:35:06+02:00"
+  by: "pi/gpt-6.2-sol"
+  at: "2026-11-23T20:09:22+02:00"
 verified:
   - by: "human:ville.takanen"
     at: "2026-11-23T18:23:20+02:00"
@@ -29,7 +29,7 @@ Lys fits the slide frame to the viewport; authors compose everything inside it. 
 | `--lys-aspect-ratio` | One value resolved on the deck, including through inheritance. Accept a finite positive CSS `<ratio>` (a single positive number has denominator 1). A missing value uses `16 / 9`. With JavaScript, invalid values, including zero, negative, or non-finite ratios, also use `16 / 9`, without altering authored markup or the author's declaration. Without JavaScript, invalid values follow normal CSS rules. A cascade change on the deck updates all frames; slide-local declarations have no effect. |
 | `--lys-backdrop` | Deck-level CSS background override. `transparent` is valid; invalid overrides follow normal CSS rules. |
 
-`src/lys.css` owns frame geometry and paint. Transitions share the same frame dimensions and clip; reduced motion makes engine changes immediate without suppressing author animation. Before enhancement, frame styling must not hide authored payload. Print preserves the ratio, definite query-container dimensions, and clip. Transition behaviour, fallback access, and print pagination are specified separately.
+`src/lys.css` owns frame geometry and paint. Transitions share the same frame dimensions and clip; reduced motion makes engine changes immediate without suppressing author animation. Before enhancement, frame styling must not hide authored payload. Print preserves the ratio, definite query-container dimensions, and clip. Default programmatic slide changes are immediate. During migration, the existing fade/direct modes use the same settled geometry and fade runs only when motion is allowed. The final deck-wide transition configuration is tracked separately in the roadmap; this increment does not introduce an author setting. Before enhancement, screen articles retain definite frames in normal flow without engine clipping. Print pagination and full fallback verification are separate tasks.
 
 ### Token migration
 
@@ -88,4 +88,4 @@ Scenario: Surface cascade
 
 ## Test / Spec Alignment
 
-All four scenarios → `tests/e2e/slides.spec.ts` (production CSS).
+All four scenarios → `tests/e2e/slides.spec.ts` and `tests/fixtures/surface.html` (production CSS and IIFE). Default navigation and legacy transition motion gates → `tests/unit/navigation.test.ts` and `tests/e2e/transitions.spec.ts`. This contract supersedes the screen fit, surface token, outline suppression, and default navigation motion requirements in the historical 1.x specs.
