@@ -25,7 +25,7 @@ Node >=20; pnpm version and scripts are defined in package.json. Configuration f
 3. For browser changes, run the relevant Playwright tests. Its production server performs a fresh build; do not run another build concurrently. Run a standalone build when verifying artifacts without a browser run.
 4. Inspect generated outputs/diffs and run whitespace checks before staging relevant files.
 
-Pre-commit uses read-only lint, type checks, and unit tests. These readers can run concurrently because none formats or builds. Pre-push runs the full browser suite. Do not bypass hooks to claim a passing change. Match verification to the change: prose needs link/consistency checks; runtime needs behavioural tests; publishing needs all release gates. Report environmental failures separately from product failures.
+Pre-commit uses read-only lint, type checks, unit tests, and an advisory front-matter report that never fails. These readers can run concurrently because none formats or builds. Pre-push runs the full browser suite. Do not bypass hooks to claim a passing change. Match verification to the change: prose needs link/consistency checks; runtime needs behavioural tests; publishing needs all release gates. Report environmental failures separately from product failures.
 
 ## Test evidence
 

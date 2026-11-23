@@ -8,6 +8,9 @@ pre-commit:
       run: pnpm tsc --noEmit
     unit-test:
       run: pnpm vitest run
+    frontmatter:
+      # Advisory: lists Markdown/MDX without OKF front matter; never fails.
+      run: node scripts/check-frontmatter.js
 
 pre-push:
   commands:
