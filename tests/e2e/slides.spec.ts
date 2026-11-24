@@ -5,12 +5,14 @@ const fixture = readFileSync(new URL("../fixtures/surface.html", import.meta.url
 const origin = "http://localhost:4173";
 const deck = "[data-lys]";
 const active = `${deck} > article[data-lys-active]`;
+/** Deck transition styles; surface geometry must hold under each. */
+const STYLES = ["none", "fade", "horizontal", "vertical"] as const;
 
-async function open(page: Page, embedded = false, fade = false) {
+async function open(page: Page, embedded = false, style = "none") {
 	await page.route(`${origin}/surface.html`, (route) =>
 		route.fulfill({
 			contentType: "text/html",
-			body: fade ? fixture.replaceAll("<article ", '<article data-transition="fade" ') : fixture,
+			body: fixture.replace("<main data-lys", `<main data-lys data-transition="${style}"`),
 		}),
 	);
 	if (embedded) {
@@ -45,86 +47,89 @@ async function expectFit(view: Page | FrameLocator, ratio: number) {
 		.toBeLessThan(1);
 }
 
-for (const embedded of [false, true]) {
-	test(`viewport fit and container units (${embedded ? "iframe" : "top level"})`, async ({
-		page,
-	}) => {
-		const view = await open(page, embedded);
-		for (const [css, ratio] of [
-			["16 / 9", 16 / 9],
-			["24 / 10", 24 / 10],
-			["9 / 19.5", 9 / 19.5],
-			["1", 1],
-		] as const) {
-			await view
-				.locator(deck)
-				.evaluate((el, value) => el.style.setProperty("--lys-aspect-ratio", value), css);
-			for (const size of [
-				{ width: 750, height: 300 },
-				{ width: 220, height: 620 },
-			]) {
-				if (embedded) {
-					await page.locator("iframe").evaluate((el, { width, height }) => {
-						el.style.width = `${width}px`;
-						el.style.height = `${height}px`;
-					}, size);
-				} else await page.setViewportSize(size);
-				await expectFit(view, ratio);
-				await expect(view.locator(active)).toHaveAttribute("id", "first");
-				const fits = await view.locator(".units").evaluate((units) => {
-					const frame = units.closest("article")?.getBoundingClientRect();
-					const box = units.getBoundingClientRect();
-					return (
-						frame &&
-						Math.abs(box.width - frame.width / 2) < 1 &&
-						Math.abs(box.height - frame.height / 2) < 1 &&
-						Math.abs(box.x - frame.x - frame.width / 4) < 1 &&
-						Math.abs(box.y - frame.y - frame.height / 4) < 1
-					);
-				});
-				expect(fits).toBe(true);
+for (const style of STYLES)
+	for (const embedded of [false, true]) {
+		test(`viewport fit and container units (${embedded ? "iframe" : "top level"}, ${style})`, async ({
+			page,
+		}) => {
+			const view = await open(page, embedded, style);
+			for (const [css, ratio] of [
+				["16 / 9", 16 / 9],
+				["24 / 10", 24 / 10],
+				["9 / 19.5", 9 / 19.5],
+				["1", 1],
+			] as const) {
+				await view
+					.locator(deck)
+					.evaluate((el, value) => el.style.setProperty("--lys-aspect-ratio", value), css);
+				for (const size of [
+					{ width: 750, height: 300 },
+					{ width: 220, height: 620 },
+				]) {
+					if (embedded) {
+						await page.locator("iframe").evaluate((el, { width, height }) => {
+							el.style.width = `${width}px`;
+							el.style.height = `${height}px`;
+						}, size);
+					} else await page.setViewportSize(size);
+					await expectFit(view, ratio);
+					await expect(view.locator(active)).toHaveAttribute("id", "first");
+					const fits = await view.locator(".units").evaluate((units) => {
+						const frame = units.closest("article")?.getBoundingClientRect();
+						const box = units.getBoundingClientRect();
+						return (
+							frame &&
+							Math.abs(box.width - frame.width / 2) < 1 &&
+							Math.abs(box.height - frame.height / 2) < 1 &&
+							Math.abs(box.x - frame.x - frame.width / 4) < 1 &&
+							Math.abs(box.y - frame.y - frame.height / 4) < 1
+						);
+					});
+					expect(fits).toBe(true);
+				}
 			}
-		}
-	});
-}
-
-test("deck ratio cascade, invalid fallback, and immediate selection", async ({ page }) => {
-	await page.setViewportSize({ width: 800, height: 500 });
-	await open(page);
-	await expectFit(page, 16 / 9);
-	await page.addStyleTag({
-		content: ":root { --lys-aspect-ratio: calc(8 / 2) / 3; } article { --lys-aspect-ratio: 9/16; }",
-	});
-	await expectFit(page, 4 / 3);
-	await page.keyboard.press("ArrowRight");
-	await expect(page.locator(active)).toHaveAttribute("id", "second");
-	await expectFit(page, 4 / 3);
-	await page.setViewportSize({ width: 500, height: 800 });
-	await expectFit(page, 4 / 3);
-	for (const invalid of [
-		"auto",
-		"1 + 2",
-		"0",
-		"1/0",
-		"-1/-2",
-		"calc(infinity)",
-		"1e999",
-		"calc(-1)",
-	]) {
-		await page
-			.locator(deck)
-			.evaluate((el, value) => el.style.setProperty("--lys-aspect-ratio", value), invalid);
-		await expectFit(page, 16 / 9);
+		});
 	}
-	await page.locator(deck).evaluate((el) => el.style.removeProperty("--lys-aspect-ratio"));
-	await expectFit(page, 4 / 3);
-});
 
-test("legacy fade uses the same frame and reduced motion leaves author animation alone", async ({
+for (const style of STYLES)
+	test(`deck ratio cascade, invalid fallback, and selection (${style})`, async ({ page }) => {
+		await page.setViewportSize({ width: 800, height: 500 });
+		await open(page, false, style);
+		await expectFit(page, 16 / 9);
+		await page.addStyleTag({
+			content:
+				":root { --lys-aspect-ratio: calc(8 / 2) / 3; } article { --lys-aspect-ratio: 9/16; }",
+		});
+		await expectFit(page, 4 / 3);
+		await page.keyboard.press("ArrowRight");
+		await expect(page.locator(active)).toHaveAttribute("id", "second");
+		await expectFit(page, 4 / 3);
+		await page.setViewportSize({ width: 500, height: 800 });
+		await expectFit(page, 4 / 3);
+		for (const invalid of [
+			"auto",
+			"1 + 2",
+			"0",
+			"1/0",
+			"-1/-2",
+			"calc(infinity)",
+			"1e999",
+			"calc(-1)",
+		]) {
+			await page
+				.locator(deck)
+				.evaluate((el, value) => el.style.setProperty("--lys-aspect-ratio", value), invalid);
+			await expectFit(page, 16 / 9);
+		}
+		await page.locator(deck).evaluate((el) => el.style.removeProperty("--lys-aspect-ratio"));
+		await expectFit(page, 4 / 3);
+	});
+
+test("deck fade uses the same frame and reduced motion leaves author animation alone", async ({
 	page,
 }) => {
 	await page.setViewportSize({ width: 900, height: 420 });
-	await open(page, false, true);
+	await open(page, false, "fade");
 	await page.addStyleTag({
 		content: `
 		[data-lys] { --lys-aspect-ratio: 9 / 19.5; --lys-transition-duration: 5s; }
@@ -143,27 +148,37 @@ test("legacy fade uses the same frame and reduced motion leaves author animation
 	await expect(page.locator(".units")).toHaveCSS("animation-name", "author");
 });
 
-test("fixed and transformed paint is clipped; nested scrolling is independent", async ({
-	page,
-}) => {
-	await page.setViewportSize({ width: 800, height: 400 });
-	await open(page);
-	await page.addStyleTag({ content: "[data-lys] { --lys-aspect-ratio: 1; }" });
-	await page.keyboard.press("ArrowRight");
-	await expectFit(page, 1);
-	const backdrop = { x: 0, y: 0, width: 199, height: 400 };
-	const before = await page.screenshot({ clip: backdrop });
-	await page.locator(".crop").evaluate((el) => {
-		el.hidden = false;
+for (const style of STYLES)
+	test(`fixed and transformed paint is clipped; nested scrolling is independent (${style})`, async ({
+		page,
+	}) => {
+		await page.setViewportSize({ width: 800, height: 400 });
+		await open(page, false, style);
+		await page.addStyleTag({ content: "[data-lys] { --lys-aspect-ratio: 1; }" });
+		await page.keyboard.press("ArrowRight");
+		await expectFit(page, 1);
+		// Let any deck motion finish so only the selected frame paints.
+		await expect
+			.poll(() =>
+				page.evaluate(
+					() => document.getAnimations().filter((a) => a instanceof CSSTransition).length,
+				),
+			)
+			.toBe(0);
+		// Stay clear of the frame edge, where focus-ring anti-aliasing varies.
+		const backdrop = { x: 0, y: 0, width: 188, height: 400 };
+		const before = await page.screenshot({ clip: backdrop });
+		await page.locator(".crop").evaluate((el) => {
+			el.hidden = false;
+		});
+		await expect(page.locator(".crop")).toBeVisible();
+		expect(await page.screenshot({ clip: backdrop })).toEqual(before);
+		await page.locator(".scroll").evaluate((el) => {
+			el.scrollTop = 45;
+		});
+		await expect(page.locator(".scroll")).toHaveJSProperty("scrollTop", 45);
+		await expect(page.locator(active)).toHaveJSProperty("scrollTop", 0);
 	});
-	await expect(page.locator(".crop")).toBeVisible();
-	expect(await page.screenshot({ clip: backdrop })).toEqual(before);
-	await page.locator(".scroll").evaluate((el) => {
-		el.scrollTop = 45;
-	});
-	await expect(page.locator(".scroll")).toHaveJSProperty("scrollTop", 45);
-	await expect(page.locator(active)).toHaveJSProperty("scrollTop", 0);
-});
 
 test("scheme-aware paint is overridable without styling authored content", async ({ page }) => {
 	await page.emulateMedia({ colorScheme: "light" });

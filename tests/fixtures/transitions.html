@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Deck transitions fixture</title>
+  <link rel="stylesheet" href="/examples/lys.css">
+  <style>
+    [data-lys] { --lys-backdrop: rgb(0, 0, 255); --lys-aspect-ratio: 1; }
+    article { color: white; font: 16px sans-serif; }
+    #s1 { background: rgb(200, 0, 0); }
+    #s2 { background: rgb(0, 150, 0); }
+    #s3 { background: rgb(150, 150, 0); }
+    #s4 { background: rgb(0, 150, 150); }
+    #s5 { background: rgb(150, 0, 150); }
+    #s6 { background: rgb(90, 90, 90); }
+    .units { position: absolute; inset: 25% auto auto 25%; width: 50cqw; height: 50cqh; }
+    @keyframes author-spin { to { rotate: 1turn; } }
+    .author {
+      width: 40px; height: 40px; background: white;
+      transform: translateX(7px);
+      transition: color 9s linear;
+      animation: author-spin 10s linear infinite;
+    }
+    .grab { position: absolute; inset: 0; pointer-events: auto; }
+  </style>
+</head>
+<body>
+  <main data-lys>
+    <article id="s1"><h1>One</h1><div class="units"></div></article>
+    <article id="s2"><h2>Two</h2><div class="author"></div></article>
+    <article id="s3"><h2>Three</h2></article>
+    <article id="s4"><h2>Four</h2></article>
+    <article id="s5"><h2>Five</h2></article>
+    <article id="s6"><h2>Six</h2><div class="grab"></div></article>
+  </main>
+  <script src="/examples/lys.iife.js"></script>
+</body>
+</html>

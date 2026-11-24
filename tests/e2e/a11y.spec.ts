@@ -1,5 +1,6 @@
+import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
 	await page.goto("/examples/minimal.html");
@@ -94,12 +95,9 @@ test.describe("axe-core accessibility scan", () => {
 		expect(serious).toHaveLength(0);
 	});
 
-	test("fade-mode deck has zero critical/serious axe-core violations", async ({ page }) => {
+	test("full example deck has zero critical/serious axe-core violations", async ({ page }) => {
 		await page.goto("/examples/full.html");
-		await page.waitForFunction(() => {
-			const container = document.querySelector("[data-lys]");
-			return container?.getAttribute("data-lys-mode") === "stacked";
-		});
+		await expect(page.locator("[data-lys]")).toHaveAttribute("data-lys-ready", "");
 
 		const results = await new AxeBuilder({ page }).analyze();
 		const critical = results.violations.filter((v) => v.impact === "critical");
@@ -107,4 +105,78 @@ test.describe("axe-core accessibility scan", () => {
 		expect(critical).toHaveLength(0);
 		expect(serious).toHaveLength(0);
 	});
+});
+
+// specs/deck-transitions — "Accessibility of motion". A transition must not
+// move focus, add roles, labels or announcements: the accessibility state
+// during and after motion matches the immediate (none) style exactly.
+const transitionsFixture = readFileSync(
+	new URL("../fixtures/transitions.html", import.meta.url),
+	"utf8",
+);
+
+async function openTransitions(page: Page, style: string) {
+	const body = transitionsFixture
+		.replace("<main data-lys", `<main data-lys data-transition="${style}"`)
+		.replace(
+			"</head>",
+			"<style>[data-lys] { --lys-transition-duration: 4s; --lys-transition-easing: linear; }</style></head>",
+		);
+	await page.route("http://localhost:4173/transitions.html", (route) =>
+		route.fulfill({ contentType: "text/html", body }),
+	);
+	await page.goto("http://localhost:4173/transitions.html");
+	await expect(page.locator("[data-lys]")).toHaveAttribute("data-lys-ready", "");
+}
+
+/** Focus, roles, ARIA attributes and text of every element in the body. */
+function a11yState(page: Page) {
+	return page.evaluate(() => ({
+		focus: document.activeElement?.id || document.activeElement?.tagName,
+		elements: Array.from(document.body.querySelectorAll("*")).map((el) => [
+			el.tagName,
+			el.id,
+			...Array.from(el.attributes)
+				.filter((a) => a.name === "role" || a.name === "tabindex" || a.name.startsWith("aria-"))
+				.map((a) => `${a.name}=${a.value}`)
+				.sort(),
+		]),
+		live: Array.from(document.querySelectorAll("[aria-live]")).map((el) => el.textContent),
+	}));
+}
+
+test.describe("accessibility of motion", () => {
+	test("transitions add no focus moves, roles, labels or announcements", async ({ page }) => {
+		const states: Record<string, unknown[]> = {};
+		for (const style of ["none", "fade", "horizontal", "vertical"]) {
+			await openTransitions(page, style);
+			await page.locator("[data-lys]").focus();
+			const seen: unknown[] = [];
+			for (const key of ["ArrowRight", "End", "ArrowLeft"]) {
+				await page.keyboard.press(key);
+				// Mid-motion for the motion styles (4s duration).
+				seen.push(await a11yState(page));
+			}
+			states[style] = seen;
+			await page.unrouteAll();
+		}
+		for (const style of ["fade", "horizontal", "vertical"])
+			expect(states[style], style).toEqual(states.none);
+	});
+
+	// Not fade: axe's colour-contrast rule blends the two half-transparent
+	// frames mid-fade and reports a contrast failure that no settled state has.
+	for (const style of ["horizontal"]) {
+		test(`${style} deck mid-transition has zero critical/serious axe-core violations`, async ({
+			page,
+		}) => {
+			await openTransitions(page, style);
+			await page.keyboard.press("ArrowRight");
+			const results = await new AxeBuilder({ page }).analyze();
+			const blocking = results.violations.filter(
+				(v) => v.impact === "critical" || v.impact === "serious",
+			);
+			expect(blocking).toHaveLength(0);
+		});
+	}
 });

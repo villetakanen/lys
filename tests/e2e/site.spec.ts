@@ -125,7 +125,7 @@ test.describe("primary demo — fixed composition", () => {
 	test("keyboard, controls and accessibility state agree", async ({ page }) => {
 		await page.setViewportSize({ width: 1440, height: 900 });
 		await page.goto(`${BASE}/examples/demo.html`);
-		await expect(page.locator("#deck")).toHaveAttribute("data-lys-mode", "stacked");
+		await expect(page.locator("#deck")).toHaveAttribute("data-lys-ready", "");
 		await page.keyboard.press("ArrowRight");
 		await expect(page.locator("#overview")).toHaveAttribute("data-lys-active", "");
 		await expect(page.locator("#overview")).toBeFocused();
@@ -295,7 +295,7 @@ test("primary demo — copied standalone file works offline", async ({ browser }
 		if (request.url().startsWith("http")) requests.push(request.url());
 	});
 	await page.goto(pathToFileURL(file).href);
-	await expect(page.locator("#deck")).toHaveAttribute("data-lys-mode", "stacked");
+	await expect(page.locator("#deck")).toHaveAttribute("data-lys-ready", "");
 	await page.keyboard.press("End");
 	await expect(page.locator("#counter")).toHaveText("8 / 8");
 	expect(errors).toEqual([]);
@@ -315,7 +315,7 @@ for (const viewport of [
 	}) => {
 		await page.setViewportSize(viewport);
 		await page.goto(`${BASE}/examples/demo.html`);
-		await expect(page.locator("#deck")).toHaveAttribute("data-lys-mode", "stacked");
+		await expect(page.locator("#deck")).toHaveAttribute("data-lys-ready", "");
 		const clipped = await page.locator("article").evaluateAll((slides) =>
 			slides.flatMap((slide) => {
 				const box = slide.getBoundingClientRect();
@@ -485,7 +485,7 @@ test.describe("FREE//FALL — Northern Lights player pitch", () => {
 			await page.setViewportSize({ width: 1536, height: 640 });
 			await page.emulateMedia({ media: "print" });
 			// Making the author canvas absolute requires a slide containing block.
-			// A relative slide must also clear stacked mode's left:50% / top:50%,
+			// A relative slide must also clear any screen-only frame placement,
 			// otherwise page count passes while half the canvas prints off-page.
 			const geometry = await page.locator("article").evaluateAll((slides) =>
 				slides.map((slide) => {
@@ -574,8 +574,8 @@ test.describe("ASDLC — Avionics example", () => {
 			{ family: "Archivo", status: "loaded" },
 			{ family: "B612 Mono", status: "loaded" },
 		]);
-		// Preserve the original themed example's scroll-snap mode, not stacked fade mode.
-		await expect(page.locator("[data-lys]")).not.toHaveAttribute("data-lys-mode");
+		// Preserve the original themed example's default immediate style.
+		await expect(page.locator("[data-lys]")).not.toHaveAttribute("data-transition");
 		for (let index = 0; index < copy.slides.length; index++) {
 			const slide = page.locator(`#${copy.slides[index].id}`);
 			await expect(slide).toHaveAttribute("data-lys-active", "");

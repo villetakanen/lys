@@ -1,4 +1,16 @@
 /* ⚜ Lys — Structural slide engine */
+@property --_lys-offset {
+	syntax: "<percentage>";
+	inherits: false;
+	initial-value: 0%;
+}
+
+@property --_lys-alpha {
+	syntax: "<number>";
+	inherits: false;
+	initial-value: 1;
+}
+
 [data-lys] {
 	--_lys-deck-ratio: var(--lys-aspect-ratio, 16 / 9);
 	--_lys-transition-duration: var(--lys-transition-duration, 300ms);
@@ -19,17 +31,17 @@
 		margin: 0;
 	}
 
-	/* A full-viewport snap row centers even a letterboxed frame. JS owns
-	   selection; the existing native scroll interaction remains in place. */
+	/* Every enhanced deck stacks its slides in one centered frame. */
 	[data-lys][data-lys-current] {
 		display: grid;
-		grid-auto-rows: 100dvh;
+		grid-template: 100dvh / minmax(0, 1fr);
 		place-items: center;
 		width: 100dvw;
 		height: 100dvh;
+		/* Slides share the first row; other authored deck children stay
+		   reachable below it without affecting the frame. */
 		overflow: hidden auto;
 		scrollbar-width: none;
-		scroll-snap-type: y mandatory;
 	}
 
 	[data-lys] > article {
@@ -45,34 +57,71 @@
 	/* Paint containment catches fixed and transformed descendants. Clipping
 	   is enhanced only and doesn't create a programmatic scroll container. */
 	[data-lys][data-lys-current] > article {
+		grid-area: 1 / 1;
 		contain: paint;
 		overflow: clip;
-		scroll-snap-align: center;
-		scroll-snap-stop: always;
-	}
-
-	[data-lys][data-lys-mode] {
-		position: relative;
-		overflow: clip;
-	}
-
-	[data-lys][data-lys-mode] > article {
-		position: absolute;
-		inset: 0;
-		margin: auto;
-		opacity: 0;
+		/* Motion runs on engine properties that only screen maps to paint, so
+		   a transition caught by printing never reaches the printed frame. */
+		--_lys-alpha: 0;
+		opacity: var(--_lys-alpha);
 		pointer-events: none;
 	}
 
-	[data-lys][data-lys-mode] > article[data-lys-active] {
-		opacity: 1;
+	/* On top, so hidden later slides can never take its pointer input. */
+	[data-lys][data-lys-current] > article[data-lys-active] {
+		z-index: 1;
+		--_lys-alpha: 1;
 		pointer-events: auto;
 	}
 
-	/* Legacy fade compatibility. Never apply engine timing to descendants. */
+	/* Axis styles: inactive frames rest before or after the selected one in
+	   document order, which gives the direction. One offset drives both the
+	   translation and a clamped clip, so even an overshooting easing never
+	   paints outside the frame. */
+	:is([data-transition="horizontal" i], [data-transition="vertical" i])[data-lys][data-lys-current]
+		> article {
+		--_lys-offset: -100%;
+	}
+
+	:is([data-transition="horizontal" i], [data-transition="vertical" i])[data-lys][data-lys-current]
+		> article[data-lys-active]
+		~ article {
+		--_lys-offset: 100%;
+	}
+
+	:is([data-transition="horizontal" i], [data-transition="vertical" i])[data-lys][data-lys-current]
+		> article[data-lys-active] {
+		--_lys-offset: 0%;
+	}
+
+	[data-lys][data-lys-current][data-transition="horizontal" i] > article {
+		translate: var(--_lys-offset) 0;
+		clip-path: inset(0 max(0%, var(--_lys-offset)) 0 max(0%, -1 * var(--_lys-offset)));
+	}
+
+	[data-lys][data-lys-current][data-transition="vertical" i] > article {
+		translate: 0 var(--_lys-offset);
+		clip-path: inset(max(0%, -1 * var(--_lys-offset)) 0 max(0%, var(--_lys-offset)));
+	}
+
+	/* Only the selected and outgoing frames animate; engine timing never
+	   applies to descendants. */
 	@media (prefers-reduced-motion: no-preference) {
-		[data-lys][data-lys-ready][data-lys-mode] > article[data-transition="fade"] {
-			transition: opacity var(--_lys-transition-duration) var(--_lys-transition-easing);
+		[data-lys][data-lys-ready][data-transition="fade" i]
+			> article:is([data-lys-active], [data-lys-leaving]) {
+			transition: --_lys-alpha var(--_lys-transition-duration) var(--_lys-transition-easing);
+		}
+
+		:is([data-transition="horizontal" i], [data-transition="vertical" i])[data-lys][data-lys-ready]
+			> article[data-lys-active] {
+			transition: --_lys-offset var(--_lys-transition-duration) var(--_lys-transition-easing);
+		}
+
+		:is([data-transition="horizontal" i], [data-transition="vertical" i])[data-lys][data-lys-ready]
+			> article[data-lys-leaving] {
+			transition:
+				--_lys-offset var(--_lys-transition-duration) var(--_lys-transition-easing),
+				--_lys-alpha 0s var(--_lys-transition-duration);
 		}
 	}
 
@@ -80,7 +129,8 @@
 	[data-lys] [data-lys-nav] {
 		position: fixed;
 		inset: 0 0 auto;
-		z-index: 1;
+		/* Above the selected slide. */
+		z-index: 2;
 	}
 }
 

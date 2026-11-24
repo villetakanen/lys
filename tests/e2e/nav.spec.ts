@@ -21,23 +21,20 @@ test.describe("chapter nav — author region", () => {
 		await setupNavDeck(page);
 	});
 
-	test("region is taken out of the scroll-snap flow", async ({ page }) => {
-		// position: fixed → not a grid item → does not consume a viewport snap row.
+	test("region is taken out of the slide frame flow", async ({ page }) => {
+		// position: fixed → not a grid item → adds no row below the shared frame.
 		const position = await page
 			.locator("[data-lys-nav]")
 			.evaluate((el) => getComputedStyle(el).position);
 		expect(position).toBe("fixed");
 
-		// The container's scrollable height is ~one viewport per article. If the
-		// fixed nav region leaked into the snap flow it would add a blank row,
-		// pushing scrollHeight past (count + 1) viewports.
-		const articleCount = await page.locator("[data-lys] > article").count();
+		// All slides share one viewport-sized frame; a nav region leaking into
+		// the grid flow would add a row and make the deck scrollable.
 		const { scrollHeight, vh } = await page.locator("[data-lys]").evaluate((el) => ({
 			scrollHeight: el.scrollHeight,
 			vh: window.innerHeight,
 		}));
-		expect(scrollHeight).toBeLessThan(vh * (articleCount + 0.5));
-		expect(scrollHeight).toBeGreaterThan(vh * (articleCount - 0.5));
+		expect(scrollHeight).toBeLessThanOrEqual(vh + 1);
 	});
 
 	test("Lys does not add or remove author links", async ({ page }) => {
@@ -54,17 +51,6 @@ test.describe("chapter nav — author region", () => {
 		await expect(active).toHaveCount(1);
 		await expect(active).toHaveAttribute("href", `#${firstId}`);
 		await expect(active).toHaveAttribute("aria-current", "true");
-	});
-
-	test("active link follows scroll position", async ({ page }) => {
-		// Scroll the container so the third slide reaches the viewport middle.
-		const targetId = await page.locator("[data-lys] > article").nth(2).getAttribute("id");
-		await page.locator("[data-lys]").evaluate((el) => {
-			el.scrollTo({ top: el.clientHeight * 2, behavior: "instant" });
-		});
-		const active = page.locator("[data-lys-nav] [data-lys-nav-active]");
-		await expect(active).toHaveAttribute("href", `#${targetId}`);
-		await expect(active).toHaveCount(1);
 	});
 
 	test("active link follows programmatic / keyboard navigation", async ({ page }) => {

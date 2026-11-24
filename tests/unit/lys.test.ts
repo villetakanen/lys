@@ -356,14 +356,29 @@ describe("state attributes", () => {
 		expect(container.getAttribute("data-lys-current")).toBe("1");
 	});
 
-	it("state attributes are cleaned up on destroy", () => {
+	it("the previous slide is marked leaving on navigation after first paint", async () => {
 		const container = createDeck(3);
 		const instance = new Lys(container);
+		await new Promise((resolve) => requestAnimationFrame(resolve));
+		instance.next();
+		const articles = container.querySelectorAll("article");
+		expect(articles[0]?.hasAttribute("data-lys-leaving")).toBe(true);
+		expect(articles[1]?.hasAttribute("data-lys-leaving")).toBe(false);
+	});
+
+	it("state attributes are cleaned up on destroy", async () => {
+		const container = createDeck(3);
+		const instance = new Lys(container);
+		await new Promise((resolve) => requestAnimationFrame(resolve));
+		instance.next();
+		expect(container.querySelector("[data-lys-leaving]")).not.toBeNull();
 		instance.destroy();
 		expect(container.hasAttribute("data-lys-current")).toBe(false);
+		expect(container.hasAttribute("data-lys-mode")).toBe(false);
 		const articles = container.querySelectorAll("article");
 		for (const article of articles) {
 			expect(article.hasAttribute("data-lys-active")).toBe(false);
+			expect(article.hasAttribute("data-lys-leaving")).toBe(false);
 		}
 	});
 

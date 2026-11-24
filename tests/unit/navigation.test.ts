@@ -262,6 +262,34 @@ describe("hash routing", () => {
 		expect(instance.current).toBe(0);
 	});
 
+	it("a native fragment selects the slide that is or contains its target", () => {
+		const container = document.createElement("div");
+		container.setAttribute("data-lys", "");
+		container.innerHTML =
+			'<article>1</article><article id="two">2</article><article><p id="inner">3</p></article>';
+		document.body.appendChild(container);
+		const instance = new Lys(container);
+		instances.push(instance);
+		history.replaceState(null, "", "#two");
+		window.dispatchEvent(new HashChangeEvent("hashchange"));
+		expect(instance.current).toBe(1);
+		history.replaceState(null, "", "#inner");
+		window.dispatchEvent(new HashChangeEvent("hashchange"));
+		expect(instance.current).toBe(2);
+	});
+
+	it("a fragment outside the deck is ignored", () => {
+		const outside = document.createElement("p");
+		outside.id = "elsewhere";
+		document.body.appendChild(outside);
+		const { instance } = createDeck(5);
+		instance.goTo(2);
+		history.replaceState(null, "", "#elsewhere");
+		window.dispatchEvent(new HashChangeEvent("hashchange"));
+		expect(instance.current).toBe(2);
+		outside.remove();
+	});
+
 	it("out-of-range hash is clamped", () => {
 		history.replaceState(null, "", "#slide=99");
 		const { instance } = createDeck(5);
@@ -315,23 +343,19 @@ describe("default screen navigation", () => {
 		vi.restoreAllMocks();
 	});
 
-	it("navigates immediately without reduced motion", () => {
-		vi.spyOn(window, "matchMedia").mockReturnValue({ matches: false } as MediaQueryList);
-		const { container, instance } = createDeck(5);
-		const slide = container.querySelectorAll("article")[1] as HTMLElement;
-		const spy = vi.fn();
-		slide.scrollIntoView = spy;
-		instance.next();
-		expect(spy).toHaveBeenCalledWith({ behavior: "instant", block: "center" });
-	});
-
-	it("navigates immediately with reduced motion", () => {
-		vi.spyOn(window, "matchMedia").mockReturnValue({ matches: true } as MediaQueryList);
-		const { container, instance } = createDeck(5);
-		const slide = container.querySelectorAll("article")[1] as HTMLElement;
-		const spy = vi.fn();
-		slide.scrollIntoView = spy;
-		instance.next();
-		expect(spy).toHaveBeenCalledWith({ behavior: "instant", block: "center" });
-	});
+	for (const reduce of [false, true]) {
+		it(`selects without scrolling any slide (reduced motion: ${reduce})`, () => {
+			vi.spyOn(window, "matchMedia").mockReturnValue({ matches: reduce } as MediaQueryList);
+			const { container, instance } = createDeck(5);
+			const spies = Array.from(container.querySelectorAll("article")).map((slide) => {
+				const spy = vi.fn();
+				slide.scrollIntoView = spy;
+				return spy;
+			});
+			instance.next();
+			instance.goTo(4);
+			expect(instance.current).toBe(4);
+			for (const spy of spies) expect(spy).not.toHaveBeenCalled();
+		});
+	}
 });

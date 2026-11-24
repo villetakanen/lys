@@ -86,10 +86,26 @@ export function setupNavigation(instance: LysInstance, container: HTMLElement): 
 	// Hash routing.
 	function parseSlideHash(hash: string): number | string | null {
 		const match = hash.match(/^#slide=(.+)$/);
-		if (!match?.[1]) return null;
+		if (!match?.[1]) return slideForFragment(hash);
 		const val = match[1];
 		const num = Number(val);
 		return Number.isFinite(num) ? num - 1 : val; // 1-based to 0-based for numbers
+	}
+
+	/** A native fragment selects the slide that is or contains its target. */
+	function slideForFragment(hash: string): number | null {
+		if (hash.length < 2) return null;
+		let id: string;
+		try {
+			id = decodeURIComponent(hash.slice(1));
+		} catch {
+			return null;
+		}
+		const target = document.getElementById(id);
+		if (!target || !container.contains(target)) return null;
+		const slides = Array.from(container.querySelectorAll<HTMLElement>(":scope > article"));
+		const index = slides.findIndex((slide) => slide.contains(target));
+		return index === -1 ? null : index;
 	}
 
 	function onSlideChange(e: Event): void {

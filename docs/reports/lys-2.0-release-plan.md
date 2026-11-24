@@ -1,7 +1,7 @@
 ---
 generated:
   by: "claude-code/claude-opus-5-5"
-  at: "2026-11-24T08:34:03+02:00"
+  at: "2026-11-24T14:44:30+02:00"
 ---
 
 # Lys 2.0.0 release plan
@@ -242,3 +242,7 @@ Initial increment: added a source-backed API/token inventory and implementation 
 Verification: 185 unit tests and 446 Playwright tests passed (28 existing skips). The production surface fixture ran on Playwright Chromium 145.0.7632.6, Firefox 146.0.1, and WebKit 26.0; these are test versions, not the August 2026 baseline. Fresh artifact raw/gzip bytes: ESM 9,560/3,273; IIFE 7,854/2,941; CSS 2,228/821. Screen-reader observations and native print verification remain separate release work.
 
 24 November 2026: the [deck transitions spec](../../specs/deck-transitions/spec.md) defines the deck-wide transition contract. Owner decisions: `data-transition` on the deck selects none, fade, horizontal, or vertical; the duration and easing tokens remain at deck scope; input during motion retargets immediately; every enhanced deck uses stacked rendering, which removes the scroll-snap row. Implementation completes task 3's transition work. Runtime behaviour is unchanged until then.
+
+24 November 2026: implemented the deck transitions spec, which completes task 3's transition work. Every enhanced deck stacks its slides in one frame; fade, horizontal, and vertical motion run on engine-private registered properties that only screen maps to paint, so printing mid-motion prints settled slides. The legacy `data-lys-mode` attribute, per-article transitions, scroll-snap rendering, and the scroll-driven `data-lys-nav` active state are removed. Opt-in navigation links still select slides: a native fragment now selects the slide that is or contains its target. This is a bridge until the links and history task, and `#slide=` URLs remain until then.
+
+Verification: 183 unit tests and 593 Playwright tests passed (28 existing skips) on Playwright Chromium 145.0.7632.6, Firefox 146.0.1, and WebKit 26.0. Fresh artifact raw/gzip bytes: ESM 9,720/3,273; IIFE 8,012/2,938; CSS 3,492/1,043. Open: wheel and trackpad paging is absent until the input task; focus can remain in an outgoing slide until the accessibility task; `examples/demo.html`, `examples/full.html`, and the README still describe 1.x transitions (tasks 6 and 7); authoring guidance must say that engine frame rules take precedence over author opacity, translate, clip-path, and transition on slides.

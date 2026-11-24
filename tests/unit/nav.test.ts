@@ -1,25 +1,18 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { Lys } from "../../src/lys.js";
 
 const instances: Lys[] = [];
-
-beforeEach(() => {
-	// happy-dom's IntersectionObserver does no real layout and fires
-	// nondeterministically across tests. The active-on-scroll path is covered by
-	// e2e; here we disable the observer so the init + slidechange logic is
-	// deterministic (nav.ts skips it when IntersectionObserver is undefined).
-	vi.stubGlobal("IntersectionObserver", undefined);
-});
 
 /** Build a deck with an opt-in [data-lys-nav] region and id'd articles. */
 function createNavDeck(opts: {
 	ids: (string | null)[];
 	navLinks: string[];
-	stacked?: boolean;
+	transition?: string;
 	withNav?: boolean;
 }): { container: HTMLElement; instance: Lys; region: HTMLElement | null } {
 	const container = document.createElement("div");
 	container.setAttribute("data-lys", "");
+	if (opts.transition) container.setAttribute("data-transition", opts.transition);
 
 	let region: HTMLElement | null = null;
 	if (opts.withNav !== false) {
@@ -39,7 +32,6 @@ function createNavDeck(opts: {
 		const article = document.createElement("article");
 		if (id) article.id = id;
 		article.innerHTML = `<h2>Slide ${i + 1}</h2>`;
-		if (opts.stacked) article.setAttribute("data-transition", "fade");
 		container.appendChild(article);
 	});
 
@@ -100,15 +92,30 @@ describe("chapter nav — active-state hook", () => {
 		expect(first?.hasAttribute("aria-current")).toBe(false);
 	});
 
-	it("tracks active in stacked mode too (no observer)", () => {
-		const { instance, region } = createNavDeck({
-			ids: ["a", "b"],
-			navLinks: ["#a", "#b"],
-			stacked: true,
+	for (const transition of ["fade", "horizontal", "vertical"]) {
+		it(`tracks active via slidechange with deck transition ${transition}`, () => {
+			const { instance, region } = createNavDeck({
+				ids: ["a", "b"],
+				navLinks: ["#a", "#b"],
+				transition,
+			});
+			if (!region) throw new Error("no region");
+			instance.goTo(1);
+			expect(activeLink(region)?.getAttribute("href")).toBe("#b");
 		});
+	}
+
+	it("does not observe slide intersection; the active link follows selection only", () => {
+		const observe = vi.fn();
+		const ctor = vi.fn(() => ({ observe, unobserve: vi.fn(), disconnect: vi.fn() }));
+		vi.stubGlobal("IntersectionObserver", ctor);
+		const { container, region } = createNavDeck({ ids: ["a", "b"], navLinks: ["#a", "#b"] });
 		if (!region) throw new Error("no region");
-		instance.goTo(1);
-		expect(activeLink(region)?.getAttribute("href")).toBe("#b");
+		expect(ctor).not.toHaveBeenCalled();
+		expect(observe).not.toHaveBeenCalled();
+		// Scrolling the deck is not selection.
+		container.dispatchEvent(new Event("scroll"));
+		expect(activeLink(region)?.getAttribute("href")).toBe("#a");
 	});
 
 	it("never marks a link that targets a non-existent slide", () => {

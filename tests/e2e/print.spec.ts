@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 
 /**
@@ -409,7 +410,7 @@ test.describe("print — nav region", () => {
 });
 
 test.describe("print — layout modes", () => {
-	test("scroll-snap decks print every slide", async ({ page }) => {
+	test("default decks print every slide", async ({ page }) => {
 		await gotoDeck(page, "/examples/minimal.html");
 		await page.emulateMedia({ media: "print" });
 
@@ -434,28 +435,44 @@ test.describe("print — layout modes", () => {
 		}
 	});
 
-	test("stacked/fade decks print every slide", async ({ page }) => {
-		await page.goto("/examples/full.html");
-		await page.waitForFunction(() => {
-			const container = document.querySelector("[data-lys]");
-			return container?.getAttribute("data-lys-mode") === "stacked";
+	for (const style of ["fade", "horizontal", "vertical"]) {
+		test(`a ${style} deck printed mid-transition prints every slide settled`, async ({ page }) => {
+			// specs/deck-transitions — "Print during motion".
+			const body = readFileSync(new URL("../fixtures/transitions.html", import.meta.url), "utf8")
+				.replace("<main data-lys", `<main data-lys data-transition="${style}"`)
+				.replace(
+					"</head>",
+					"<style>[data-lys] { --lys-transition-duration: 10s; --lys-transition-easing: linear; }</style></head>",
+				);
+			await page.route("http://localhost:4173/transitions.html", (route) =>
+				route.fulfill({ contentType: "text/html", body }),
+			);
+			await page.goto("http://localhost:4173/transitions.html");
+			await expect(page.locator("[data-lys]")).toHaveAttribute("data-lys-ready", "");
+			await page.keyboard.press("ArrowRight");
+			await page.keyboard.press("ArrowRight");
+			// Mid-motion on screen: an incoming and an outgoing frame are moving.
+			await expect(page.locator("[data-lys] > article[data-lys-leaving]")).toHaveCount(1);
+			await page.emulateMedia({ media: "print" });
+
+			await expect
+				.poll(() =>
+					page.locator("[data-lys] > article").evaluateAll((slides) =>
+						slides.map((el) => {
+							const cs = getComputedStyle(el);
+							return [el.id, cs.opacity, cs.translate, cs.clipPath, cs.position];
+						}),
+					),
+				)
+				.toEqual(
+					["s1", "s2", "s3", "s4", "s5", "s6"].map((id) => [id, "1", "none", "none", "relative"]),
+				);
+			const tops = await page
+				.locator("[data-lys] > article")
+				.evaluateAll((slides) => slides.map((el) => el.getBoundingClientRect().top));
+			for (let i = 1; i < tops.length; i++) expect(tops[i]).toBeGreaterThan(tops[i - 1]);
 		});
-		await page.emulateMedia({ media: "print" });
-
-		const slides = page.locator("[data-lys] > article");
-		const count = await slides.count();
-		expect(count).toBeGreaterThan(0);
-
-		for (let i = 0; i < count; i++) {
-			await expect(async () => {
-				const opacity = await slides.nth(i).evaluate((el) => getComputedStyle(el).opacity);
-				expect(opacity).toBe("1");
-			}).toPass({ timeout: 2000 });
-
-			const position = await slides.nth(i).evaluate((el) => getComputedStyle(el).position);
-			expect(position).toBe("relative");
-		}
-	});
+	}
 });
 
 test.describe("print — accessibility", () => {

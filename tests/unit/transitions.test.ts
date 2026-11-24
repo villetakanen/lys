@@ -1,636 +1,488 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Lys } from "../../src/lys.js";
 
+/**
+ * Deck transitions, unit side (specs/deck-transitions/spec.md).
+ *
+ * The style is resolved purely by CSS attribute selectors, so happy-dom can
+ * only verify engine state: selection timing, the outgoing-frame marker,
+ * retargeting, and that authored attributes are never rewritten. Painted
+ * motion, direction, timing and reduced motion are covered by e2e.
+ */
+
 const instances: Lys[] = [];
 
 function createDeck(
 	articleCount: number,
-	extras?: {
-		fadeSlides?: number[];
-		directSlides?: number[];
-		slideAttrs?: Record<number, Record<string, string>>;
-	},
+	opts: {
+		deckTransition?: string | undefined;
+		articleAttrs?: Record<number, Record<string, string>>;
+	} = {},
 ): { container: HTMLElement; articles: HTMLElement[] } {
 	const container = document.createElement("div");
 	container.setAttribute("data-lys", "");
-
+	if (opts.deckTransition !== undefined) {
+		container.setAttribute("data-transition", opts.deckTransition);
+	}
 	for (let i = 0; i < articleCount; i++) {
 		const article = document.createElement("article");
 		article.innerHTML = `<h2>Slide ${i + 1}</h2>`;
-
-		if (extras?.fadeSlides?.includes(i)) {
-			article.setAttribute("data-transition", "fade");
-		}
-
-		if (extras?.directSlides?.includes(i)) {
-			article.setAttribute("data-transition", "direct");
-		}
-
-		const attrs = extras?.slideAttrs?.[i];
-		if (attrs) {
-			for (const [k, v] of Object.entries(attrs)) {
-				article.setAttribute(k, v);
-			}
+		for (const [k, v] of Object.entries(opts.articleAttrs?.[i] ?? {})) {
+			article.setAttribute(k, v);
 		}
 		container.appendChild(article);
 	}
-
 	document.body.appendChild(container);
-	const instance = new Lys(container);
-	instances.push(instance);
-
-	const articles = Array.from(container.querySelectorAll<HTMLElement>(":scope > article"));
-	return { container, articles };
+	return { container, articles: Array.from(container.querySelectorAll("article")) };
 }
 
-function popInstance(): Lys {
-	const instance = instances.pop();
-	if (!instance) throw new Error("No instance to pop");
+function init(container: HTMLElement): Lys {
+	const instance = new Lys(container);
+	instances.push(instance);
 	return instance;
 }
 
-function cleanup(): void {
-	for (const instance of instances) {
-		instance.destroy();
-	}
+/** Initialise and wait for data-lys-ready, after which navigation marks the outgoing frame. */
+async function initReady(container: HTMLElement): Promise<Lys> {
+	const instance = init(container);
+	await nextFrame();
+	expect(container.hasAttribute("data-lys-ready")).toBe(true);
+	return instance;
+}
+
+function leaving(articles: HTMLElement[]): number[] {
+	return articles.flatMap((a, i) => (a.hasAttribute("data-lys-leaving") ? [i] : []));
+}
+
+function active(articles: HTMLElement[]): number[] {
+	return articles.flatMap((a, i) => (a.hasAttribute("data-lys-active") ? [i] : []));
+}
+
+function nextFrame(): Promise<void> {
+	return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
+afterEach(() => {
+	for (const instance of instances) instance.destroy();
 	instances.length = 0;
 	document.body.innerHTML = "";
 	history.replaceState(null, "", location.pathname);
+	vi.unstubAllGlobals();
+	vi.restoreAllMocks();
+});
+
+// === Style resolution: Lys never rewrites the attribute ===
+
+describe("style resolution", () => {
+	for (const value of ["fade", "Horizontal", "vertical", "", "spin", "none"]) {
+		it(`leaves deck data-transition="${value}" unchanged through init, navigation and destroy`, async () => {
+			const { container } = createDeck(3, { deckTransition: value });
+			const instance = init(container);
+			expect(container.getAttribute("data-transition")).toBe(value);
+			await nextFrame();
+			instance.next();
+			instance.goTo(0);
+			expect(container.getAttribute("data-transition")).toBe(value);
+			instance.destroy();
+			expect(container.getAttribute("data-transition")).toBe(value);
+		});
+	}
+
+	it("does not add data-transition to a deck without one", () => {
+		const { container, articles } = createDeck(3);
+		const instance = init(container);
+		instance.next();
+		expect(container.hasAttribute("data-transition")).toBe(false);
+		for (const article of articles) expect(article.hasAttribute("data-transition")).toBe(false);
+	});
+
+	it("never sets the 1.x data-lys-mode attribute", () => {
+		for (const deckTransition of [undefined, "fade", "horizontal", "vertical"]) {
+			const { container } = createDeck(3, {
+				deckTransition,
+				articleAttrs: { 0: { "data-transition": "fade" }, 1: { "data-transition": "direct" } },
+			});
+			const instance = init(container);
+			instance.next();
+			expect(container.hasAttribute("data-lys-mode")).toBe(false);
+		}
+	});
+
+	it("applies a deck style change made after init without engine involvement", async () => {
+		const { container, articles } = createDeck(3, { deckTransition: "fade" });
+		const instance = await initReady(container);
+		container.setAttribute("data-transition", "vertical");
+		instance.next();
+		expect(container.getAttribute("data-transition")).toBe("vertical");
+		expect(active(articles)).toEqual([1]);
+		expect(leaving(articles)).toEqual([0]);
+	});
+});
+
+// === Article data-transition is ignored ===
+
+describe("article data-transition", () => {
+	it("is ignored and never rewritten", () => {
+		const { container, articles } = createDeck(3, {
+			articleAttrs: { 1: { "data-transition": "fade" }, 2: { "data-transition": "direct" } },
+		});
+		const instance = init(container);
+		instance.goTo(1);
+		instance.goTo(2);
+		expect(articles[1]?.getAttribute("data-transition")).toBe("fade");
+		expect(articles[2]?.getAttribute("data-transition")).toBe("direct");
+		expect(container.hasAttribute("data-transition")).toBe(false);
+		expect(container.hasAttribute("data-lys-mode")).toBe(false);
+		instance.destroy();
+		expect(articles[1]?.getAttribute("data-transition")).toBe("fade");
+	});
+
+	it("does not trigger scrolling, which the 2.0 deck never uses for selection", () => {
+		const { container, articles } = createDeck(3, {
+			articleAttrs: { 1: { "data-transition": "fade" } },
+		});
+		const instance = init(container);
+		const spies = articles.map((a) => {
+			const spy = vi.fn();
+			a.scrollIntoView = spy;
+			return spy;
+		});
+		instance.goTo(1);
+		instance.goTo(2);
+		for (const spy of spies) expect(spy).not.toHaveBeenCalled();
+	});
+});
+
+// === Selection timing ===
+
+describe("selection timing", () => {
+	for (const deckTransition of [undefined, "fade", "horizontal", "vertical"]) {
+		it(`updates selection, current, URL and event synchronously (${deckTransition ?? "none"})`, async () => {
+			const { container, articles } = createDeck(4, { deckTransition });
+			const instance = init(container);
+			await nextFrame();
+			const seen: Array<{ current: number; active: number[]; attr: string | null }> = [];
+			const handler = vi.fn(() => {
+				seen.push({
+					current: instance.current,
+					active: active(articles),
+					attr: container.getAttribute("data-lys-current"),
+				});
+			});
+			container.addEventListener("lys:slidechange", handler);
+
+			instance.goTo(2);
+
+			expect(handler).toHaveBeenCalledOnce();
+			expect(seen[0]).toEqual({ current: 2, active: [2], attr: "2" });
+			expect((handler.mock.calls[0] as unknown as [CustomEvent])[0].detail).toMatchObject({
+				from: 0,
+				to: 2,
+				slide: articles[2],
+			});
+			expect(instance.current).toBe(2);
+			expect(location.hash).toBe("#slide=3");
+		});
+	}
+});
+
+// === Outgoing frame marker ===
+
+describe("outgoing frame marker", () => {
+	it("no slide is leaving after init", () => {
+		const { container, articles } = createDeck(3, { deckTransition: "fade" });
+		init(container);
+		expect(leaving(articles)).toEqual([]);
+	});
+
+	it("initial fragment selection marks no slide as leaving", () => {
+		history.replaceState(null, "", "#slide=3");
+		const { container, articles } = createDeck(4, { deckTransition: "horizontal" });
+		const instance = init(container);
+		expect(instance.current).toBe(2);
+		expect(active(articles)).toEqual([2]);
+		expect(leaving(articles)).toEqual([]);
+	});
+
+	it("navigation before data-lys-ready selects without marking a leaving slide", async () => {
+		const { container, articles } = createDeck(4, { deckTransition: "fade" });
+		const instance = init(container);
+		expect(container.hasAttribute("data-lys-ready")).toBe(false);
+		const handler = vi.fn();
+		container.addEventListener("lys:slidechange", handler);
+		instance.next();
+		instance.goTo(3);
+		expect(handler).toHaveBeenCalledTimes(2);
+		expect(active(articles)).toEqual([3]);
+		expect(leaving(articles)).toEqual([]);
+		await nextFrame();
+		instance.prev();
+		expect(leaving(articles)).toEqual([3]);
+	});
+
+	it("marks the previous slide leaving and moves the marker on each navigation", async () => {
+		const { container, articles } = createDeck(6, { deckTransition: "horizontal" });
+		const instance = await initReady(container);
+
+		instance.next();
+		expect(leaving(articles)).toEqual([0]);
+		expect(active(articles)).toEqual([1]);
+
+		instance.next();
+		expect(leaving(articles)).toEqual([1]);
+		expect(active(articles)).toEqual([2]);
+
+		instance.goTo(0);
+		expect(leaving(articles)).toEqual([2]);
+		expect(active(articles)).toEqual([0]);
+	});
+
+	it("a jump marks only the origin leaving; intermediate slides stay untouched", async () => {
+		const { container, articles } = createDeck(6, { deckTransition: "vertical" });
+		const instance = await initReady(container);
+		instance.goTo(5);
+		expect(leaving(articles)).toEqual([0]);
+		expect(active(articles)).toEqual([5]);
+		for (const i of [1, 2, 3, 4]) {
+			expect(articles[i]?.hasAttribute("data-lys-leaving")).toBe(false);
+			expect(articles[i]?.hasAttribute("data-lys-active")).toBe(false);
+		}
+	});
+
+	it("rapid input keeps at most one slide leaving and selects the latest target", async () => {
+		const { container, articles } = createDeck(6, { deckTransition: "fade" });
+		const instance = await initReady(container);
+		for (let press = 1; press <= 3; press++) {
+			container.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+			expect(leaving(articles).length).toBeLessThanOrEqual(1);
+			expect(active(articles)).toEqual([press]);
+		}
+		expect(instance.current).toBe(3);
+		expect(leaving(articles)).toEqual([2]);
+	});
+
+	it("returning to the leaving slide makes it active and no longer leaving", async () => {
+		const { container, articles } = createDeck(3, { deckTransition: "fade" });
+		const instance = await initReady(container);
+		instance.next();
+		instance.prev();
+		expect(active(articles)).toEqual([0]);
+		expect(leaving(articles)).toEqual([1]);
+		expect(articles[0]?.hasAttribute("data-lys-leaving")).toBe(false);
+	});
+
+	it("marks leaving the same way for the default style", async () => {
+		const { container, articles } = createDeck(3);
+		const instance = await initReady(container);
+		instance.next();
+		expect(leaving(articles)).toEqual([0]);
+	});
+});
+
+// === Endpoints ===
+
+describe("endpoints", () => {
+	it("next on the last slide changes nothing and starts no motion", async () => {
+		const { container, articles } = createDeck(3, { deckTransition: "horizontal" });
+		const instance = await initReady(container);
+		instance.goTo(2);
+		const before = { leaving: leaving(articles), active: active(articles), hash: location.hash };
+		const handler = vi.fn();
+		container.addEventListener("lys:slidechange", handler);
+
+		instance.next();
+		container.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+
+		expect(handler).not.toHaveBeenCalled();
+		expect(instance.current).toBe(2);
+		expect({ leaving: leaving(articles), active: active(articles), hash: location.hash }).toEqual(
+			before,
+		);
+	});
+
+	it("prev on the first slide changes nothing and marks nothing leaving", () => {
+		const { container, articles } = createDeck(3, { deckTransition: "vertical" });
+		const instance = init(container);
+		const handler = vi.fn();
+		container.addEventListener("lys:slidechange", handler);
+		instance.prev();
+		expect(handler).not.toHaveBeenCalled();
+		expect(leaving(articles)).toEqual([]);
+		expect(active(articles)).toEqual([0]);
+	});
+
+	it("goTo the current slide does not move the leaving marker", async () => {
+		const { container, articles } = createDeck(3, { deckTransition: "fade" });
+		const instance = await initReady(container);
+		instance.next();
+		instance.goTo(1);
+		expect(leaving(articles)).toEqual([0]);
+	});
+});
+
+// === Retargeting cancels engine frame transitions ===
+
+class FakeCSSTransition {
+	cancel = vi.fn();
+	constructor(public transitionProperty: string) {}
 }
 
-afterEach(cleanup);
+class FakeCSSAnimation {
+	cancel = vi.fn();
+	animationName = "author";
+}
 
-// === Mode detection ===
+function stubAnimations(el: HTMLElement, animations: unknown[]): ReturnType<typeof vi.fn> {
+	const spy = vi.fn(() => animations as Animation[]);
+	el.getAnimations = spy;
+	return spy;
+}
 
-describe("mode detection", () => {
-	it("default deck does not have data-lys-mode", () => {
-		const { container } = createDeck(3);
-		expect(container.hasAttribute("data-lys-mode")).toBe(false);
-	});
+describe("retargeting", () => {
+	it("cancels the --_lys-alpha and --_lys-offset transitions on the old leaving frame", async () => {
+		vi.stubGlobal("CSSTransition", FakeCSSTransition);
+		const { container, articles } = createDeck(4, { deckTransition: "horizontal" });
+		const instance = await initReady(container);
+		instance.next(); // slide 0 leaving
+		const frame = ["--_lys-alpha", "--_lys-offset"].map((p) => new FakeCSSTransition(p));
+		const spy = stubAnimations(articles[0] as HTMLElement, frame);
 
-	it("deck with data-transition='fade' gets data-lys-mode='fade'", () => {
-		const { container } = createDeck(3, { fadeSlides: [1] });
-		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
-	});
-
-	it("any slide with fade activates fade for the whole deck", () => {
-		const { container } = createDeck(5, { fadeSlides: [2] });
-		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
-	});
-
-	it("unknown data-transition value is ignored", () => {
-		const { container } = createDeck(3, {
-			slideAttrs: { 0: { "data-transition": "zoom" } },
-		});
-		expect(container.hasAttribute("data-lys-mode")).toBe(false);
-	});
-});
-
-// === Fade layout via data-lys-active ===
-
-describe("fade layout", () => {
-	it("active slide has data-lys-active, inactive slides do not", () => {
-		const { articles } = createDeck(3, { fadeSlides: [0] });
-		expect(articles[0].hasAttribute("data-lys-active")).toBe(true);
-		expect(articles[1].hasAttribute("data-lys-active")).toBe(false);
-		expect(articles[2].hasAttribute("data-lys-active")).toBe(false);
-	});
-
-	it("navigation updates data-lys-active", () => {
-		const { articles } = createDeck(3, { fadeSlides: [0] });
-		const instance = instances[instances.length - 1];
-		instance.goTo(1);
-
-		expect(articles[0].hasAttribute("data-lys-active")).toBe(false);
-		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
-	});
-});
-
-// === Scroll-snap mode unchanged ===
-
-describe("scroll-snap mode unchanged", () => {
-	it("default deck calls scrollIntoView on navigation", () => {
-		const { articles } = createDeck(3);
-		const spy = vi.spyOn(articles[1], "scrollIntoView");
-		const instance = instances[instances.length - 1];
-		instance.goTo(1);
+		instance.next();
 
 		expect(spy).toHaveBeenCalledOnce();
+		for (const t of frame) expect(t.cancel).toHaveBeenCalledOnce();
+		expect(leaving(articles)).toEqual([1]);
 	});
 
-	it("default deck does not set data-lys-mode", () => {
-		const { container } = createDeck(3);
-		const instance = instances[instances.length - 1];
-		instance.goTo(1);
-		expect(container.hasAttribute("data-lys-mode")).toBe(false);
-	});
-});
-
-// === Navigation in fade mode ===
-
-describe("navigation in fade mode", () => {
-	it("scrollIntoView is NOT called in fade mode", () => {
-		const { articles } = createDeck(3, { fadeSlides: [0] });
-		const spy = vi.spyOn(articles[1], "scrollIntoView");
-		const instance = instances[instances.length - 1];
-		instance.goTo(1);
-
-		expect(spy).not.toHaveBeenCalled();
-	});
-
-	it("keyboard navigation works in fade mode", () => {
-		const { container, articles } = createDeck(3, { fadeSlides: [0] });
-		container.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
-
-		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
-	});
-
-	it("touch navigation works in fade mode", () => {
-		const { container, articles } = createDeck(3, { fadeSlides: [0] });
-		const startX = 200;
-		const startY = 200;
-		container.dispatchEvent(
-			new TouchEvent("touchstart", {
-				touches: [
-					new Touch({ identifier: 0, target: container, clientX: startX, clientY: startY }),
-				],
-				bubbles: true,
-			}),
+	it("does not cancel non-frame transitions or CSS animations on the leaving frame", async () => {
+		vi.stubGlobal("CSSTransition", FakeCSSTransition);
+		const { container, articles } = createDeck(4, { deckTransition: "fade" });
+		const instance = await initReady(container);
+		instance.next();
+		const others = ["color", "transform", "translate", "clip-path", "--author-offset"].map(
+			(p) => new FakeCSSTransition(p),
 		);
-		container.dispatchEvent(
-			new TouchEvent("touchend", {
-				changedTouches: [
-					new Touch({ identifier: 0, target: container, clientX: startX - 60, clientY: startY }),
-				],
-				bubbles: true,
-			}),
-		);
+		const animation = new FakeCSSAnimation();
+		stubAnimations(articles[0] as HTMLElement, [...others, animation]);
 
-		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
+		instance.next();
+
+		for (const t of others) expect(t.cancel).not.toHaveBeenCalled();
+		expect(animation.cancel).not.toHaveBeenCalled();
 	});
 
-	it("API navigation works in fade mode", () => {
-		createDeck(5, { fadeSlides: [0] });
-		const instance = instances[instances.length - 1];
-		instance.goTo(2);
+	it("returning to the leaving frame does not cancel its motion", async () => {
+		vi.stubGlobal("CSSTransition", FakeCSSTransition);
+		const { container, articles } = createDeck(3, { deckTransition: "horizontal" });
+		const instance = await initReady(container);
+		instance.next(); // A=0 leaving, B=1 active
+		const frame = ["--_lys-alpha", "--_lys-offset"].map((p) => new FakeCSSTransition(p));
+		stubAnimations(articles[0] as HTMLElement, frame);
 
-		expect(instance.current).toBe(2);
+		instance.prev(); // back to A before motion ends
+
+		for (const t of frame) expect(t.cancel).not.toHaveBeenCalled();
+		expect(active(articles)).toEqual([0]);
+		expect(leaving(articles)).toEqual([1]);
 	});
 
-	it("lys:slidechange fires with correct detail in fade mode", () => {
-		const { container } = createDeck(3, { fadeSlides: [0] });
-		const instance = instances[instances.length - 1];
-		const handler = vi.fn();
-		container.addEventListener("lys:slidechange", handler);
+	it("queries only the leaving frame itself, never its subtree or other slides", async () => {
+		vi.stubGlobal("CSSTransition", FakeCSSTransition);
+		const { container, articles } = createDeck(4, { deckTransition: "vertical" });
+		const instance = await initReady(container);
+		instance.next(); // 0 leaving, 1 active
 
-		instance.goTo(2);
+		const child = articles[0]?.querySelector("h2") as HTMLElement;
+		const childTransition = new FakeCSSTransition("opacity");
+		const childSpy = stubAnimations(child, [childTransition]);
+		const leavingSpy = stubAnimations(articles[0] as HTMLElement, []);
+		const activeSpy = stubAnimations(articles[1] as HTMLElement, []);
+		const idleSpy = stubAnimations(articles[3] as HTMLElement, []);
 
-		expect(handler).toHaveBeenCalledOnce();
-		const detail = (handler.mock.calls[0][0] as CustomEvent).detail;
-		expect(detail.from).toBe(0);
-		expect(detail.to).toBe(2);
+		instance.next();
+
+		expect(leavingSpy).toHaveBeenCalledOnce();
+		const args = leavingSpy.mock.calls[0] as unknown[];
+		expect(args[0] === undefined || (args[0] as { subtree?: boolean }).subtree !== true).toBe(true);
+		expect(childSpy).not.toHaveBeenCalled();
+		expect(childTransition.cancel).not.toHaveBeenCalled();
+		expect(activeSpy).not.toHaveBeenCalled();
+		expect(idleSpy).not.toHaveBeenCalled();
 	});
 
-	it("hash routing works in fade mode", () => {
-		// Set hash before creating deck.
-		history.replaceState(null, "", "#slide=2");
-		const { articles } = createDeck(3, { fadeSlides: [0] });
-		const instance = instances[instances.length - 1];
-
-		expect(instance.current).toBe(1); // 0-indexed, #slide=2 → index 1
-		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
-	});
-});
-
-// === A11y in fade mode ===
-
-describe("a11y in fade mode", () => {
-	it("ARIA attributes are set in fade mode", () => {
-		const { container, articles } = createDeck(3, { fadeSlides: [0] });
-
-		expect(container.getAttribute("role")).toBe("group");
-		expect(container.getAttribute("aria-roledescription")).toBe("slide deck");
-
-		for (const article of articles) {
-			expect(article.getAttribute("role")).toBe("group");
-			expect(article.getAttribute("aria-roledescription")).toBe("slide");
-		}
+	it("does not query animations when nothing is leaving", async () => {
+		vi.stubGlobal("CSSTransition", FakeCSSTransition);
+		const { container, articles } = createDeck(3, { deckTransition: "fade" });
+		const instance = await initReady(container);
+		const spies = articles.map((a) => stubAnimations(a, []));
+		instance.next();
+		for (const spy of spies) expect(spy).not.toHaveBeenCalled();
 	});
 
-	it("aria-hidden is managed in fade mode", () => {
-		const { articles } = createDeck(3, { fadeSlides: [0] });
-
-		expect(articles[0].hasAttribute("aria-hidden")).toBe(false);
-		expect(articles[1].getAttribute("aria-hidden")).toBe("true");
-		expect(articles[2].getAttribute("aria-hidden")).toBe("true");
+	it("tolerates getAnimations being absent", async () => {
+		const { container, articles } = createDeck(3, { deckTransition: "fade" });
+		const instance = await initReady(container);
+		instance.next();
+		Object.defineProperty(articles[0], "getAnimations", { value: undefined, configurable: true });
+		expect(() => instance.next()).not.toThrow();
+		expect(active(articles)).toEqual([2]);
+		expect(leaving(articles)).toEqual([1]);
 	});
 
-	it("live region announces in fade mode", () => {
-		const { container } = createDeck(3, { fadeSlides: [0] });
-		const instance = instances[instances.length - 1];
-		instance.goTo(1);
-
-		const liveRegion = container.querySelector('[role="status"]') as HTMLElement;
-		expect(liveRegion.textContent).toBe("Slide 2 of 3");
-	});
-
-	it("focus moves to active slide in fade mode", () => {
-		const { articles } = createDeck(3, { fadeSlides: [0] });
-		const instance = instances[instances.length - 1];
-		const focusSpy = vi.spyOn(articles[1], "focus");
-		instance.goTo(1);
-
-		expect(focusSpy).toHaveBeenCalledWith({ preventScroll: true });
+	it("tolerates CSSTransition being undefined and cancels nothing", async () => {
+		vi.stubGlobal("CSSTransition", undefined);
+		const { container, articles } = createDeck(3, { deckTransition: "fade" });
+		const instance = await initReady(container);
+		instance.next();
+		const t = new FakeCSSTransition("--_lys-alpha");
+		stubAnimations(articles[0] as HTMLElement, [t]);
+		expect(() => instance.next()).not.toThrow();
+		expect(t.cancel).not.toHaveBeenCalled();
+		expect(leaving(articles)).toEqual([1]);
 	});
 });
 
-// === Cleanup ===
-
-describe("destroy cleanup", () => {
-	it("destroy removes data-lys-mode", () => {
-		const { container } = createDeck(3, { fadeSlides: [0] });
-		const instance = popInstance();
-		instance.destroy();
-
-		expect(container.hasAttribute("data-lys-mode")).toBe(false);
-	});
-
-	it("destroy removes data-lys-active from slides", () => {
-		const { articles } = createDeck(3, { fadeSlides: [0] });
-		const instance = popInstance();
-		instance.destroy();
-
-		for (const article of articles) {
-			expect(article.hasAttribute("data-lys-active")).toBe(false);
-		}
-	});
-
-	it("re-initialization after destroy preserves mode", () => {
-		const { container } = createDeck(3, { fadeSlides: [0] });
-		const instance = popInstance();
-		instance.destroy();
-
-		expect(container.hasAttribute("data-lys-mode")).toBe(false);
-
-		// Re-init: data-transition is still on the article.
-		const newInstance = new Lys(container);
-		instances.push(newInstance);
-		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
-	});
-});
-
-// === Edge cases ===
-
-describe("edge cases", () => {
-	it("empty deck with no slides does not throw or set fade mode", () => {
-		const { container } = createDeck(0);
-		expect(container.hasAttribute("data-lys-mode")).toBe(false);
-	});
-
-	it("single-slide fade deck has data-lys-active", () => {
-		const { container, articles } = createDeck(1, { fadeSlides: [0] });
-		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
-		expect(articles[0].hasAttribute("data-lys-active")).toBe(true);
-	});
-
-	it("data-lys-active is set before data-lys-mode", () => {
-		// Verify the constructor sets data-lys-active first.
-		// The container should have both attributes after init.
-		const { container, articles } = createDeck(3, { fadeSlides: [0] });
-		expect(articles[0].hasAttribute("data-lys-active")).toBe(true);
-		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
-	});
-});
-
-// === Direct mode detection ===
-
-describe("direct mode detection", () => {
-	it("deck with data-transition='direct' gets data-lys-mode='direct'", () => {
-		const { container } = createDeck(3, { directSlides: [0] });
-		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
-	});
-
-	it("any slide with direct activates direct for the whole deck", () => {
-		const { container } = createDeck(5, { directSlides: [2] });
-		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
-	});
-
-	it("fade takes precedence over direct", () => {
-		const { container } = createDeck(3, { fadeSlides: [0], directSlides: [1] });
-		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
-	});
-});
-
-// === Direct mode layout ===
-
-describe("direct mode layout", () => {
-	it("active slide has data-lys-active, inactive slides do not", () => {
-		const { articles } = createDeck(3, { directSlides: [0] });
-		expect(articles[0].hasAttribute("data-lys-active")).toBe(true);
-		expect(articles[1].hasAttribute("data-lys-active")).toBe(false);
-		expect(articles[2].hasAttribute("data-lys-active")).toBe(false);
-	});
-
-	it("navigation updates data-lys-active", () => {
-		const { articles } = createDeck(3, { directSlides: [0] });
-		const instance = instances[instances.length - 1];
-		instance.goTo(1);
-
-		expect(articles[0].hasAttribute("data-lys-active")).toBe(false);
-		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
-	});
-});
-
-// === Navigation in direct mode ===
-
-describe("navigation in direct mode", () => {
-	it("scrollIntoView is NOT called in direct mode", () => {
-		const { articles } = createDeck(3, { directSlides: [0] });
-		const spy = vi.spyOn(articles[1], "scrollIntoView");
-		const instance = instances[instances.length - 1];
-		instance.goTo(1);
-
-		expect(spy).not.toHaveBeenCalled();
-	});
-
-	it("keyboard navigation works in direct mode", () => {
-		const { container, articles } = createDeck(3, { directSlides: [0] });
-		container.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
-
-		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
-	});
-
-	it("touch navigation works in direct mode", () => {
-		const { container, articles } = createDeck(3, { directSlides: [0] });
-		const startX = 200;
-		const startY = 200;
-		container.dispatchEvent(
-			new TouchEvent("touchstart", {
-				touches: [
-					new Touch({ identifier: 0, target: container, clientX: startX, clientY: startY }),
-				],
-				bubbles: true,
-			}),
-		);
-		container.dispatchEvent(
-			new TouchEvent("touchend", {
-				changedTouches: [
-					new Touch({ identifier: 0, target: container, clientX: startX - 60, clientY: startY }),
-				],
-				bubbles: true,
-			}),
-		);
-
-		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
-	});
-
-	it("API navigation works in direct mode", () => {
-		createDeck(5, { directSlides: [0] });
-		const instance = instances[instances.length - 1];
-		instance.goTo(2);
-
-		expect(instance.current).toBe(2);
-	});
-
-	it("lys:slidechange fires with correct detail in direct mode", () => {
-		const { container } = createDeck(3, { directSlides: [0] });
-		const instance = instances[instances.length - 1];
-		const handler = vi.fn();
-		container.addEventListener("lys:slidechange", handler);
-
-		instance.goTo(2);
-
-		expect(handler).toHaveBeenCalledOnce();
-		const detail = (handler.mock.calls[0][0] as CustomEvent).detail;
-		expect(detail.from).toBe(0);
-		expect(detail.to).toBe(2);
-	});
-
-	it("hash routing works in direct mode", () => {
-		history.replaceState(null, "", "#slide=2");
-		const { articles } = createDeck(3, { directSlides: [0] });
-		const instance = instances[instances.length - 1];
-
-		expect(instance.current).toBe(1);
-		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
-	});
-});
-
-// === A11y in direct mode ===
-
-describe("a11y in direct mode", () => {
-	it("ARIA attributes are set in direct mode", () => {
-		const { container, articles } = createDeck(3, { directSlides: [0] });
-
-		expect(container.getAttribute("role")).toBe("group");
-		expect(container.getAttribute("aria-roledescription")).toBe("slide deck");
-
-		for (const article of articles) {
-			expect(article.getAttribute("role")).toBe("group");
-			expect(article.getAttribute("aria-roledescription")).toBe("slide");
-		}
-	});
-
-	it("aria-hidden is managed in direct mode", () => {
-		const { articles } = createDeck(3, { directSlides: [0] });
-
-		expect(articles[0].hasAttribute("aria-hidden")).toBe(false);
-		expect(articles[1].getAttribute("aria-hidden")).toBe("true");
-		expect(articles[2].getAttribute("aria-hidden")).toBe("true");
-	});
-
-	it("live region announces in direct mode", () => {
-		const { container } = createDeck(3, { directSlides: [0] });
-		const instance = instances[instances.length - 1];
-		instance.goTo(1);
-
-		const liveRegion = container.querySelector('[role="status"]') as HTMLElement;
-		expect(liveRegion.textContent).toBe("Slide 2 of 3");
-	});
-
-	it("focus moves to active slide in direct mode", () => {
-		const { articles } = createDeck(3, { directSlides: [0] });
-		const instance = instances[instances.length - 1];
-		const focusSpy = vi.spyOn(articles[1], "focus");
-		instance.goTo(1);
-
-		expect(focusSpy).toHaveBeenCalledWith({ preventScroll: true });
-	});
-});
-
-// === Direct mode cleanup ===
-
-describe("direct mode cleanup", () => {
-	it("destroy removes data-lys-mode='direct'", () => {
-		const { container } = createDeck(3, { directSlides: [0] });
-		const instance = popInstance();
-		instance.destroy();
-
-		expect(container.hasAttribute("data-lys-mode")).toBe(false);
-	});
-
-	it("re-initialization after destroy preserves direct mode", () => {
-		const { container } = createDeck(3, { directSlides: [0] });
-		const instance = popInstance();
-		instance.destroy();
-
-		expect(container.hasAttribute("data-lys-mode")).toBe(false);
-
-		const newInstance = new Lys(container);
-		instances.push(newInstance);
-		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
-	});
-});
-
-// === Direct mode edge cases ===
-
-describe("direct mode edge cases", () => {
-	it("single-slide direct deck has data-lys-active", () => {
-		const { container, articles } = createDeck(1, { directSlides: [0] });
-		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
-		expect(articles[0].hasAttribute("data-lys-active")).toBe(true);
-	});
-});
-
-// === Mixed-mode decks (per-slide transitions) ===
-
-describe("mixed-mode decks", () => {
-	it("mixed fade and direct slides use stacked mode", () => {
-		const { container } = createDeck(4, { fadeSlides: [0], directSlides: [2] });
-		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
-	});
-
-	it("navigation works through mixed slides", () => {
-		const { articles } = createDeck(4, { fadeSlides: [0, 3], directSlides: [1] });
-		const instance = instances[instances.length - 1];
-
-		instance.goTo(1);
-		expect(articles[1].hasAttribute("data-lys-active")).toBe(true);
-		expect(articles[0].hasAttribute("data-lys-active")).toBe(false);
-
-		instance.goTo(2);
-		expect(articles[2].hasAttribute("data-lys-active")).toBe(true);
-
-		instance.goTo(3);
-		expect(articles[3].hasAttribute("data-lys-active")).toBe(true);
-	});
-
-	it("scrollIntoView is NOT called in mixed-mode deck", () => {
-		const { articles } = createDeck(3, { fadeSlides: [0], directSlides: [2] });
-		const spy = vi.spyOn(articles[1], "scrollIntoView");
-		const instance = instances[instances.length - 1];
-		instance.goTo(1);
-
-		expect(spy).not.toHaveBeenCalled();
-	});
-
-	it("lys:slidechange fires for each transition in mixed deck", () => {
-		const { container } = createDeck(4, { fadeSlides: [0, 3], directSlides: [1] });
-		const instance = instances[instances.length - 1];
-		const handler = vi.fn();
-		container.addEventListener("lys:slidechange", handler);
-
-		instance.goTo(1);
-		instance.goTo(2);
-		instance.goTo(3);
-
-		expect(handler).toHaveBeenCalledTimes(3);
-	});
-
-	it("single fade slide in otherwise plain deck triggers stacked mode", () => {
-		const { container } = createDeck(5, { fadeSlides: [2] });
-		expect(container.getAttribute("data-lys-mode")).toBe("stacked");
-	});
-
-	it("ARIA attributes work in mixed-mode deck", () => {
-		const { container, articles } = createDeck(3, { fadeSlides: [0], directSlides: [2] });
-
-		expect(container.getAttribute("role")).toBe("group");
-		expect(container.getAttribute("aria-roledescription")).toBe("slide deck");
-
-		for (const article of articles) {
-			expect(article.getAttribute("role")).toBe("group");
-			expect(article.getAttribute("aria-roledescription")).toBe("slide");
-		}
-	});
-
-	it("live region announces in mixed-mode deck", () => {
-		const { container } = createDeck(3, { fadeSlides: [0], directSlides: [2] });
-		const instance = instances[instances.length - 1];
-		instance.goTo(1);
-
-		const liveRegion = container.querySelector('[role="status"]') as HTMLElement;
-		expect(liveRegion.textContent).toBe("Slide 2 of 3");
-	});
-
-	it("hash routing works in mixed-mode deck", () => {
-		history.replaceState(null, "", "#slide=3");
-		const { articles } = createDeck(3, { fadeSlides: [0], directSlides: [2] });
-		const instance = instances[instances.length - 1];
-
-		expect(instance.current).toBe(2);
-		expect(articles[2].hasAttribute("data-lys-active")).toBe(true);
-	});
-});
-
-// === FOUC prevention (#22) ===
-
-describe("FOUC prevention — data-lys-ready", () => {
-	it("data-lys-ready is NOT set synchronously after construction", () => {
-		const { container } = createDeck(3, { fadeSlides: [0] });
+// === Readiness and teardown ===
+
+describe("readiness and teardown", () => {
+	it("sets data-lys-ready only after the first frame", async () => {
+		const { container } = createDeck(3, { deckTransition: "fade" });
+		init(container);
 		expect(container.hasAttribute("data-lys-ready")).toBe(false);
-	});
-
-	it("data-lys-ready is set after requestAnimationFrame", async () => {
-		const { container } = createDeck(3, { fadeSlides: [0] });
-		await new Promise((resolve) => requestAnimationFrame(resolve));
+		await nextFrame();
 		expect(container.hasAttribute("data-lys-ready")).toBe(true);
 	});
 
-	it("data-lys-ready is set for direct mode", async () => {
-		const { container } = createDeck(3, { directSlides: [0] });
-		await new Promise((resolve) => requestAnimationFrame(resolve));
-		expect(container.hasAttribute("data-lys-ready")).toBe(true);
-	});
-
-	it("data-lys-ready is set for scroll-snap mode", async () => {
-		const { container } = createDeck(3);
-		await new Promise((resolve) => requestAnimationFrame(resolve));
-		expect(container.hasAttribute("data-lys-ready")).toBe(true);
-	});
-
-	it("destroy() removes data-lys-ready", async () => {
-		const { container } = createDeck(3, { fadeSlides: [0] });
-		await new Promise((resolve) => requestAnimationFrame(resolve));
-		expect(container.hasAttribute("data-lys-ready")).toBe(true);
-
-		const instance = popInstance();
+	it("destroy before the first frame prevents data-lys-ready", async () => {
+		const { container } = createDeck(3, { deckTransition: "fade" });
+		const instance = new Lys(container);
 		instance.destroy();
+		await nextFrame();
 		expect(container.hasAttribute("data-lys-ready")).toBe(false);
 	});
 
-	it("destroy() before rAF prevents data-lys-ready from being set", async () => {
-		const { container } = createDeck(3, { fadeSlides: [0] });
-		// Destroy immediately, before rAF fires.
-		const instance = popInstance();
+	it("destroy removes data-lys-leaving, data-lys-active and data-lys-ready", async () => {
+		const { container, articles } = createDeck(3, { deckTransition: "horizontal" });
+		const instance = new Lys(container);
+		await nextFrame();
+		instance.next();
+		expect(leaving(articles)).toEqual([0]);
 		instance.destroy();
-
-		await new Promise((resolve) => requestAnimationFrame(resolve));
+		expect(leaving(articles)).toEqual([]);
+		expect(active(articles)).toEqual([]);
 		expect(container.hasAttribute("data-lys-ready")).toBe(false);
+		expect(container.hasAttribute("data-lys-current")).toBe(false);
 	});
 
-	it("re-initialization after destroy sets data-lys-ready again", async () => {
-		const { container } = createDeck(3, { fadeSlides: [0] });
-		await new Promise((resolve) => requestAnimationFrame(resolve));
-
-		const instance = popInstance();
-		instance.destroy();
-		expect(container.hasAttribute("data-lys-ready")).toBe(false);
-
-		const newInstance = new Lys(container);
-		instances.push(newInstance);
-		expect(container.hasAttribute("data-lys-ready")).toBe(false);
-		await new Promise((resolve) => requestAnimationFrame(resolve));
-		expect(container.hasAttribute("data-lys-ready")).toBe(true);
+	it("re-initialisation starts with no leaving slide", async () => {
+		const { container, articles } = createDeck(3, { deckTransition: "fade" });
+		const first = new Lys(container);
+		await nextFrame();
+		first.next();
+		expect(leaving(articles)).toEqual([0]);
+		history.replaceState(null, "", location.pathname); // no fragment re-selection
+		const second = init(container); // destroys the first
+		expect(leaving(articles)).toEqual([]);
+		expect(second.current).toBe(0);
 	});
 });

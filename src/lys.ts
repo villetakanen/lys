@@ -5,6 +5,19 @@ import { type NavigationHandle, setupNavigation } from "./navigation.js";
 import { watchAspectRatio } from "./surface.js";
 import type { LysInstance, LysReadyDetail, LysSlideChangeDetail } from "./types.js";
 
+const FRAME_MOTION = new Set(["--_lys-alpha", "--_lys-offset"]);
+
+/** Browsers may keep a transition running after its property leaves
+ * `transition`; end the engine's frame transitions on this article only. */
+function stopFrameMotion(slide: HTMLElement): void {
+	if (typeof CSSTransition === "undefined") return;
+	for (const animation of slide.getAnimations?.() ?? []) {
+		if (animation instanceof CSSTransition && FRAME_MOTION.has(animation.transitionProperty)) {
+			animation.cancel();
+		}
+	}
+}
+
 /** Registry of initialized containers to instances (for idempotency). */
 const registry = new WeakMap<HTMLElement, Lys>();
 
@@ -19,7 +32,6 @@ export class Lys implements LysInstance {
 	#slides: HTMLElement[] = [];
 	#current = -1;
 	#classMap = new Map<HTMLElement, string[]>();
-	#mode: "stacked" | null = null;
 	#readyFrame = 0;
 	#stopWatchingRatio: (() => void) | undefined;
 	#navigation: NavigationHandle | null = null;
@@ -70,20 +82,11 @@ export class Lys implements LysInstance {
 			}
 		}
 
-		// Set initial state attributes (must happen before fade mode detection).
+		// Set initial state attributes.
 		if (this.#current >= 0) {
 			this.#slides[this.#current]?.setAttribute("data-lys-active", "");
 			container.setAttribute("data-lys-current", String(this.#current));
 			this.#stopWatchingRatio = watchAspectRatio(container);
-		}
-
-		// Detect transition mode — any recognized data-transition triggers stacked layout.
-		const hasStacked = this.#slides.some(
-			(s) => s.dataset.transition === "fade" || s.dataset.transition === "direct",
-		);
-		this.#mode = hasStacked ? "stacked" : null;
-		if (this.#mode) {
-			container.setAttribute("data-lys-mode", this.#mode);
 		}
 
 		registry.set(container, this);
@@ -144,17 +147,23 @@ export class Lys implements LysInstance {
 		const nextSlide = this.#slides[index];
 		if (!nextSlide) return;
 
-		// Update active slide attribute.
+		// Update selection. Only the outgoing and selected frames animate (CSS);
+		// any earlier outgoing frame stops at once, so a new request retargets.
+		for (const slide of this.#slides) {
+			if (slide.hasAttribute("data-lys-leaving")) {
+				slide.removeAttribute("data-lys-leaving");
+				// Returning to the outgoing frame reverses its motion smoothly.
+				if (slide !== nextSlide) stopFrameMotion(slide);
+			}
+		}
 		prevSlide?.removeAttribute("data-lys-active");
+		// Initial selection (e.g. a fragment load) happens before ready: no motion.
+		if (this.#container.hasAttribute("data-lys-ready")) {
+			prevSlide?.setAttribute("data-lys-leaving", "");
+		}
 		this.#current = index;
 		nextSlide.setAttribute("data-lys-active", "");
 		this.#container.setAttribute("data-lys-current", String(this.#current));
-
-		// In scroll-snap mode, scroll the target slide into view.
-		// In fade/direct mode, CSS handles visibility via data-lys-active — no scrolling needed.
-		if (!this.#mode) {
-			nextSlide.scrollIntoView({ behavior: "instant", block: "center" });
-		}
 
 		// Dispatch slidechange event.
 		this.#container.dispatchEvent(
@@ -186,11 +195,10 @@ export class Lys implements LysInstance {
 		// Remove state attributes.
 		for (const slide of this.#slides) {
 			slide.removeAttribute("data-lys-active");
+			slide.removeAttribute("data-lys-leaving");
 		}
 		this.#container.removeAttribute("data-lys-current");
-		this.#container.removeAttribute("data-lys-mode");
 		this.#container.removeAttribute("data-lys-ready");
-		this.#mode = null;
 
 		// Revert data-class additions.
 		for (const [slide, classes] of this.#classMap) {

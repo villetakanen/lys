@@ -1,7 +1,7 @@
 ---
 generated:
   by: "claude-code/claude-opus-5-5"
-  at: "2026-11-24T08:40:40+02:00"
+  at: "2026-11-24T11:57:43+02:00"
 verified:
   - by: "human:ville.takanen"
     at: "2026-11-24T08:42:02+02:00"
@@ -67,8 +67,8 @@ With JavaScript, all slides share the settled frame defined by the [surface geom
 
 | Module | Responsibility |
 | --- | --- |
-| `src/lys.ts` | Resolves the deck style, owns selection, and records motion direction and the outgoing frame as engine state. |
-| `src/lys.css` | Stacking, fade, and axis motion, keyed off enhanced state and limited to screen. Deck-scope timing; no motion under reduced motion. |
+| `src/lys.ts` | Owns selection and marks the outgoing frame. On retarget, ends the engine's frame transitions on the previous outgoing frame. |
+| `src/lys.css` | Resolves the deck style. Stacking, fade, and axis motion, keyed off enhanced state and limited to screen; direction follows document order. Deck-scope timing; no motion under reduced motion. |
 | `src/navigation.ts` | Input commands call the core selection path, which owns motion. |
 
 Engine state attributes are internal and not author API.
