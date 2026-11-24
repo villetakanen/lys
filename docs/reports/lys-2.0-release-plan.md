@@ -1,7 +1,7 @@
 ---
 generated:
-  by: "pi/gpt-6.2-sol"
-  at: "2026-11-23T20:10:43+02:00"
+  by: "claude-code/claude-opus-5-5"
+  at: "2026-11-24T08:34:03+02:00"
 ---
 
 # Lys 2.0.0 release plan
@@ -107,7 +107,7 @@ Source basis: src/lys.ts, src/types.ts, src/navigation.ts, src/nav.ts, src/a11y.
 | `lys:ready`, `lys:slidechange` | Public events used by internal modules | Decide public retention separately from internal coordination |
 | `data-class`, `data-background` | Mutate article class/style | Remove author shorthand behaviour under standard HTML/CSS boundary; migrate to ordinary class/style |
 | `data-notes`, `data-timing` | Advertised metadata, no presenter UI | No engine metadata contract in 2.0; remove documentation promises |
-| Article `data-transition` | Any fade/direct article activates stacked mode | Replace per-slide interpretation with one deck style; exact configuration pending |
+| Article `data-transition` | Any fade/direct article activates stacked mode | Replaced by deck `data-transition` (none, fade, horizontal, vertical) with stacked rendering for every deck; see the [deck transitions spec](../../specs/deck-transitions/spec.md) |
 | `data-lys-nav`, active markers | Optional navigation-region styling and active-link management | Custom navigation integration is not implied by ordinary anchor support; removal/migration must be explicit |
 | `#slide=…` | Custom numeric/ID parser; sequential replaceState | Replace with actual optional authored IDs; no ID synthesis/repair |
 | Accessibility mutations | Article roles replaced; labels/tabindex/live region added; focus moved | Do not adopt as native baseline; task 1a gates replacements |
@@ -116,7 +116,7 @@ Source basis: src/lys.ts, src/types.ts, src/navigation.ts, src/nav.ts, src/a11y.
 
 | 1.x token | Migration direction |
 | --- | --- |
-| `--lys-transition-duration`, `--lys-transition-easing` | Retain motion configuration only if needed; deck scope, reduced-motion override must win |
+| `--lys-transition-duration`, `--lys-transition-easing` | Retained at deck scope; reduced motion wins. See the [deck transitions spec](../../specs/deck-transitions/spec.md) |
 | `--lys-print-page-size` | Investigate actual page-context resolution and native print sizing before retaining/replacing |
 
 ### Native history and unnamed slides
@@ -240,3 +240,5 @@ Initial increment: added a source-backed API/token inventory and implementation 
 23 November 2026: implemented the Task 3 surface increment: deck-wide screen fit and ratio validation, size containment, clipping, scheme-aware paint, and immediate default navigation. The existing fade/direct modes share the new frame; reduced motion bypasses engine fade without disabling author animations. Deck-wide transition configuration and horizontal/vertical motion still need the Task 1 contract; this increment introduces no public configuration.
 
 Verification: 185 unit tests and 446 Playwright tests passed (28 existing skips). The production surface fixture ran on Playwright Chromium 145.0.7632.6, Firefox 146.0.1, and WebKit 26.0; these are test versions, not the August 2026 baseline. Fresh artifact raw/gzip bytes: ESM 9,560/3,273; IIFE 7,854/2,941; CSS 2,228/821. Screen-reader observations and native print verification remain separate release work.
+
+24 November 2026: the [deck transitions spec](../../specs/deck-transitions/spec.md) defines the deck-wide transition contract. Owner decisions: `data-transition` on the deck selects none, fade, horizontal, or vertical; the duration and easing tokens remain at deck scope; input during motion retargets immediately; every enhanced deck uses stacked rendering, which removes the scroll-snap row. Implementation completes task 3's transition work. Runtime behaviour is unchanged until then.
