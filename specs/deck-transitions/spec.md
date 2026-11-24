@@ -1,7 +1,7 @@
 ---
 generated:
   by: "claude-code/claude-opus-5-5"
-  at: "2026-11-24T09:02:11+02:00"
+  at: "2026-11-24T08:40:40+02:00"
 ---
 
 # Deck transitions
@@ -10,7 +10,7 @@ generated:
 
 ### Context
 
-A deck has one transition style: none, fade, horizontal, or vertical. The style changes how a slide change looks, never what it means. Reduced motion makes every change immediate. Animation inside slides belongs to the author.
+A deck has one transition style: none, fade, horizontal, or vertical. The style changes how a slide change looks, never what it means.
 
 ### Architecture
 
@@ -34,7 +34,7 @@ A deck has one transition style: none, fade, horizontal, or vertical. The style 
 | `--lys-transition-duration` | `300ms` | Resolved on the deck, including through inheritance. Applies to fade, horizontal, and vertical. Slide-local declarations have no effect. |
 | `--lys-transition-easing` | `ease-in-out` | Same scope and resolution as duration. |
 
-Invalid timing values follow normal CSS rules; Lys does not repair them. `none` ignores both tokens. Reduced motion overrides both.
+Invalid timing values follow normal CSS rules; Lys does not repair them. `none` ignores both tokens.
 
 #### Rendering
 
@@ -57,7 +57,7 @@ With JavaScript, all slides share the settled frame defined by the [surface geom
 - **Rapid input.** A navigation request during a running transition retargets it immediately. Nothing is queued or locked. At most two frames are painted at any moment: the newest incoming frame and the frame it replaces. When motion stops, only the selected frame is painted.
 - **Endpoints.** Next on the last slide and previous on the first change nothing and start no motion.
 - **Initial state.** Initialisation, including a load that addresses a slide by fragment, selects the slide without motion.
-- **Reduced motion.** With `prefers-reduced-motion: reduce`, every style changes slides immediately. A change of preference takes effect without a reload.
+- **Reduced motion.** With `prefers-reduced-motion: reduce`, every style changes slides immediately, whatever the timing tokens say. A change of preference takes effect without a reload.
 - **Resize.** Resizing during motion recomputes the frame and does not change selection.
 
 #### Modules
@@ -72,35 +72,21 @@ Engine state attributes are internal and not author API.
 
 ### Anti-Patterns
 
-- Per-slide styles, overrides, or timing.
-- Setting transitions, animations, transforms, or `will-change` on descendants, or suspending author animation during engine motion.
 - Measuring or inspecting slide content to drive motion, or animating with JavaScript frame loops that read layout.
-- Delaying selection, URL updates, or notifications until motion ends; input locks, queues, or dropped input during motion.
-- Painting moving frames onto the backdrop, or resizing frames during motion.
-- Letting the timing tokens override reduced motion.
 - Stacking or hiding slides before enhancement, which would hide authored payload without JavaScript.
 - Moving focus, adding announcements, or changing roles because a transition ran.
-- Applying stacked or motion styles to print.
 - Value aliases.
 
 ## Contract (Quality)
 
 ### Definition of Done
 
-- The scenarios below pass with production CSS and IIFE in Chromium, Firefox, and WebKit, under the verification requirements in [PROJECT.md](../../PROJECT.md).
-- Style resolution, selection timing, retargeting, and endpoints have unit coverage.
-- Motion direction, confinement, timing, and reduced motion are checked in a browser by sampling frame transforms, opacity, and paint bounds during motion.
+- The scenarios below pass with production CSS and IIFE in Chromium, Firefox, and WebKit, under the verification requirements in [PROJECT.md](../../PROJECT.md). Browser checks sample frame transforms, opacity, and paint bounds during motion.
 - Every surface geometry scenario passes under each style.
-- Artifact sizes stay within the PROJECT.md budgets, measured on a fresh build.
 
 ### Regression Guardrails
 
-- Surface geometry holds under every style: fit, ratio cascade, clipping, and paint defaults.
-- Key mapping, endpoints without wrapping, and input ownership are independent of the style.
-- Authored IDs, semantics, focusability, native control actions, and author animation are unchanged.
-- Without JavaScript, every slide stays in normal flow in document order, whatever `data-transition` says.
-- Print includes every slide, settled and unmoved, regardless of selection or motion.
-- Engine code never reads slide content or layout to decide motion.
+Key mapping, endpoints, and input ownership are independent of the style. Authored IDs, semantics, focusability, and native control actions are unchanged.
 
 ### Scenarios (Gherkin)
 
