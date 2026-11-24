@@ -2,6 +2,9 @@
 generated:
   by: "claude-code/claude-opus-5-5"
   at: "2026-11-24T08:40:40+02:00"
+verified:
+  - by: "human:ville.takanen"
+    at: "2026-11-24T08:42:02+02:00"
 ---
 
 # Deck transitions
