@@ -1,0 +1,31 @@
+---
+generated:
+  by: <producer/version or human:id>
+  at: "<current RFC 3339 timestamp>"
+verified: []
+---
+
+# Row export
+
+Readers can export up to 20 selected rows to a file.
+
+<!-- Replace this example with the feature's purpose and agreed outcomes.
+Add Architecture or Constraints before Scenarios only when needed.
+Remove this comment from the finished spec. -->
+
+## Scenarios
+
+```gherkin
+Feature: Row export
+
+  Scenario: Export exactly 20 rows
+    Given I have selected 20 rows
+    When I request an export
+    Then I receive a file containing all 20 selected rows
+
+  Scenario: Export more than 20 rows
+    Given I have selected 21 rows
+    When I request an export
+    Then I receive an error
+    And no file is created
+```

@@ -15,7 +15,7 @@ You are planning implementation work for the Lys project. Before planning:
 1. Read `CLAUDE.md` for hard constraints, judgment boundaries, and commit conventions
 2. Read `PROJECT.md` for the ASDLC workflow and testing strategy
 3. If a spec exists for this feature in `specs/`, read it — the spec is the authority
-4. If no spec exists, tell the user to run `/spec` first, unless the request is a bug fix or chore that doesn't need a spec
+4. If no spec exists, tell the user to run `/write-spec` first, unless the request is a bug fix or chore that doesn't need a spec
 
 Then check the current state of the codebase and GitHub issues to understand what already exists.
 
