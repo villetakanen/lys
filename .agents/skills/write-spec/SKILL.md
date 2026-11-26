@@ -3,7 +3,7 @@ name: write-spec
 description: Create or amend a living feature spec, resolve questions about expected behaviour, or propose how to organise a repository’s specs.
 generated:
   by: openai-codex/gpt-6
-  at: "2026-11-25T16:49:17Z"
+  at: "2026-11-26T08:34:32Z"
 verified: []
 ---
 
@@ -22,20 +22,20 @@ Read the request, the governing spec and its neighbours, and enough of the imple
 
 ## Write the spec
 
-Use the feature name as the title. Open with a sentence explaining what the feature lets someone do. For a small feature, that sentence and one scenario can be the whole spec.
+Use the feature name as the title. Follow it with these three level-two headings in order, even for a small feature.
 
-Add **Architecture** when a reader needs to know who owns a responsibility or how parts fit together. Link to code and schemas where they live. Add **Constraints** for limits and rules that apply throughout the feature.
+- **Context** explains who needs the feature and what they are trying to do. One sentence often suffices.
+- **Blueprint** states how the feature behaves. Put its rules, limits and exceptions here so a reader can find them directly. A single rule can be the whole Blueprint. Describe responsibilities and link to code or schemas when that helps explain the behaviour.
+- **Scenarios** illustrates those rules in one fenced `gherkin` block. Start with `Feature:` and repeat the spec title exactly. Give each `Scenario:` a name, a starting condition (`Given`), an action or event (`When`) and an observable outcome (`Then`). Keep boundary examples that show what happens at or beyond a limit.
 
-Under **Scenarios**, put all examples in one fenced `gherkin` block. Start with `Feature:` and repeat the spec title exactly. Give each `Scenario:` a name, a starting condition (`Given`), an action or event (`When`) and an observable outcome (`Then`). Keep a boundary example when it explains what happens at or beyond a limit. The template shows both sides of a 20-row limit.
-
-Use outcomes supported by the brief or an explicit decision. Keep acceptance criteria, checkboxes, task lists and test instructions out of specs. When amending an older spec, read each checklist item and guardrail for distinct promises. Carry those promises into constraints or scenario outcomes.
+Use the brief, governing spec and explicit decisions to establish expected behaviour. If an outcome depends on an assumption, put the question in the handover. Keep acceptance criteria, checkboxes, task lists and test instructions out of specs. When amending behaviour in an older spec, carry its distinct promises from prose, checklists and guardrails into the new structure.
 
 Split out a part when it can change independently. Link parent and child both ways. Use the [guide to splitting specs](references/splitting.md) for child specs and bulky attachments.
 
 ## Record and hand over the change
 
-Spec frontmatter contains only `generated` and `verified`. For a substantive change, record the actual producer and current RFC 3339 time. Formatting and link repairs preserve generation metadata. Use the same provenance on written proposals and Markdown attachments.
+Spec frontmatter contains only `generated` and `verified`. For a substantive edit, including a rewrite from an older format into rules and examples, record the actual producer and current RFC 3339 time. Formatting and link repairs preserve generation metadata. Use the same provenance on written proposals and Markdown attachments.
 
-Start with `verified: []`. A human source check replaces the previous entry. After an edit, retain the latest human check. It covers the text when dated at or after generation. For older records, keep the latest attributable human check, including its original date precision. Report gaps in attribution.
+A new spec starts with `verified: []`. When editing an existing spec, carry its latest human check into `verified`, including one recorded under the older `reviewed_by` field. Use `by: human:<id>` and keep the original date precision. A new human check replaces that entry. It covers the text only when dated at or after generation. Report gaps in attribution.
 
 Run host checks. Identify the changed spec, any open decision and text awaiting verification. Implementation requires explicit authorization. When implementing an agreed behaviour change, include its spec amendment in the same commit.

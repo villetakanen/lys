@@ -7,11 +7,13 @@ verified: []
 
 # Row export
 
-Readers can export up to 20 selected rows to a file.
+## Context
 
-<!-- Replace this example with the feature's purpose and agreed outcomes.
-Add Architecture or Constraints before Scenarios only when needed.
-Remove this comment from the finished spec. -->
+Readers need a file containing only the rows they select in a table.
+
+## Blueprint
+
+An export of up to 20 selected rows produces a file containing those rows. If more than 20 are selected, the reader sees an error and no file is created.
 
 ## Scenarios
 
